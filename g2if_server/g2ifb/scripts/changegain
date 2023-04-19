@@ -1,9 +1,0 @@
-#!/bin/bash
-
-
-LOOP_NAME=$1
-VAL=$2
-
-cd ${HOME}/AOloop/${LOOP_NAME}-rootdir
-
-cacao-fpsctrl setval mfilt loopgain ${VAL}

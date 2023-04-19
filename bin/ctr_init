@@ -2,16 +2,14 @@
 #!/bin/sh
 
 
-cd /usr/local/nsl/bin/
+NSLMON="/usr/local/nsl/bin/nslmon"
 
-./nslmon -u 0
-./nslmon -u 1
-./nslmon -u 2
-./nslmon -u 3
+${NSLMON} -u 0
+${NSLMON} -u 1
+${NSLMON} -u 2
+${NSLMON} -u 3
 
-./nslmon -u 0 --clrf --clrl --clrc
-./nslmon -u 1 --clrf --clrl --clrc
-./nslmon -u 2 --clrf --clrl --clrc
-./nslmon -u 3 --clrf --clrl --clrc
-
-cd /home/rts/RTS_2019/bin/
+${NSLMON} -u 0 --clrf --clrl --clrc
+${NSLMON} -u 1 --clrf --clrl --clrc
+${NSLMON} -u 2 --clrf --clrl --clrc
+${NSLMON} -u 3 --clrf --clrl --clrc
