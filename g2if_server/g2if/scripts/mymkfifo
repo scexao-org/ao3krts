@@ -1,0 +1,7 @@
+#!/bin/bash
+
+pipe="$1"
+
+if [[ ! -p $pipe ]]; then
+    mkfifo $pipe
+fi

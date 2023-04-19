@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# g2if_restart -- Restart g2if server
+#
+
+g2if_stop
+
+sleep 1.0
+
+g2if_start

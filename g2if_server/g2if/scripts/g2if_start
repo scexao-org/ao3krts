@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# g2if_start -- Start g2if server
+#
+
+
+if [ -z ${RTS_PACK_ROOT} ]; then
+    echo "RTS_PACK_ROOT UNDEFINED - ABORT"
+fi
+
+G2IF_EXEC_PATH="${RTS_PACK_ROOT}/g2if_server/g2if/bin"
+
+# server program
+SERVER="${G2IF_EXEC_PATH}/g2if_server"
+
+# client programg2
+CLIENT="${G2IF_EXEC_PATH}/g2if_client"
+
+# configuration file
+CONFIG="${G2IF_EXEC_PATH}/conf/g2if.conf"
+
+# log file
+LOGFILE="${G2IF_EXEC_PATH}/log/g2if_$(date '+%Y%m%d').log"
+
+# start server programe
+echo "Starting ${SERVER}"
+echo "  log file ${LOGFILE}"
+echo "  conf file ${CONFIG}"
+${SERVER} -c ${CONFIG} -l ${LOGFILE}
