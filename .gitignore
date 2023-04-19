@@ -1,4 +1,4 @@
-./g2if_server/g2if/bin
+g2if_server/g2if/bin
 *.o
 *.log
 *~
