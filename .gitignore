@@ -1,0 +1,8 @@
+g2if_client
+g2if_server
+*.o
+*.log
+*~
+Makefile.depend
+
+bin/

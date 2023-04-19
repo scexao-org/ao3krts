@@ -1,0 +1,17 @@
+
+#!/bin/sh
+
+
+cd /usr/local/nsl/bin/
+
+./nslmon -u 0
+./nslmon -u 1
+./nslmon -u 2
+./nslmon -u 3
+
+./nslmon -u 0 --clrf --clrl --clrc
+./nslmon -u 1 --clrf --clrl --clrc
+./nslmon -u 2 --clrf --clrl --clrc
+./nslmon -u 3 --clrf --clrl --clrc
+
+cd /home/rts/RTS_2019/bin/
