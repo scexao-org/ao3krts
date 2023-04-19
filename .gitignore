@@ -1,5 +1,4 @@
-g2if_client
-g2if_server
+./g2if_server/g2if/bin
 *.o
 *.log
 *~
