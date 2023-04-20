@@ -43,7 +43,8 @@ enum {
 
 /* FIFO INFO for GAIN */
 #define GAIN_FIFO_NAME      "/milk/shm/g2if_gain.fifo"
-#define GAIN_FIFO_DMG       "loopRUN-1.loopgain" // 1 = hardware, 2 = cacao simulator
+#define GAIN_FIFO_DMG       "mfilt-3.loopgain"
+#define GAIN_FIFO_TTG       "mfilt-4.loopgain"
 
 /* Structure to store gain values */
 struct gain_stat {
@@ -104,7 +105,9 @@ int gain_procconf(gain_t *gain, const char *subsec, int argc, const char **argv)
 int gain_postconf(gain_t *gain);    
 int gain_proccmd(client_t *client, gain_t *gain);
 int gain_getdmg(gain_t *gain, float *dmg);
+int gain_getttg(gain_t *gain, float *ttg);
 int gain_setdmg(gain_t *gain, float dmg);
+int gain_setttg(gain_t *gain, float ttg);
 int gain_getstat(gain_t *gain, struct gain_stat *stat);
 int gain_savestat(gain_t *gain, struct gain_stat *stat);
 

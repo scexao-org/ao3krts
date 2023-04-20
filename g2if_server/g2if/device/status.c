@@ -123,11 +123,13 @@ static void *status_poll_fast(status_t *status){
   for(k=0; k<nFrame; k++){
     /* sem_wait for apdmatrix */
     clock_gettime(CLOCK_REALTIME, &ts1);
-    ts1.tv_sec += 2;
+    ts1.tv_sec += (ts1.tv_nsec + 1000000) / 1000000000;
+    ts1.tv_nsec = (ts1.tv_nsec + 1000000) % 1000000000;
+    // FIXME sem 5 doesn't need to be 5.
     ImageStreamIO_semtimedwait(status->shm_apdcnt, 5, &ts1);
 
-    // if semwait timeout
-    if(errno == ETIMEDOUT) return NULL;
+    // if semwait timeout -> No, we're expecting this to work even without the APD running at all.
+    //if(errno == ETIMEDOUT) return NULL;
 
     /* get howfs apd count (+) from shm */
     for(i=0; i<HOAPD_NUM; i++) stat.ave_hapdcnt[i] += status->apdcnt[status->hapdmap[i]];
@@ -142,12 +144,12 @@ static void *status_poll_fast(status_t *status){
     for(i=0; i<DMACT_NUM; i++) stat.ave_dmvolt[i] += status->dmvolt[i];
 
     /* get dmtt from shm */
-    stat.ave_dmtt[0] += status->dmtt[2];
-    stat.ave_dmtt[1] += status->dmtt[3];
+    stat.ave_dmtt[0] += status->dmtt[0];
+    stat.ave_dmtt[1] += status->dmtt[1];
 
     /* get wtt from shm */
-    stat.ave_wtt[0] += status->wtt[2];
-    stat.ave_wtt[1] += status->wtt[3];
+    stat.ave_wtt[0] += status->wtt[0];
+    stat.ave_wtt[1] += status->wtt[1];
 
     /* get LO tip/tilt/defocus */
     stat.ave_lott[0] += status->lott[0];

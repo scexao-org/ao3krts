@@ -148,7 +148,30 @@ int gain_getdmg(gain_t *gain, float *dmg){
     *dmg = -99;
     return -1;
   }
+  return 0;
+}
 
+/*
+ * Get TTG from CACAO through fifo
+ */
+int gain_getttg(gain_t *gain, float *ttg){
+  int ret = 0;
+  char buff[GAIN_COMM_BUFSIZ];
+  char *arg[GAIN_STATARG_MAX];
+
+  /* send fwrval command to cacao */
+  system("echo \""FIFO_GET_COMMAND" "GAIN_FIFO_TTG" "GAIN_FIFO_NAME"\" >> "FIFO_FPSCTRL_NAME);
+
+  /* read fifo */
+  if((ret = fifo_read(&(gain->fifo), buff)) == 0){
+    /* parse text */
+    ret = strsplit_delim(buff, arg, " ,=:{}()[]'\n\r\t\v\f", GAIN_STATARG_MAX);
+    *ttg = (float)atof(arg[4]);
+  } else{
+    info(RES_HEAD_ERR"%s: %s\n", gain->header, buff);
+    *ttg = -99;
+    return -1;
+  }
   return 0;
 }
 
@@ -168,6 +191,21 @@ int gain_setdmg(gain_t *gain, float dmg){
 }
 
 /*
+ * Set TTG through fifo
+ */
+int gain_setttg(gain_t *gain, float ttg){
+  char script[GAIN_COMM_BUFSIZ];
+
+  /* make command string */
+  sprintf(script,"echo \""FIFO_SET_COMMAND" "GAIN_FIFO_TTG" %.4f\" >> "FIFO_FPSCTRL_NAME, ttg);
+
+  /* send command to fifo */
+  system(script);
+
+  return 0;
+}
+
+/*
  * Get status from shared memory
  */
 int gain_getstat(gain_t *gain, struct gain_stat *stat){
@@ -178,8 +216,8 @@ int gain_getstat(gain_t *gain, struct gain_stat *stat){
   gain_getdmg(gain, &(stat->dmg));
 
   /* read TTG gain */
-  if(shms_read_float(shms, KEY_TTG_GAIN, &(stat->ttg), 1, errstr) != 0)
-    stat->ttg = 0.0;
+  gain_getttg(gain, &(stat->ttg));
+
 
   /* read HTT gain */
   if(shms_read_float(shms, KEY_HTT_GAIN, &(stat->htt), 1, errstr) != 0)

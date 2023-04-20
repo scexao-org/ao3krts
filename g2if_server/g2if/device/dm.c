@@ -75,8 +75,8 @@ int dm_open(dm_t *dm){
   char errstr[DM_ERRSTR_MAX + 1];
 
   /* set DM volt shm shortcut */
-  if((shm = bsearch(KEY_DM01DISP, shms->shm, shms->shm_num, sizeof(struct cacao_shm), shms_search_comp)) == NULL){
-    sprintf(errstr, "\"%s\" no matched keyword", KEY_DM01DISP);
+  if((shm = bsearch(KEY_BIMWRITE, shms->shm, shms->shm_num, sizeof(struct cacao_shm), shms_search_comp)) == NULL){
+    sprintf(errstr, "\"%s\" no matched keyword", KEY_BIMWRITE);
     error_num(errno, "%s", errstr);
     return -1;
   }

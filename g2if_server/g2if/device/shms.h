@@ -79,23 +79,23 @@ int shms_write_uint32(shms_t *shms, const char *key, const uint32_t *value, cons
 int shms_read_uint32(shms_t *shms, const char *key, uint32_t *value, const int num, char *errstr);
 
 /* Keyword to access sheard memories */
-#define KEY_TTG_GAIN        "ttg"                // SHM Keyword for TTG gain                     // USED in gain_cmd.c, gain.c
+// #define KEY_TTG_GAIN        "ttg"                // SHM Keyword for TTG gain                     // USED in gain_cmd.c, gain.c
 #define KEY_HTT_GAIN        "Httg"               // SHM Keyword for HTT gain                     // USED in cmtx_cmd.c, gain_cmd.c, gain.c
 #define KEY_HDF_GAIN        "Hdfg"               // SHM Keyword for HDF gain                     // USED in cmtx_cmd.c, gain_cmd.c, gain.c
 #define KEY_LTT_GAIN        "LO_tt_gain"         // SHM Keyword for LTT gain                     // USED in gain_cmd.c, gain.c
 #define KEY_LDF_GAIN        "LO_defocus_gain"    // SHM Keyword for LDF gain                     // USED in gain_cmd.c, gain.c
 #define KEY_WTT_GAIN        "wttg"               // SHM Keyword for WTT gain                     // USED in gain_cmd.c, gain.c
 #define KEY_ADF_GAIN        "ADF_gain"           // SHM Keyword for ADF gain                     // USED in gain_cmd.c, gain.c, adf_cmd.c
-#define KEY_TTM_TT          "dmTTapply"          // SHM Keyword for Tip/Tilt of TTM              // USED in tt.c, status.c
-#define KEY_WTT_TT          "wttapply"           // SHM Keyword for Tip/Tilt of WTTM             // USED in status.c
+#define KEY_TTM_TT          "tt_value_float"     // SHM Keyword for Tip/Tilt of TTM              // USED in tt.c, status.c
+#define KEY_WTT_TT          "wtt_value_float"    // SHM Keyword for Tip/Tilt of WTTM             // USED in status.c
 #define KEY_APD_COUNT       "apdmatrix"          // SHM Keyword for APD count                    // USED in status.c
 #define KEY_APD_COUNT2      "apdcount"           // SHM Keyword for APD count (for APD safety)   // USED in apdsafe.c
 #define KEY_ADFGAIN_X_DF    "ADFg"               // SHM Keyword for ADF_gain x defocus           // USED in adf_cmd.c
-#define KEY_DM_VOLT         "dmapply"            // SHM Keyword for dm voltage                   // USED in dm.c, status.c
+#define KEY_DM_VOLT         "bim_telemetry"      // SHM Keyword for dm voltage                   // USED in dm.c, status.c
 #define KEY_CURV            "curv_ord"           // SHM Keyword for curvature                    // USED in status.c, gain.c, gain_cmd.c+292?
 #define KEY_LO_TT           "LO_tt"              // SHM Keyword for LOWFS tip/tilt               // USED in status.c
 #define KEY_LO_DF           "LO_defocus"         // SHM Keyword for LOWFS defocus                // USED in status.c
-#define KEY_DM01DISP        "dm01disp"           // SHM Keyword for dm01disp                     // USED in dm.c
+#define KEY_BIMWRITE        "bim188_float"       // SHM Keyword for dm01disp                     // USED in dm.c
 
 
 #endif /* _SHM_H */

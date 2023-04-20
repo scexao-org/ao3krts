@@ -2,7 +2,7 @@
 
 CC	= gcc
 
-CFLAGS	= -Wall -O2 -std=gnu99 -I$(COMMON) -I$(DEVICE) -fPIC -I/usr/local/milk/include
+CFLAGS	= -Wall -Wno-unused-result -O2 -std=gnu99 -I$(COMMON) -I$(DEVICE) -fPIC -I/usr/local/milk/include
 LIBS	= -lm -lpthread -lrt -lgsl -lgslcblas -lcfitsio -L/usr/local/milk/lib -lImageStreamIO
 RPATHFLAG = -Wl,-rpath /usr/local/milk/lib
 

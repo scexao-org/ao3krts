@@ -27,9 +27,6 @@ tmux send-keys -t tm_cacao2 "imzero LO_tt_disp" C-m
 
 
 
-
-
-
 tmux send-keys -t tm_cacao2 'readshmim dmvoltf' C-m
 tmux send-keys -t tm_cacao2 'imsetsempost dmvoltf -1' C-m
 

@@ -70,7 +70,6 @@ static int gain_cmd_set(client_t *client, gain_t *gain){
   } else if (strcmp(cmd, "ttg") == 0) {
     min = ming->ttg;
     max = maxg->ttg;
-    strcpy(key, KEY_TTG_GAIN);
   } else if (strcmp(cmd, "htt") == 0) {
     min = ming->htt;
     max = maxg->htt;
@@ -136,6 +135,8 @@ static int gain_cmd_set(client_t *client, gain_t *gain){
 
   if(strcmp(cmd,"dmg")==0){
     gain_setdmg(gain, val);
+  } else if(strcmp(cmd,"ttg")==0) {
+    gain_setttg(gain, val);
   } else if(strcmp(cmd, "ltt") == 0) {
     sprintf(msg, "%s %s %.4f 0", gain->change, key, val);
     system(msg);
