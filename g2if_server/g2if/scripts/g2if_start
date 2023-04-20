@@ -6,24 +6,32 @@
 
 if [ -z ${RTS_PACK_ROOT} ]; then
     echo "RTS_PACK_ROOT UNDEFINED - ABORT"
+    exit
 fi
 
-G2IF_EXEC_PATH="${RTS_PACK_ROOT}/g2if_server/g2if/bin"
+G2IF_EXEC_PATH="${RTS_PACK_ROOT}/g2if_server/g2if"
 
 # server program
-SERVER="${G2IF_EXEC_PATH}/g2if_server"
+SERVER="${G2IF_EXEC_PATH}/bin/g2if_server"
 
 # client programg2
-CLIENT="${G2IF_EXEC_PATH}/g2if_client"
+CLIENT="${G2IF_EXEC_PATH}/bin/g2if_client"
 
 # configuration file
 CONFIG="${G2IF_EXEC_PATH}/conf/g2if.conf"
 
 # log file
-LOGFILE="${G2IF_EXEC_PATH}/log/g2if_$(date '+%Y%m%d').log"
+LOGFILE="${HOME}/logs/g2if_$(date '+%Y%m%d').log"
 
 # start server programe
 echo "Starting ${SERVER}"
 echo "  log file ${LOGFILE}"
 echo "  conf file ${CONFIG}"
+
+TMUX="fpsCTRL_g2if_fifo"
+tmux new -d -s ${TMUX}
+tmux send-keys -t ${TMUX} "milk-fpsCTRL -f /milk/shm/ao188_new_fpsCTRL.fifo" Enter
+echo "rescan" >> /milk/shm/ao188_new_fpsCTRL.fifo
+sleep 0.1
+
 ${SERVER} -c ${CONFIG} -l ${LOGFILE}

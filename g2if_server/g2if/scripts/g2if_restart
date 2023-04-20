@@ -2,9 +2,15 @@
 #
 # g2if_restart -- Restart g2if server
 #
+if [ -z ${RTS_PACK_ROOT} ]; then
+    echo "RTS_PACK_ROOT UNDEFINED - ABORT"
+    exit
+fi
 
-g2if_stop
+G2IF_EXEC_PATH="${RTS_PACK_ROOT}/g2if_server/g2if"
+
+${G2IF_EXEC_PATH}/scripts/g2if_stop
 
 sleep 1.0
 
-g2if_start
+${G2IF_EXEC_PATH}/scripts/g2if_start

@@ -3,8 +3,7 @@
 # g2if_stop -- Stop g2if server
 #
 
-# server program
-SERVERSTRING="g2if_server"
-
-echo "Stopping ${SERVERSTRING}"
-killall -wq ${SERVERSTRING}
+echo "Stopping g2if_server"
+killall -wq g2if_server
+tmux kill-session -t fpsCTRL_g2if_fifo
+rm /milk/shm/ao188_new_fpsCTRL.fifo
