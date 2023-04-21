@@ -28,10 +28,13 @@ echo "Starting ${SERVER}"
 echo "  log file ${LOGFILE}"
 echo "  conf file ${CONFIG}"
 
-TMUX="fpsCTRL_g2if_fifo"
-tmux new -d -s ${TMUX}
-tmux send-keys -t ${TMUX} "milk-fpsCTRL -f /milk/shm/ao188_new_fpsCTRL.fifo" Enter
+TMUXFIFO="fpsCTRL_g2if_fifo"
+tmux new -d -s ${TMUXFIFO}
+tmux send-keys -t ${TMUXFIFO} "milk-fpsCTRL -f /milk/shm/ao188_new_fpsCTRL.fifo" Enter
 echo "rescan" >> /milk/shm/ao188_new_fpsCTRL.fifo
 sleep 0.1
 
-${SERVER} -c ${CONFIG} -l ${LOGFILE}
+TMUXSERVER="g2if_server"
+tmux new -d -s ${TMUXSERVER}
+# expect nothing running...
+tmux send keys -t ${TMUXSERVER} "${SERVER} -c ${CONFIG} -l ${LOGFILE} -v" Enter
