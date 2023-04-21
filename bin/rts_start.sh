@@ -1,272 +1,198 @@
-#!/bin/sh
+#!/bin/bash
 
 ###################################################
-# Ch. Clergeon 2019/09/23
+# Ch. Clergeon 2020/06/20
 # startup script for AO188 interface communication
+# NEW CACAO VERSION
 # HARDWARE
 ###################################################
+
+RED="\e[1;31m"
+GREEN="\e[1;32m"
+BLUE="\e[1;34m"
+ECOL="\e[0m" # End terminal color
 
 
 # ------------------------
 # CACAO startup
 # ------------------------
 
-echo -e "\n"
-echo -e "\e[1;32mStart CACAO\e[0m \n"
-echo -e "\n"
-echo -e "\n"
-
-# load configuration file
-echo -e "\e[1;32mLoad CACAO configuration file... \e[0m \n"
-source /home/rts/AOloop/cacaovars.ao188.bash
-echo -e "\n"
-echo -e "\e[1;31mCACAO configuratin file loaded. \e[0m \n"
-sleep 3
- 
-# start conf process (DM comb - etc ...)
-echo -e "\e[1;32mStart CACAO setup: start configuration process... \e[0m \n"
-cacao-setup
-sleep 15
-echo -e "\n"
-echo -e "\e[1;31mCACAO setup started (conf process ON). \e[0m \n"
-echo -e "\e[1;33mprocess running in:\e[0m \n"
-echo -e "\e[1;33mSee tmux a -t ao188_fpsCTRL\e[0m \n"
-echo -e "\n"
-echo -e "\n"
-
-# start running process
-echo -e "\e[1;32mStart CACAO setup: start running process... \e[0m \n"
-
-
-# Dm comb 01
-#echo "confstart DMcomb-01" >> /milk/shm/ao188_fpsCTRL.fifo
-echo "runstart DMcomb-01" >> /milk/shm/ao188_fpsCTRL.fifo
-sleep 5
-
-# Sim - acquWFS-1
-#echo "confstart acquWFS-1" >> /milk/shm/ao188_fpsCTRL.fifo
-echo "runstart acquWFS-1" >> /milk/shm/ao188_fpsCTRL.fifo
-sleep 5
-
-
-echo -e "\n"
-echo -e "\e[1;31mCACAO setup started (run process ON). \e[0m \n"
-echo -e "\e[1;33mprocess running in:\e[0m \n"
-echo -e "\e[1;33mSee tmux a -t ao188_fpsCTRL\e[0m \n"
-echo -e "\n"
-echo -e "\n"
-
-### ????### " status proces ??? feedback CRASHED OR NOT CRASHED?
-
-
-echo -e "\n"
-echo -e "\n"
-
 # ------------------------
 # init fpdp boards
 # ------------------------
 
 echo -e "\n"
-echo -e "\e[1;32mInitialize fpdp boads connections\e[0m \n"
+echo -e "${GREEN}Reset fpdp boads connections${ECOL} \n"
 echo -e "\n"
 
-/home/rts/RTS_2019/bin/ctr_init
-sleep 3
-/home/rts/RTS_2019/bin/ctr_init
-sleep 3
+${RTS_PACK_ROOT}/bin/ctr_init
+sleep 1.0
+${RTS_PACK_ROOT}/bin/ctr_init
+sleep 1.0
 
 # ------------------------
 # START/init tmux sessions
 # ------------------------
 
 echo -e "\n"
-echo -e "\e[1;32mInitialize tmux sessions...\e[0m \n"
+echo -e "${GREEN}Initialize tmux sessions...${ECOL} \n"
 echo -e "\n"
-# ??
-tmux new-session -d -s tm_ao188
-tmux new-session -d -s tm_tt_cntr
-tmux new-session -d -s tm_log_dm
-tmux new-session -d -s tm_log_apd
-tmux new-session -d -s tm_dm_cnt
+
+#tmux new-session -d -s tm_ao188
+#tmux new-session -d -s tm_tt_cntr
+#tmux new-session -d -s tm_log_dm
+#tmux new-session -d -s tm_log_apd
+#tmux new-session -d -s tm_dm_cnt
 # main tmux sessions
-tmux new-session -d -s tm_cacao
-tmux new-session -d -s tm_cacao2
-tmux new-session -d -s tm_fpdp_dm
-tmux new-session -d -s tm_fpdp_dm_logic
-tmux new-session -d -s tm_fpdp_apd
-tmux new-session -d -s tm_chris
+#tmux new-session -d -s tm_cacao
+#tmux new-session -d -s tm_cacao2
+#tmux new-session -d -s tm_fpdp_dm
+#tmux new-session -d -s tm_fpdp_dm_logic
+#tmux new-session -d -s tm_fpdp_apd
+#tmux new-session -d -s tm_chris
+#tmux new-session -d -s tm_ptp
 
+echo -e "\n"
+echo -e "${BLUE}Done.  Here's a 'tmux ls':${ECOL} \n"
+echo -e "\n"
 
+tmux ls
 
+echo ""
+echo ""
 
 # -----------------------------------------
-# Start CACAO in the tmux tm_cacao2 session 
+# Spin up the CRED1. This assumes it's cold.
 #------------------------------------------
 
+echo -e "${GREEN}Starting IIWI acquisition... ${ECOL}\n"
+cam-iiwistart
+echo -e "${RED}Startup executed. Check iiwi SHM.${ECOL}\n"
 
-# kill cacao if still running in the session
-tmux send-keys -t tm_cacao2 "^C" C-m
-sleep 0.5
-tmux send-keys -t tm_cacao2 "cd /home/rts/RTS_2019/conf/" C-m
-sleep 0.5
-tmux send-keys -t tm_cacao2 "cacao" C-m
+# -----------------------------------------
+# Spin up the CACAO loop(s)
+#------------------------------------------
 
+echo -e "${GREEN}Reconfiguring CACAO loops... ${ECOL}\n"
 
+echo -e "${RED}Done.${ECOL}\n"
 
+(cd ${HOME}/AOloop;
+rm -rf .nir188.cacaotaskmanager-log/;
+rm -rf .ttoff188.cacaotaskmanager-log/;
+cacao-loop-deploy ao3k-nirpyr188;
+cacao-loop-deploy ao3k-ttoff188
+)
 
+# -----------------------------------------
+# Starting up the DMCombs
+#------------------------------------------
 
-# ---------------------------
-# Start the APD communication
-# ---------------------------
-
-echo -e "\e[1;32mStart APDs communication... \e[0m\n"
-
-tmux new-session -d -s tm_fpdp_apd
-tmux send-keys -t tm_fpdp_apd 'cd /home/rts/RTS_2019/APD3/ ' C-m
-tmux send-keys -t tm_fpdp_apd './fpdptest_new_nour_APD' C-m
-tmux detach -s tm_fpdp_apd
-
-echo -e "\e[1;31mAPDs communication started! \e[0m\n"
-sleep 3
+(cd ${HOME}/AOloop/nir188-rootdir;
+cacao-aorun-001-dmsim start;
+cacao-aorun-000-dm start
+)
+(cd ${HOME}/AOloop/ttoff188-rootdir;
+cacao-aorun-001-dmsim start;
+cacao-aorun-000-dm start
+)
+sleep 3.0
 
 # --------------------------------------------------
 # Start the DM communication - STEP 1: DM main (NGS)
 # --------------------------------------------------
 
-echo -e "\e[1;32mStart DM communication... \e[0m\n"
+echo -e "${GREEN}Start DM communication... ${ECOL}\n"
 
-tmux new-session -d -s tm_fpdp_dm
-tmux send-keys -t tm_fpdp_dm 'cd /home/rts/RTS_2019/DM/ ' C-m
-tmux send-keys -t tm_fpdp_dm './fpdptest_LGS_DM' C-m
-tmux send-keys -t tm_fpdp_dm 'DM_ON' C-m
-tmux detach -s tm_fpdp_dm
+# Assert DMch2disp-00 is running!! And that it has created dm00disp.
+ln -sf /milk/shm/dm00disp.im.shm /milk/shm/bim188_float.im.shm
+# Assert DMch2disp-01 (TToffload loop) is running!! And that it has created dm00disp.
+ln -sf /milk/shm/dm01disp.im.shm /milk/shm/tt_value_float.im.shm
 
-echo -e "\e[1;31mDM communication in stand-by ... \e[0m\n"
+creashmim wtt_value_float 1 2 -z --type=f32
+creashmim bim188_tele 1 188 -z --type=f32
+creashmim tt_telemetry 1 2 -z --type=f32
+creashmim wtt_telemetry 1 2 -z --type=f32
+
+creashmim dmvolt 1 188 -z --type=u16 # This one is to make dm_displouf happy.
+
+tmux new -d -s fpdp_dm
+tmux send-keys -t fpdp_dm "hwint-dac40 -s bim188_float -u 0" Enter
+PID=$(pgrep hwint-dac40)
+milk-exec "csetandprioext $PID dm188_drv 45"
+
+echo -e "${BLUE}DM communication available on SHMs "bim188_float" "tt_value_float" "wtt_value_float"  ... ${ECOL}\n"
 
 sleep 3
-#--------------------------------------------
-# Load configuration files in shared memories
-#--------------------------------------------
 
-echo -e "\e[1;32mload configuration files...\e[0m\n"
-python /home/rts/RTS_2019/bin/load_LO_coef.py
-sleep 1
-python /home/rts/RTS_2019/bin/load_tt_RM.py
-sleep 1
-python /home/rts/RTS_2019/bin/load_wtt_RM.py
-sleep 1
-python /home/rts/RTS_2019/bin/load_ADF_RM.py
-sleep 1
+# ------------------------------------------------------------------
+# Start CACAO process WFS acquisition (requires SHM from APD script)
+# ------------------------------------------------------------------
+
 
 #----------------------------
 # Load dmTT flat and wtt flat
 #----------------------------
 
-echo -e "\e[1;32mload dmTT amd wTT flats...\e[0m\n"
-python /home/rts/RTS_2019/bin/tt_flat.py
-sleep 1
-python /home/rts/RTS_2019/bin/wtt_flat.py
-sleep 1
+echo -e "${GREEN}load dmTT amd wTT flats...${ECOL}\n"
+${RTS_PACK_ROOT}/bin/tt_flat.py
+sleep 3
+${RTS_PACK_ROOT}/bin/wtt_flat.py
+sleep 3
+
 #----------------------------------------------------
 # Start the DM communication - STEP 2: DM LOGIC (LGS)
 #----------------------------------------------------
-
-echo -e "\e[1;32mStart DM LOGIC script... \e[0m\n"
-
-tmux new-session -d -s tm_fpdp_dm_logic
-tmux send-keys -t tm_fpdp_dm_logic 'cd /home/rts/RTS_2019/DM/ ' C-m
-tmux send-keys -t tm_fpdp_dm_logic './fpdptest_LGS_logic' C-m
-tmux detach -s tm_fpdp_dm_logic
-echo -e "\e[1;31mDM LOGIC started ... \e[0m\n"
-sleep 3
 
 #-----------------
 # zero DM channels
 #-----------------
 
-echo -e "\e[1;32mZero DM channels...\e[0m\n"
-python /home/rts/RTS_2019/bin/dm_zero.py
-sleep 1
-
-
 #--------------------------------
 # Load default NGS control matrix
 #--------------------------------
 
-echo -e "\e[1;32mLoading the default Control Matrix for NGS mode...\e[0m\n"
-python /home/rts/RTS_2019/bin/load_NGS_CM.py
-echo -e "\e[1;31mControl Matrix (NGS) loaded...\e[0m\n"
-
-sleep 1
-
-
-
-
-
 # Set default Httg and Hdfg to 1 (NGS)
-
-tmux send-keys -t tm_cacao "cacao" C-m
-
-sleep 2
-
-tmux send-keys -t tm_cacao 'readshmim Httg' C-m
-tmux send-keys -t tm_cacao 'setpix Httg 1 0 0' C-m
-
-sleep 1
-
-tmux send-keys -t tm_cacao 'readshmim Hdfg' C-m
-tmux send-keys -t tm_cacao 'setpix Hdfg 1 0 0' C-m
-
-tmux send-keys -t tm_cacao '\x03' C-m
-
-sleep 2
 
 #-----------------------------------------------------------
 # START Loop process !
 #-----------------------------------------------------------
 
-# LoopRun-1
 
-#echo "confstart loopRUN-1" >> /milk/shm/ao188_fpsCTRL.fifo
-echo "runstart loopRUN-1" >> /milk/shm/ao188_fpsCTRL.fifo
-sleep 5
+#####################################################################
+#
+#### ---- SECURITY FOR OPERATORS --- CHECK if conf is loaded properly
 
-
-
-
+#####################################################################
 
 #-----------------------------------------------------------
 # Start the DM communication - FINAL STEP: start DM writting
 #-----------------------------------------------------------
 
-echo -e "\e[1;32mStart DM writting... \e[0m\n"
-
-tmux new-session -d -s tm_fpdp_dm
-tmux send-keys -t tm_fpdp_dm 'cd /home/rts/RTS_2019/DM/ ' C-m
-tmux send-keys -t tm_fpdp_dm 'DM' C-m
-tmux detach -s tm_fpdp_dm
-sleep 3
-
-echo -e "\e[1;31mDM communication started ... \e[0m\n"
-
-
-
-
 #-----------------------------------------------------------
 # Start the gen2 interface: new  10/2019
 #-----------------------------------------------------------
 
-echo -e "\e[1;32mStart gen2 interface... \e[0m\n"
+echo -e "${GREEN}Start gen2 interface... ${ECOL}\n"
 
-tmux new-session -d -s tm_ao188
-tmux send-keys -t tm_ao188 'g2if_restart' C-m
-tmux detach -s tm_ao188
-sleep 3
+echo -e "${RED}Warning creating dummy SHMS for HDF, LTT, ADF, APD, CURV... ${ECOL}\n"
+creashmim Httg 1 1 -z --type=f32
+creashmim Hdfg 1 1 -z --type=f32
+creashmim LO_tt_gain 1 2 -z --type=f32
+creashmim LO_defocus_gain 1 1 -z --type=f32
+creashmim ADF_gain 1 1 -z --type=f32
+creashmim ADFg 1 1 -z --type=f32
+creashmim wttg 1 1 -z --type=f32
+creashmim apdmatrix 1 216 -z --type=u16
+creashmim apdcount 1 216 -z --type=u16
+creashmim curv_ord 1 188 -z --type=f32
+creashmim LO_tt 1 2 -z --type=f32
+creashmim LO_defocus 1 1 -z --type=f32
 
-echo -e "\e[1;31mDM communication started ... \e[0m\n"
+${HOME}/src/rts/g2if_server/g2if/scripts/g2if_restart
+sleep 3.0
 
+echo -e "${BLUE}DM communication started ... ${ECOL}\n"
+echo -e "\n\n"
+echo -e "${GREEN}RTS interface scripts started ! ${ECOL}\n"
 
-
-echo -e "\n"
-echo -e "\n"
-echo -e "\e[1;34mRTS interface scripts started ! \e[0m\n"

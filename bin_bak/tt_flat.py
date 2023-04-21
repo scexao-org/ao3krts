@@ -2,15 +2,8 @@
 #!/usr/bin/env python
 
 from astropy.io import fits
-import numpy as np
-import matplotlib
-from matplotlib import pylab as pltx1
-from scipy.ndimage.interpolation import zoom
 from pylab import*
-from random import randint
-from matplotlib.figure import Figure
 import os
-import glob
 import time
 
 # BEST !!!! 2018/11/01
@@ -62,13 +55,6 @@ os.system("tmux send-keys -t tm_cacao 'imzero LO_tt_integ' C-m")
 
 os.system("tmux send-keys -t tm_cacao 'readshmim LO_tt_disp' C-m")
 os.system("tmux send-keys -t tm_cacao 'imzero LO_tt_disp' C-m")
-
-
-
-
-
-
-
 
 os.system("tmux send-keys -t tm_cacao 'readshmim dmvoltf' C-m")
 os.system("tmux send-keys -t tm_cacao 'imsetsempost dmvoltf -1' C-m")
