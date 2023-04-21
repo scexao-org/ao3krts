@@ -70,7 +70,7 @@ clean:
 depend:
 	$(CC) $(CFLAGS) -MM *.c > Makefile.depend
 
-g2if_server: g2if_server.o $(objects)
+g2if_server: g2if_server.o $(OBJECTS)
 	$(CC) $(CFLAGS) $(RPATHFLAG) -o $@ $^ $(LIBS) $(LISIO)
 
 g2if_client: g2if_client.o $(COMMON)/socket.o $(COMMON)/stringx.o $(COMMON)/tool.o $(COMMON)/log.o

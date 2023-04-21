@@ -16,7 +16,7 @@
  */
 int fifo_init(struct fifo_t *fifo){
   pthread_mutex_init(&(fifo->lock), NULL);
-  fifo->timersec = FIFO_DEF_TIMERSEC;
+  fifo->timermsec = FIFO_DEF_TIMERMSEC;
   fifo->name = 0;
 
   return 0;
@@ -36,9 +36,9 @@ int fifo_set_name(struct fifo_t *fifo, const char *name){
 /*
  * get fifo timer
  */
-int fifo_set_timersec(struct fifo_t *fifo, int timersec){
+int fifo_set_timermsec(struct fifo_t *fifo, int timermsec){
   pthread_mutex_lock(&(fifo->lock));
-  fifo->timersec = timersec;
+  fifo->timermsec = timermsec;
   pthread_mutex_unlock(&(fifo->lock));
 
   return 0;
@@ -106,7 +106,9 @@ int fifo_read(struct fifo_t *fifo, char *buff){
 
   /* get current time */
   clock_gettime(CLOCK_REALTIME, &ts1);
-  ts1.tv_sec += fifo->timersec;
+  long nsec = ts1.tv_nsec + (1,000,000 * fifo->timermsec);
+  ts1.tv_nsec = nsec % 1,000,000,000;
+  ts1.tv_sec += nsec / 1,000,000,000;
 
   while(1){
     ret = read(fifo->fd, buf1, 1);

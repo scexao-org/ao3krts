@@ -11,7 +11,7 @@
 #ifndef _FIFO_FUNC_H
 #define _FIFO_FUNC_H
 
-#define FIFO_DEF_TIMERSEC     2
+#define FIFO_DEF_TIMERMSEC     200
 #define FIFO_CMD_LENGTH       1024
 
 #define FIFO_FPSCTRL_NAME     "/milk/shm/ao188_new_fpsCTRL.fifo" // ao188 = hardware, ao188lhs_ = cacao simulator
@@ -22,13 +22,13 @@
 struct fifo_t{
   char *name;
   int fd;
-  int timersec;
+  int timermsec;
   pthread_mutex_t lock;
 };
 
 int fifo_init(struct fifo_t *fifo);
 int fifo_set_name(struct fifo_t *fifo, const char *name);
-int fifo_set_timersec(struct fifo_t *fifo, int timersec);
+int fifo_set_timermsec(struct fifo_t *fifo, int timersec);
 int fifo_create(struct fifo_t *fifo);
 int fifo_open(struct fifo_t *fifo);
 int fifo_close(struct fifo_t *fifo);
