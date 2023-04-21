@@ -16,7 +16,7 @@
 #ifndef _G2IF_SERVIF_H
 #define _G2IF_SERVIF_H
 
-#define G2IF_SERVER_ADDR       "127.0.0.1"  /* Default hostname of g2if server */
+#define G2IF_SERVER_ADDR       "133.40.146.95"  /* Default hostname of g2if server */
 #define G2IF_SERVER_PORT       18826            /* Port number for server */
 #define G2IF_CLIENT_TIMEOUT    3600             /* Default timeout */
 

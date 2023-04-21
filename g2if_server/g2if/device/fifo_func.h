@@ -15,7 +15,7 @@
 #define FIFO_CMD_LENGTH       1024
 
 #define FIFO_FPSCTRL_NAME     "/milk/shm/ao188_new_fpsCTRL.fifo" // ao188 = hardware, ao188lhs_ = cacao simulator
-#define FIFO_MKFIFO_COMMAND   "/home/vdeo/src/rts/g2if_server/g2if/scripts/mymkfifo"
+#define FIFO_MKFIFO_COMMAND   "/home/aorts/src/rts/g2if_server/g2if/scripts/mymkfifo"
 #define FIFO_GET_COMMAND      "fwrval"
 #define FIFO_SET_COMMAND      "setval"
 

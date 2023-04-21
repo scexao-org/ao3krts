@@ -37,4 +37,4 @@ sleep 0.1
 TMUXSERVER="g2if_server"
 tmux new -d -s ${TMUXSERVER}
 # expect nothing running...
-tmux send keys -t ${TMUXSERVER} "${SERVER} -c ${CONFIG} -l ${LOGFILE} -v" Enter
+tmux send-keys -t ${TMUXSERVER} "${SERVER} -c ${CONFIG} -l ${LOGFILE} -v" Enter
