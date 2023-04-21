@@ -2,7 +2,7 @@
 
 CC	= gcc
 
-CFLAGS	= -Wall -Wno-unused-result -O2 -std=gnu99 -I$(COMMON) -I$(DEVICE) -fPIC -I/usr/local/milk/include
+CFLAGS	= -Wall -Wno-unused-result -O0 -std=gnu99 -I$(COMMON) -I$(DEVICE) -fPIC -I/usr/local/milk/include
 LIBS	= -lm -lpthread -lrt -lgsl -lgslcblas -lcfitsio -L/usr/local/milk/lib -lImageStreamIO
 RPATHFLAG = -Wl,-rpath /usr/local/milk/lib
 
@@ -11,9 +11,9 @@ DEVICE	= device
 
 PREFIX	= .
 
-programs = g2if_server g2if_client
-scripts = g2if_start g2if_stop g2if_restart
-objects = $(COMMON)/alias.o $(COMMON)/comm.o $(COMMON)/conf.o \
+PROGRAMS = g2if_server g2if_client
+SCRIPTS = g2if_start g2if_stop g2if_restart
+OBJECTS = $(COMMON)/alias.o $(COMMON)/comm.o $(COMMON)/conf.o \
 	$(COMMON)/device.o $(COMMON)/log.o $(COMMON)/poll.o $(COMMON)/server.o \
 	$(COMMON)/socket.o $(COMMON)/stringx.o \
 	$(COMMON)/tlock.o $(COMMON)/tpool.o $(COMMON)/libtrack.o $(COMMON)/tool.o \
@@ -63,12 +63,12 @@ install-client: client
 	install -s -m 755 g2if_client $(PREFIX)/bin
 
 clean:
-	rm -f *.o $(programs) *.log *.status *.pid
+	rm -f $(OBJECTS) $(PROGRAMS) *.log *.status *.pid *.o
 
 depend:
 	$(CC) $(CFLAGS) -MM *.c > Makefile.depend
 
-g2if_server: g2if_server.o $(objects)
+g2if_server: g2if_server.o $(OBJECTS)
 	$(CC) $(CFLAGS) $(RPATHFLAG) -o $@ $^ $(LIBS)
 
 g2if_client: g2if_client.o $(COMMON)/socket.o $(COMMON)/stringx.o $(COMMON)/tool.o $(COMMON)/log.o

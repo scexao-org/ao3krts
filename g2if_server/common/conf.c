@@ -72,7 +72,7 @@ int getconfpar(FILE *fp, char *buf, size_t size, char **argv, int maxargc)
 		argc = strsplit(buf, argv, maxargc);
 
 		/* If valid arguments, return */
-		if (argv[0] != '\0') {
+		if (argv[0][0] != '\0') {
 			return argc;
 		}
 	}

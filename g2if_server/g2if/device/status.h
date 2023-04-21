@@ -42,7 +42,7 @@ enum {
 #define CURV_NUM               188
 #define DMACT_NUM              188
 #define LOAPD_NUM               16
-#define STATUS_DEF_NFRAME            1000
+#define STATUS_DEF_NFRAME             200
 #define STATUS_MIN_NFRAME               0
 #define STATUS_MAX_NFRAME            5000
 #define STATUS_POLL_INTERVAL_FAST       0
@@ -100,6 +100,7 @@ typedef struct status{
   /* config */
   char *hapdconf; // apd mapping config for HOWFS
   char *lapdconf; // apd mapping config for LOWFS
+  char *foldtele; // folder root for telemetry log file.
   int *hapdmap; // apd mapping for HOWFS
   int *lapdmap; // apd mapping for LOWFS
 

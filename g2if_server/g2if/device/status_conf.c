@@ -30,8 +30,10 @@ int status_procconf(status_t *status, const char *sect, int argc, const char **a
     return 0;
   } else if (strcmp(key, "hapdconf") == 0){  /* keyword for howfs apd map */
     return setpar_strdup(argc, argv, 1, &(status->hapdconf));
-  } else if (strcmp(key, "lapdconf") == 0){  /* keyword for howfs apd map */
+  } else if (strcmp(key, "lapdconf") == 0){  /* keyword for lowfs apd map */
     return setpar_strdup(argc, argv, 1, &(status->lapdconf));
+  } else if (strcmp(key, "foldtele") == 0){  /* keyword for folder in which to log fastpoll telemetry*/
+    return setpar_strdup(argc, argv, 1, &(status->foldtele));
   }
 
   setpar_unknown_par(key);
@@ -46,6 +48,7 @@ int status_postconf(status_t *status){
 
   info("%s: HOWFS apd config = \"%s\"", header, status->hapdconf);
   info("%s: LOWFS apd config = \"%s\"", header, status->lapdconf);
+  info("%s: FastPoll telemetry log folder = \"%s\"", header, status->foldtele);
 
   return 0;
 }

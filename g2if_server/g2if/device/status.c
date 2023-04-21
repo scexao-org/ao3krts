@@ -6,6 +6,7 @@
  *    <Date>       <Who>         <What>    
  *    2019/04/11   Y. Ono        Initial version
  *    2019/10/01   Y. Ono        Complete loop and gain status through fifo
+ *    2023/04/19   V. Deo        See https://github.com/scexao-org/ao3krts
  * -------------------------------------------------------------------------
  */
 
@@ -123,13 +124,9 @@ static void *status_poll_fast(status_t *status){
   for(k=0; k<nFrame; k++){
     /* sem_wait for apdmatrix */
     clock_gettime(CLOCK_REALTIME, &ts1);
-    ts1.tv_sec += (ts1.tv_nsec + 1000000) / 1000000000;
-    ts1.tv_nsec = (ts1.tv_nsec + 1000000) % 1000000000;
-    // FIXME sem 5 doesn't need to be 5.
+        ts1.tv_sec += (ts1.tv_nsec + 5000000) / 1000000000;
+        ts1.tv_nsec = (ts1.tv_nsec + 5000000) % 1000000000;
     ImageStreamIO_semtimedwait(status->shm_apdcnt, 5, &ts1);
-
-    // if semwait timeout -> No, we're expecting this to work even without the APD running at all.
-    //if(errno == ETIMEDOUT) return NULL;
 
     /* get howfs apd count (+) from shm */
     for(i=0; i<HOAPD_NUM; i++) stat.ave_hapdcnt[i] += status->apdcnt[status->hapdmap[i]];
@@ -265,9 +262,8 @@ int status_init(status_t *status, const char *header){
   int ret = 0;
   poll_t *poll_fast = &(status->poll_fast);
   poll_t *poll_slow = &(status->poll_slow);
-  time_t timer;
-  struct tm *ut;
-  char fname[256];
+    printf("ptr poll_fast %p %p\n", poll_fast, &(status->poll_fast));
+    printf("ptr poll_slow %p %p\n", poll_slow, &(status->poll_slow));
 
   if (header != NULL) {
     debug("%s: init", header);
@@ -301,12 +297,8 @@ int status_init(status_t *status, const char *header){
   init_status_fast(&(status->stat_fast));
   pthread_rwlock_init(&(status->cache_lock), NULL);
 
-  /* init log */
-  timer = time(NULL);
-  ut = gmtime(&timer);
-  sprintf(fname,"/home/rts/RTS_2019/log/g2if_telemtry_%04d%02d%02d.txt",ut->tm_year+1900,ut->tm_mon+1,ut->tm_mday);
-  status->fp_telemetry = fopen(fname,"a");
-  status->log_telemetry = 1;
+  /* init log but not yet*/
+  status->log_telemetry = 0;
 
   return 0;
 }
@@ -406,6 +398,18 @@ int status_open(status_t *status){
   }
   status->lodf = shm->image.array.F;
 
+  /* Create the telemetry log file */
+  time_t timer;
+  struct tm *ut;
+  char fname[256];
+
+  timer = time(NULL);
+  ut = gmtime(&timer);
+  sprintf(fname, "%s/g2if_telemetry_%04d%02d%02d.txt", status->foldtele,
+          ut->tm_year + 1900, ut->tm_mon + 1, ut->tm_mday);
+  status->fp_telemetry = fopen(fname, "a");
+  status->log_telemetry = 1;
+
   /* start polling */
   poll_start(&(status->poll_fast));
   poll_start(&(status->poll_slow));
@@ -420,4 +424,3 @@ int status_close(status_t *status){
   fclose(status->fp_telemetry);
   return 0;
 }
-

@@ -4,7 +4,7 @@ CC	= gcc
 
 COMMON	= ../../common
 
-CFLAGS	= -Wall -Wno-unused-result -O2 -std=gnu99 -I$(COMMON) -I/usr/local/milk/include
+CFLAGS	= -Wall -Wno-unused-result -O0 -std=gnu99 -I$(COMMON) -I/usr/local/milk/include
 LIBS	= -lpthread -lrt -lm -lcfitsio -L/usr/local/milk/lib -lImageStreamIO
 
 
