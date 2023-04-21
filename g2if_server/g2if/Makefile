@@ -3,7 +3,9 @@
 CC	= gcc
 
 CFLAGS	= -Wall -Wno-unused-result -O0 -std=gnu99 -I$(COMMON) -I$(DEVICE) -fPIC -I/usr/local/milk/include
-LIBS	= -lm -lpthread -lrt -lgsl -lgslcblas -lcfitsio -L/usr/local/milk/lib -lImageStreamIO
+LIBS	= -lm -lpthread -lrt -lgsl -lgslcblas -lcfitsio -L/usr/local/milk/lib
+LISIO   = -lImageStreamIO
+
 RPATHFLAG = -Wl,-rpath /usr/local/milk/lib
 
 COMMON	= ../common
@@ -68,8 +70,8 @@ clean:
 depend:
 	$(CC) $(CFLAGS) -MM *.c > Makefile.depend
 
-g2if_server: g2if_server.o $(OBJECTS)
-	$(CC) $(CFLAGS) $(RPATHFLAG) -o $@ $^ $(LIBS)
+g2if_server: g2if_server.o $(objects)
+	$(CC) $(CFLAGS) $(RPATHFLAG) -o $@ $^ $(LIBS) $(LISIO)
 
 g2if_client: g2if_client.o $(COMMON)/socket.o $(COMMON)/stringx.o $(COMMON)/tool.o $(COMMON)/log.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
