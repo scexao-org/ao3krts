@@ -39,18 +39,6 @@ echo -e "${GREEN}Initialize tmux sessions...${ECOL} \n"
 echo -e "\n"
 
 #tmux new-session -d -s tm_ao188
-#tmux new-session -d -s tm_tt_cntr
-#tmux new-session -d -s tm_log_dm
-#tmux new-session -d -s tm_log_apd
-#tmux new-session -d -s tm_dm_cnt
-# main tmux sessions
-#tmux new-session -d -s tm_cacao
-#tmux new-session -d -s tm_cacao2
-#tmux new-session -d -s tm_fpdp_dm
-#tmux new-session -d -s tm_fpdp_dm_logic
-#tmux new-session -d -s tm_fpdp_apd
-#tmux new-session -d -s tm_chris
-#tmux new-session -d -s tm_ptp
 
 echo -e "\n"
 echo -e "${BLUE}Done.  Here's a 'tmux ls':${ECOL} \n"
@@ -67,7 +55,9 @@ echo ""
 
 echo -e "${GREEN}Starting IIWI acquisition... ${ECOL}\n"
 cam-iiwistart
-echo -e "${RED}Startup executed. Check iiwi SHM.${ECOL}\n"
+ln -sf /milk/shm/apapane.im.shm /milk/shm/iiwi.im.shm
+
+echo -e "${RED}Startup executed. Check apapane/iiwi SHM.${ECOL}\n"
 
 # -----------------------------------------
 # Spin up the CACAO loop(s)
@@ -135,7 +125,7 @@ sleep 3
 #----------------------------
 
 echo -e "${GREEN}load dmTT amd wTT flats...${ECOL}\n"
-${RTS_PACK_ROOT}/bin/tt_flat.py
+${RTS_PACK_ROOT}/bin/tt_flat.py # Load fits to DMcomb channel 0.
 sleep 3
 ${RTS_PACK_ROOT}/bin/wtt_flat.py
 sleep 3
@@ -189,6 +179,7 @@ creashmim curv_ord 1 188 -z --type=f32
 creashmim LO_tt 1 2 -z --type=f32
 creashmim LO_defocus 1 1 -z --type=f32
 
+# TODO
 ${HOME}/src/rts/g2if_server/g2if/scripts/g2if_restart
 sleep 3.0
 
