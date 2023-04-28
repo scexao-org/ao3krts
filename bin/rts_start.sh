@@ -106,11 +106,10 @@ creashmim wtt_telemetry 1 2 -z --type=f32
 
 creashmim dmvolt 1 188 -z --type=u16 # This one is to make dm_displouf happy.
 
-tmux new -d -s fpdp_dm
-tmux send-keys -t fpdp_dm "hwint-dac40 -s bim188_float -u 0" Enter
-PID=$(pgrep hwint-dac40)
-milk-exec "csetandprioext $PID dm188_drv 45"
 
+bim188-hwint lo # Start the loopback DAC40 interface
+
+echo -e "${BLUE}DM communication available TO LOOPBACK FAKE DAC40"
 echo -e "${BLUE}DM communication available on SHMs "bim188_float" "tt_value_float" "wtt_value_float"  ... ${ECOL}\n"
 
 sleep 3
