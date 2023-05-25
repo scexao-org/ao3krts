@@ -113,7 +113,6 @@ static int loop_cmd_off(client_t *client, loop_t *loop){
   struct loop_stat stat;
   struct timespec ts1, ts2;
   int stat_timeout = 0;
-  char script[LOOP_COMM_BUFSIZ];
 
   pthread_mutex_lock(&(loop->lock));
 

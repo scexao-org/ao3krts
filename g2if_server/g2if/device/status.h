@@ -111,7 +111,7 @@ typedef struct status{
   poll_t poll_fast;	/* data for fast polling thread */
   poll_t poll_slow;	/* data for slow polling thread */
 
-  /* cashe */
+  /* cache */
   int nFrame;
   struct status_fast stat_fast;
   pthread_rwlock_t cache_lock;       /* lock of cache */

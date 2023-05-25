@@ -106,9 +106,9 @@ int fifo_read(struct fifo_t *fifo, char *buff){
 
   /* get current time */
   clock_gettime(CLOCK_REALTIME, &ts1);
-  long nsec = ts1.tv_nsec + (1,000,000 * fifo->timermsec);
-  ts1.tv_nsec = nsec % 1,000,000,000;
-  ts1.tv_sec += nsec / 1,000,000,000;
+  long nsec = ts1.tv_nsec + (1000000 * fifo->timermsec);
+  ts1.tv_nsec = nsec % 1000000000;
+  ts1.tv_sec += nsec / 1000000000;
 
   while(1){
     ret = read(fifo->fd, buf1, 1);
