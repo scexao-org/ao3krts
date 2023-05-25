@@ -76,6 +76,7 @@ static int loop_cmd_on(client_t *client, loop_t *loop){
   /* Log command */
   info("> %s: on", loop->header);
   system("echo \""FIFO_SET_COMMAND" "LOOP_FIFO_ONOFF" ON\" >> "FIFO_FPSCTRL_NAME);
+  system("echo \""FIFO_SET_COMMAND" "LOOPTT_FIFO_ONOFF" ON\" >> "FIFO_FPSCTRL_NAME);
 
   /* get current time */
   clock_gettime(CLOCK_REALTIME, &ts1);
@@ -119,6 +120,7 @@ static int loop_cmd_off(client_t *client, loop_t *loop){
   /* Log command */
   info("> %s: off", loop->header);
   system("echo \""FIFO_SET_COMMAND" "LOOP_FIFO_ONOFF" OFF\" >> "FIFO_FPSCTRL_NAME);
+  system("echo \""FIFO_SET_COMMAND" "LOOPTT_FIFO_ONOFF" OFF\" >> "FIFO_FPSCTRL_NAME);
 
   /* get current time */
   clock_gettime(CLOCK_REALTIME, &ts1);

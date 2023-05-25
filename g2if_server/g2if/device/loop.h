@@ -38,6 +38,7 @@ enum {
 /* FIFO INFO for LOOP */
 #define LOOP_FIFO_NAME      "/milk/shm/g2if_loop.fifo"
 #define LOOP_FIFO_ONOFF     "mfilt-3.loopON" // 1 = hardware
+#define LOOPTT_FIFO_ONOFF     "mfilt-4.loopON" // 1 = hardware
 #define LOOP_STATARG_MAX    100
 
 /* structure to store info */
