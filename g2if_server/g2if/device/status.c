@@ -123,6 +123,8 @@ static void *status_poll_fast(status_t *status){
 
   for(k=0; k<nFrame; k++){
     /* sem_wait for apdmatrix */
+    // FIXME the timeout is purposefully extremely slow to offset the fact that
+    // APDs are NOT running at this point.
     clock_gettime(CLOCK_REALTIME, &ts1);
         ts1.tv_sec += (ts1.tv_nsec + 5000000) / 1000000000;
         ts1.tv_nsec = (ts1.tv_nsec + 5000000) % 1000000000;
@@ -245,12 +247,18 @@ static void *status_poll_slow(status_t *status){
   gain_savestat(status->gain, &gstat);
 
   /* update howfs */
+  // FIXME COMMENTED ENTIRELY CAUSE THIS WILL STALL FOR
+  // A VERY LONG TIMEOUT if no ping on 10.0.0.3
+  /*
   ret = howfs_getstat(status->howfs, &hwstat, errstr);
   if(ret == 0) howfs_savestat(status->howfs, &hwstat);
+  //*/
 
   /* update lowfs */
+  /*
   ret = lowfs_getstat(status->lowfs, &lwstat, errstr);
   if(ret == 0) lowfs_savestat(status->lowfs, &lwstat);
+  //*/
 
   return NULL;
 }
