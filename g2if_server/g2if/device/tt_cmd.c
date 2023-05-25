@@ -63,7 +63,7 @@ static int tt_cmd_zero(client_t *client, tt_t *tt){
   info("> %s: %s", tt->header, cmd);
 
   /* tt zero */
-  sprintf(script,"bash %s",tt->zero);
+  sprintf(script,"%s all",tt->zero);
   system(script);
   usleep(100000); // wait 0.1s
 
