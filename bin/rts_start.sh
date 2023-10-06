@@ -78,6 +78,7 @@ cacao-loop-deploy ao3k-ttoff188
 # Starting up the DMCombs
 #------------------------------------------
 
+# TODO Not sure of that???
 (cd ${HOME}/AOloop/nir188-rootdir;
 cacao-aorun-001-dmsim start;
 cacao-aorun-000-dm start
