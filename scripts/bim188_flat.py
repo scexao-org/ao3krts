@@ -26,7 +26,7 @@ BIM_DMSIM = '10'
 
 if __name__ == "__main__":
     args = docopt(
-        __doc__
+            __doc__
     )  # no args - but will crash if there are args that should be there.
     init_logger_autoname()
     logg = logging.getLogger()
@@ -41,5 +41,5 @@ if __name__ == "__main__":
     bim_chan_0.set_data(flat)
 
     logg.info(
-        f'TT mount flattened using {most_alphabetical_flat.split("/")[-1]} on dm{DM}disp00.'
+            f'TT mount flattened using {most_alphabetical_flat.split("/")[-1]} on dm{DM}disp00.'
     )

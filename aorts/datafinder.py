@@ -21,8 +21,6 @@ from . import config
 from .datafetch import fetcher
 
 
-
-
 class RtmDataSupervisor:
 
     def __init__(self) -> None:
@@ -36,32 +34,31 @@ class RtmDataSupervisor:
 
         # APD FETCHER IS SPECIAL, because its 2x216 and we should only have 1x216.
         # TODO: get the correct latest frame
-        self.apd_fetcher = fetcher.APD2DFetcher(self, 'APD_DATA_ARR', config.SHMNAME_APD,
-                                      shm_callables = {
-                                            'FRAME_NUMBER': SHM.get_counter,
-                                      },
-                                      data_callables = {
-                                            'APD_CELLDATAMIN': lambda x: np.min(x[:188]),
-                                            'APD_CELLDATAMAX': lambda x: np.max(x[:188]),
-                                            'APD_CELLDATAVAR': lambda x: np.var(x[:188]),
-                                            'APD_CELLDATAAVG': lambda x: np.mean(x[:188]),
-                                      })
+        self.apd_fetcher = fetcher.APD2DFetcher(
+                self, 'APD_DATA_ARR', config.SHMNAME_APD, shm_callables={
+                        'FRAME_NUMBER': SHM.get_counter,
+                }, data_callables={
+                        'APD_CELLDATAMIN': lambda x: np.min(x[:188]),
+                        'APD_CELLDATAMAX': lambda x: np.max(x[:188]),
+                        'APD_CELLDATAVAR': lambda x: np.var(x[:188]),
+                        'APD_CELLDATAAVG': lambda x: np.mean(x[:188]),
+                })
 
-        self.curvature_fetcher = fetcher.SHMFetcher(self, 'CURV_DATA_ARR', config.SHMNAME_CURV1K,
-                                       data_callables = {
-                                            'CURV_CELLDATAMIN': lambda x: np.min,
-                                            'CURV_CELLDATAMAX': lambda x: np.max,
-                                            'CURV_CELLDATAVAR': lambda x: np.var,
-                                            'CURV_CELLDATAAVG': lambda x:np.mean,
-                                      })
+        self.curvature_fetcher = fetcher.SHMFetcher(
+                self, 'CURV_DATA_ARR', config.SHMNAME_CURV1K, data_callables={
+                        'CURV_CELLDATAMIN': lambda x: np.min,
+                        'CURV_CELLDATAMAX': lambda x: np.max,
+                        'CURV_CELLDATAVAR': lambda x: np.var,
+                        'CURV_CELLDATAAVG': lambda x: np.mean,
+                })
 
-        self.bim188_fetcher = fetcher.SHMFetcher(self, 'BIM188_DATA_ARR', config.SHMNAME_APD,
-                                         data_callables = {
-                                             'DM_CELLDATAMIN': np.min,
-                                             'DM_CELLDATAMAX': np.max,
-                                             'DM_CELLDATAVAR': np.var,
-                                             'DM_CELLDATAAVG': np.mean,
-                                         })
+        self.bim188_fetcher = fetcher.SHMFetcher(
+                self, 'BIM188_DATA_ARR', config.SHMNAME_APD, data_callables={
+                        'DM_CELLDATAMIN': np.min,
+                        'DM_CELLDATAMAX': np.max,
+                        'DM_CELLDATAVAR': np.var,
+                        'DM_CELLDATAAVG': np.mean,
+                })
 
         # TODO: have a pointer to the correct curvature.
         self.curv_shm = SHM(config.HOWFS_SHM)
@@ -72,36 +69,34 @@ class RtmDataSupervisor:
         self.tt_shm = SHM(config.SHMNAME_TT)
         self.wtt_shm = SHM(config.SHMNAME_WTT)
         self.ctt_shm = SHM(config.SHMNAME_CTT)
-
-
         '''
         General data (legacy order) subsection, for reference.
         '''
-        FRAME_NUMBER = 0 ## OK
-        DM_CELLDATAMIN = 23 ## OK
-        DM_CELLDATAMAX = 24 ## OK
-        DM_CELLDATAVAR = 25 ## OK
-        DM_CELLDATAAVG = 26 ## OK
-        CRV_CELLDATAMIN = 39 ## OK
-        CRV_CELLDATAMAX = 40 ## OK
-        CRV_CELLDATAVAR = 41 ## OK
-        CRV_CELLDATAAVG = 42 ## OK
-        APD_CELLDATAMIN = 51 ## OK
-        APD_CELLDATAMAX = 52 ## OK
-        APD_CELLDATAVAR = 53 ## OK
-        APD_CELLDATAAVG = 54 ## OK # changed APD_CELLCOUNTAVG APD_CELLDATAAVG
+        FRAME_NUMBER = 0  ## OK
+        DM_CELLDATAMIN = 23  ## OK
+        DM_CELLDATAMAX = 24  ## OK
+        DM_CELLDATAVAR = 25  ## OK
+        DM_CELLDATAAVG = 26  ## OK
+        CRV_CELLDATAMIN = 39  ## OK
+        CRV_CELLDATAMAX = 40  ## OK
+        CRV_CELLDATAVAR = 41  ## OK
+        CRV_CELLDATAAVG = 42  ## OK
+        APD_CELLDATAMIN = 51  ## OK
+        APD_CELLDATAMAX = 52  ## OK
+        APD_CELLDATAVAR = 53  ## OK
+        APD_CELLDATAAVG = 54  ## OK # changed APD_CELLCOUNTAVG APD_CELLDATAAVG
 
-        VMFREQ = 2 ## ??
-        VMVOLT = 3 ## ??
-        APD_RMAGAVG = 55 ## ??
-        IRM2TTX = 77 # ??
-        IRM2TTY = 78 # ??
-        IRM2TTVAR = 79 # ??
-        
+        VMFREQ = 2  ## ??
+        VMVOLT = 3  ## ??
+        APD_RMAGAVG = 55  ## ??
+        IRM2TTX = 77  # ??
+        IRM2TTY = 78  # ??
+        IRM2TTVAR = 79  # ??
+
         VMDRIVE = 1
         VMPHASE = 4
         LOOPSTATUS = 5
-        DMGAIN = 6 # HOWFS loop gain?
+        DMGAIN = 6  # HOWFS loop gain?
         DMGAINHOLD = 7
         TTGAIN = 8
         TTGAINHOLD = 9
@@ -161,17 +156,15 @@ class RtmDataSupervisor:
         WFS_VAR = 76
         GENDATASZ = 80
 
-    
     def __getitem__(self, key: typ.Any) -> typ.Any:
         return self.DATA_VAULT[key]
 
     def __setitem__(self, key: typ.Any, value: typ.Any) -> None:
         self.DATA_VAULT[key] = value
-        
+
     def process_data(self) -> None:
         # Now all the custom bits.
         pass
 
     def send(self) -> None:
         pass
-    

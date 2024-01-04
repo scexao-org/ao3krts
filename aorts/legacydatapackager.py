@@ -19,8 +19,8 @@
                     all defined in cst!
                     something something LGS / NGS at pos 20. CTRLMTRXSIDE?
 
-    
-    
+
+
     CHANGED: we ditched the ascii float array idea.
 
     Now it's 660 4-byte <f4 floats.

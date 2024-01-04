@@ -1,5 +1,3 @@
-
-
 SHMNAME_APD = 'apd'
 
 SHMNAME_DM = 'bim188_tele'

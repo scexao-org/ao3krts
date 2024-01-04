@@ -186,4 +186,3 @@ sleep 3.0
 echo -e "${BLUE}DM communication started ... ${ECOL}\n"
 echo -e "\n\n"
 echo -e "${GREEN}RTS interface scripts started ! ${ECOL}\n"
-

@@ -3,7 +3,7 @@ from __future__ import annotations
 # Typing
 import typing as typ
 
-from rtspy.datafinder import RtmDataSupervisor
+from aorts.datafinder import RtmDataSupervisor
 if typ.TYPE_CHECKING:
     from ..datafinder import RtmDataSupervisor
 
@@ -17,7 +17,9 @@ from pyMilk.interfacing.fps import FPS
 
 # Internal
 
+
 class TopicFetcher(abc.ABC):
+
     @abc.abstractmethod
     def __init__(self, data_vault: RtmDataSupervisor, *args, **kwargs) -> None:
         pass
@@ -26,10 +28,13 @@ class TopicFetcher(abc.ABC):
     def fetch(self, *args, **kwargs) -> None:
         pass
 
+
 class FPSFetcher(TopicFetcher):
-    def __init__(self, data_vault: RtmDataSupervisor, fps_name: str, topics: typ.Dict[str, typ.Any]) -> None:
+
+    def __init__(self, data_vault: RtmDataSupervisor, fps_name: str,
+                 topics: typ.Dict[str, typ.Any]) -> None:
         self.fps = FPS(fps_name)
-        # TODO? some internal statuses to fetch if exists, autorelink, tmux alive, conf alive, 
+        # TODO? some internal statuses to fetch if exists, autorelink, tmux alive, conf alive,
 
         self.topics = topics
 
@@ -41,21 +46,25 @@ class FPSFetcher(TopicFetcher):
 
 
 class SHMFetcher(TopicFetcher):
-    def __init__(self, data_vault: RtmDataSupervisor,
-                 data_name: str,
-                 shm_name: str,
-                 shm_callables: typ.Dict[str, typ.Callable[[SHM], typ.Any]]=  {},
-                 data_callables: typ.Dict[str, typ.Callable[[np.ndarray], typ.Any]]=  {},
-                 ) -> None:
-        
+
+    def __init__(
+            self,
+            data_vault: RtmDataSupervisor,
+            data_name: str,
+            shm_name: str,
+            shm_callables: typ.Dict[str, typ.Callable[[SHM], typ.Any]] = {},
+            data_callables: typ.Dict[str, typ.Callable[[np.ndarray],
+                                                       typ.Any]] = {},
+    ) -> None:
+
         # TODO? AUTORELINK! Actually SHM owners may re-create it entirely.
-        
+
         self.data_vault = data_vault
         self.data_name = data_name
 
         self.shm_name = shm_name
         self.shm = SHM(shm_name)
-        
+
         self.shm_callables = shm_callables
         self.data_callables = data_callables
 
@@ -64,21 +73,23 @@ class SHMFetcher(TopicFetcher):
             self.data_vault[var_name] = callable(self.shm)
 
         self.data = self.shm.get_data(False, copy=True)
-        self.data_vault[self.data_name] = self.data # Ideally, no copy.
+        self.data_vault[self.data_name] = self.data  # Ideally, no copy.
 
         for var_name, callable in self.data_callables.items():
             self.data_vault[var_name] = callable(self.data)
 
 
 class APD2DFetcher(SHMFetcher):
+
     def fetch(self) -> None:
         for var_name, callable in self.shm_callables.items():
             self.data_vault[var_name] = callable(self.shm)
 
-        self.curv_index: int = self.shm.get_keywords()['_CURV_SGN'] # TODO: config.
-        
+        self.curv_index: int = self.shm.get_keywords()[
+                '_CURV_SGN']  # TODO: config.
+
         self.data = self.shm.get_data(False, copy=True)[self.curv_index, :]
-        self.data_vault[self.data_name] = self.data # Ideally, no copy.
+        self.data_vault[self.data_name] = self.data  # Ideally, no copy.
 
         for var_name, callable in self.data_callables.items():
             self.data_vault[var_name] = callable(self.data)
