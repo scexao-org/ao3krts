@@ -1,5 +1,5 @@
 #===============================================================================
-# File: Constants.py
+# File: constants.py
 #     : Rtm gui constants
 #
 #===============================================================================
@@ -10,7 +10,7 @@ VERSION = 2.0
 DGPRAD = 57.295  # Degrees per radian = (360 / 2*pi )
 RESERVEDPORTSTOP = 1024  # legal user ports must be greater than this value
 CONFIGFILE = "rtmConfig.yaml"  # configuration file
-POLYGONFILE = "MirrorWidget_polygons.cfg"
+POLYGONFILE = "mirrorWidget_polygons.cfg"
 LOGFILE = "rtm.log"
 LOGDIR = "/home/ao/ao188/log"  # default logpath
 SOURCEFOLDER = "/home/ao/ao188/src/rtm/rtm-V1.3"

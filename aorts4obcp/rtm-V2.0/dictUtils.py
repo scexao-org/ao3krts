@@ -76,7 +76,7 @@ def readDict(fpath):
         with open(fpath, 'r') as f:
             theDict = eval(f.read())
     except Exception as exc:
-        print("<DictUtils.readDict> Problem reading file:[%s]" % (fpath), exc)
+        print("<dictUtils.readDict> Problem reading file:[%s]" % (fpath), exc)
         print("Goodbye...")
         sys.exit()
     return theDict

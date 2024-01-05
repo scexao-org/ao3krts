@@ -1,7 +1,7 @@
 #===============================================================================
 # Rtm default configuration dictionary
 #===============================================================================
-import Constants as Kst
+import constants as Kst
 
 dfltConfigD = {
         "gen": {
@@ -46,7 +46,7 @@ dfltConfigD = {
                         "value": 0,
                         "label": "Verbose"
                 },
-                # Configuration filepath must be set in Constants.py:CONFIGPATH.
+                # configuration filepath must be set in constants.py:CONFIGPATH.
                 # any value set here will be overwritten by CONFIGPATH.
                 "configpath": {
                         "desc": "Config-file path",
@@ -120,7 +120,7 @@ dfltConfigD = {
                 #    "label": "RTD Connect Command",
                 #},
 
-                # Log filepath must be set in Constants.py:LOGPATH
+                # Log filepath must be set in constants.py:LOGPATH
                 #"logpath": {
                 #    "desc": "Logfile filepath",
                 #   "value": Kst.LOGPATH,
@@ -129,7 +129,7 @@ dfltConfigD = {
         },
 
         #-----------------------------------------------------------------------
-        #                       Stripchart settings
+        #                       stripchart settings
         #-----------------------------------------------------------------------
         "stripchart": {
                 "chart1": {
@@ -137,19 +137,19 @@ dfltConfigD = {
                         "fixedScaleMax": {
                                 "desc": "Maximum fixed plotscale wheel value ",
                                 "value": Kst.DFLT_FIXEDSCALE1_MAX,
-                                "label": "Stripchart #1 fixed-scale maximum",
+                                "label": "stripchart #1 fixed-scale maximum",
                         },
                         "fixedScaleMin": {
                                 "desc": "Maximum fixed plotscale wheel value ",
                                 "value": Kst.DFLT_FIXEDSCALE1_MIN,
-                                "label": "Stripchart #1 fixed-scale minimum",
+                                "label": "stripchart #1 fixed-scale minimum",
                         },
                         "zeroScaleBase": {
                                 "desc": "Set minimum Y-axis scale = zero",
                                 "value": Kst.DFLT_ZEROSCALEBASE,
                                 "label": "ZeroScaleMin",
                         },
-                        # Stripchart top & bottom scale thumbwheel settings
+                        # stripchart top & bottom scale thumbwheel settings
                         "scaleWheelMax": {
                                 "desc": "Maximum fixed plotscale wheel value ",
                                 "value": Kst.DFLT_SCALEWHEEL1_MAX,
@@ -171,12 +171,12 @@ dfltConfigD = {
                         "fixedScaleMax": {
                                 "desc": "Maximum fixed plotscale wheel value ",
                                 "value": Kst.DFLT_FIXEDSCALE2_MAX,
-                                "label": "Stripchart #2 fixed-scale maximum",
+                                "label": "stripchart #2 fixed-scale maximum",
                         },
                         "fixedScaleMin": {
                                 "desc": "Maximum fixed plotscale wheel value ",
                                 "value": Kst.DFLT_FIXEDSCALE2_MIN,
-                                "label": "Stripchart #2 fixed-scale minimum",
+                                "label": "stripchart #2 fixed-scale minimum",
                         },
                         "zeroScaleBase": {
                                 "desc": "Set minimum Y-axis scale = zero",
@@ -184,7 +184,7 @@ dfltConfigD = {
                                 "label": "ZeroScaleMin",
                         },
 
-                        # Stripchart top & bottom scale thumbwheel settings
+                        # stripchart top & bottom scale thumbwheel settings
                         "scaleWheelMax": {
                                 "desc": "Maximum fixed plotscale wheel value ",
                                 "value": Kst.DFLT_SCALEWHEEL2_MAX,
@@ -206,19 +206,19 @@ dfltConfigD = {
                         "fixedScaleMax": {
                                 "desc": "Maximum fixed plotscale wheel value ",
                                 "value": Kst.DFLT_FIXEDSCALE3_MAX,
-                                "label": "Stripchart #3 fixed-scale maximum",
+                                "label": "stripchart #3 fixed-scale maximum",
                         },
                         "fixedScaleMin": {
                                 "desc": "Maximum fixed plotscale wheel value ",
                                 "value": Kst.DFLT_FIXEDSCALE3_MIN,
-                                "label": "Stripchart #3 fixed-scale minimum",
+                                "label": "stripchart #3 fixed-scale minimum",
                         },
                         "zeroScaleBase": {
                                 "desc": "Set minimum Y-axis scale = zero",
                                 "value": Kst.DFLT_ZEROSCALEBASE,
                                 "label": "ZeroScaleMin",
                         },
-                        # Stripchart top & bottom scale thumbwheel settings
+                        # stripchart top & bottom scale thumbwheel settings
                         "scaleWheelMax": {
                                 "desc": "Maximum fixed plotscale wheel value ",
                                 "value": Kst.DFLT_SCALEWHEEL3_MAX,
@@ -240,19 +240,19 @@ dfltConfigD = {
                         "fixedScaleMax": {
                                 "desc": "Maximum fixed plotscale wheel value ",
                                 "value": Kst.DFLT_FIXEDSCALE4_MAX,
-                                "label": "Stripchart #4 fixed-scale maximum",
+                                "label": "stripchart #4 fixed-scale maximum",
                         },
                         "fixedScaleMin": {
                                 "desc": "Maximum fixed plotscale wheel value ",
                                 "value": Kst.DFLT_FIXEDSCALE4_MIN,
-                                "label": "Stripchart #4 fixed-scale minimum",
+                                "label": "stripchart #4 fixed-scale minimum",
                         },
                         "zeroScaleBase": {
                                 "desc": "Set minimum Y-axis scale = zero",
                                 "value": Kst.DFLT_ZEROSCALEBASE,
                                 "label": "ZeroScaleMin",
                         },
-                        # Stripchart top & bottom scale thumbwheel settings
+                        # stripchart top & bottom scale thumbwheel settings
                         "scaleWheelMax": {
                                 "desc": "Maximum fixed plotscale wheel value ",
                                 "value": Kst.DFLT_SCALEWHEEL4_MAX,

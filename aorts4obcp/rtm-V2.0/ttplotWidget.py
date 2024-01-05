@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-Stripchart:
+stripchart:
 """
 from __future__ import absolute_import, print_function, division
 
@@ -11,8 +11,8 @@ from PyQt5.QtGui import (QBrush, QPen, QColor)
 from PyQt5.QtWidgets import (QSlider, QSizePolicy, QFrame)
 
 import random
-import Configuration
-import Constants as Kst
+import configuration
+import constants as Kst
 
 from numpy import zeros
 
@@ -33,7 +33,7 @@ class TTplotWidget(qwt.QwtPlot):
     def __init__(self, *args, **kwargs):
         qwt.QwtPlot.__init__(self, *args)
 
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
         self.MountXDct = None  # tiltx alarm dictionary must be set by caller
         self.MountYDct = None  # tilty alarm dictionary must be set by caller
@@ -115,7 +115,7 @@ class TTplotWidget(qwt.QwtPlot):
 
             scaleDraw.enableComponent(qwt.QwtAbstractScaleDraw.Ticks, False)
 
-            scaleDraw.enableComponent(qwt.QwtAbstractScaleDraw.Labels, False)
+            scaleDraw.enableComponent(qwt.QwtAbstractScaleDraw.labels, False)
 
         #s.plot.setPen(QPen(Qt.green))
         self.plot.setSymbol(

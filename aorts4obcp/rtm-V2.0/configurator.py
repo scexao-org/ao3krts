@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #===============================================================================
-# File: Configurer.py
-#     : Read configuration file. Load cfg values in dynamic Configuration
+# File: configurator.py
+#     : Read configuration file. Load cfg values in dynamic configuration
 #
 #
 #http://stackoverflow.com/questions/3409856/accessing-dictionaries-vs-accessing-shelves
@@ -15,15 +15,15 @@
 #print "value in memory: %d" % p.X # prints 0
 #print "value in shelf: %d" % s["foo"].X # prints 9
 #
-# Also see: Configuration.py
+# Also see: configuration.py
 #===============================================================================
 
 import os
 
-#import CmdlineOptions
-import Configuration
-import DictUtils as du
-import Constants as Kst
+#import cmdLineOptions
+import configuration
+import dictUtils as du
+import constants as Kst
 
 from copy import deepcopy
 import defaultConfig
@@ -33,16 +33,16 @@ import yaml
 
 
 #-------------------------------------------------------------------------------
-# Configurer
+# configurator
 #-------------------------------------------------------------------------------
-class Configurer(object):
+class Configurator(object):
     """Load configuration dictionary from default module or file
        Set configuration values.
     """
 
     def __init__(self, configFile, logpath, logger, parent=None):
 
-        self.cfg = Configuration.cfg  # create configuration instance
+        self.cfg = configuration.cfg  # create configuration instance
         self.cfg.lg = logger  # give logger to configuration
         self.cfg.logpath = logpath  # give logpath to configuration
         self.cfg.versionS = str(Kst.VERSION)  # version number
@@ -91,7 +91,7 @@ class Configurer(object):
 
         #
         else:  # get dictionary from config file
-            self.cfg.lg.info("o Configuration from file  : %s" %
+            self.cfg.lg.info("o configuration from file  : %s" %
                              self.cfg.configpath)
 
             # copy shelved dict values to _configDict
@@ -118,6 +118,6 @@ class Configurer(object):
 # test
 #-------------------------------------------------------------------------------
 if __name__ == "__main__":
-    configurer = Configurer()
+    configurer = configurator()
     configurer.cfg.prn_cfg()
     cfg = configurer.cfg

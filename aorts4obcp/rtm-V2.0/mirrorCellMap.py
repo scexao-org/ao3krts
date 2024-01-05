@@ -1,6 +1,6 @@
 #!/usr/bin/python -Qnew
 #^==============================================================================
-# File: MirrorCellMap.py
+# File: mirrorCellMap.py
 #     : Map of deformable mirror cell number to gui polygon list.
 #     : Array index is polygon index, values are cell-numbers
 #===============================================================================

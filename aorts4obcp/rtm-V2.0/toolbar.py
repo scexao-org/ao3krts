@@ -5,14 +5,14 @@
 #
 #===============================================================================
 from __future__ import absolute_import, print_function, division
-import Configuration
+import configuration
 
 from PyQt5.QtCore import (Qt, QPoint)
 from PyQt5.QtWidgets import (QToolBar, QPushButton, QMenu, QWidget,
                              QColorDialog)
 from PyQt5.QtGui import QIcon
 
-import Constants as Kst
+import constants as Kst
 
 import editConfig
 import socket
@@ -26,14 +26,14 @@ class Toolbar(QToolBar):
     def __init__(self, parent=None):
         #....................................................
         super(Toolbar, self).__init__(parent)
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         if self.cfg.debug: print("<Menubar.__init__>")
         self.parent = parent
 
         # Menus
         self.fileMenu = QMenu(self)
-        self.fileMenu.addAction("Save Configuration", self.saveConfig)
-        self.fileMenu.addAction("Edit Configuration File", self.editConfig)
+        self.fileMenu.addAction("Save configuration", self.saveConfig)
+        self.fileMenu.addAction("Edit configuration File", self.editConfig)
         #s.fileMenu.addAction("Reset Plots",      s.clearPlotHistory)
 
         #s.fileMenu.addAction("Set  RealTime Host",      s.setHost)
@@ -131,7 +131,7 @@ class Toolbar(QToolBar):
             print("** Connected to %s:%d" % (host, port))
 
         # Send command to realtime data server
-        self.cfg.lg.info("Sending Command:'%s' ==> RtData server %s:%d "% \
+        self.cfg.lg.info("Sending Command:'%s' ==> rtData server %s:%d "% \
                        (command, host, port))
         try:
             skt.send(command + '\r')

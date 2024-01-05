@@ -26,8 +26,8 @@ from PyQt5.QtWidgets import (QWidget, QSizePolicy)
 import math
 
 import numpy as np
-import Configuration
-import Constants as Kst
+import configuration
+import constants as Kst
 #import rotationArrow
 #import rotatePixmap
 
@@ -40,14 +40,14 @@ RMB = 2
 #------------------------------------------------------------------------------
 # LensletWidget
 #------------------------------------------------------------------------------
-class SHWidget(QWidget):
+class shWidget(QWidget):
 
     #.......................................................................
     def __init__(self, parent=None):
-        super(SHWidget, self).__init__(parent)
+        super(shWidget, self).__init__(parent)
 
-        self.cfg = Configuration.cfg
-        if self.cfg.debug: print("<SHWidget.__init__>")
+        self.cfg = configuration.cfg
+        if self.cfg.debug: print("<shWidget.__init__>")
         self.name = "SHwdg"
         self.alarmDlg = None  # to be set by instantiater
         self.minSize = 200
@@ -179,7 +179,7 @@ class SHWidget(QWidget):
 
     #...........................................................................
     def heightForWidth(self, w):
-        #print("<SHWidget>.heightForWidth>",w)
+        #print("<shWidget>.heightForWidth>",w)
         return (w)
 
     #...........................................................................
@@ -223,8 +223,8 @@ class SHWidget(QWidget):
                     self.painter.setBrush(
                             self.HighAlarmColor)  #set hAlarm color
                 except Exception as e:
-                    self.lg.error("SHWidget alarm Paint exception:%s" % e)
-                    self.lg.error("SHWidget Polygon:%d" % (i))
+                    self.lg.error("shWidget alarm Paint exception:%s" % e)
+                    self.lg.error("shWidget Polygon:%d" % (i))
                     self.painter.end()
                     return
 
@@ -234,8 +234,8 @@ class SHWidget(QWidget):
                     self.painter.setBrush(
                             self.LowAlarmColor)  # set lAlarm color
                 except Exception as e:
-                    self.lg.error("SHWidget alarm Paint exception:%s" % e)
-                    self.lg.error("SHWidget.  Polygon:%d" % (i))
+                    self.lg.error("shWidget alarm Paint exception:%s" % e)
+                    self.lg.error("shWidget.  Polygon:%d" % (i))
                     self.painter.end()
                     return
 
@@ -309,7 +309,7 @@ class SHWidget(QWidget):
 
     #----------------------------------------------------------------------
     def setAlarms(self, lAlarm, lEnable, hAlarm, hEnable):
-        #print("<SHWidget>.setAlarms",s.name,lAlarm, lEnable, hAlarm, hEnable)
+        #print("<shWidget>.setAlarms",s.name,lAlarm, lEnable, hAlarm, hEnable)
         self.lAlarm = float(lAlarm)
         self.lAlarmEnable = bool(lEnable)
         self.hAlarm = float(hAlarm)

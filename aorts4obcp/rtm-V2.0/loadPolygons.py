@@ -5,17 +5,17 @@
 from __future__ import absolute_import, print_function
 
 from PyQt5.QtGui import QPolygon
-import Configuration
+import configuration
 
 
 #----------------------------------------------------------------------
-# MirrorWidget_loader
+# mirrorWidget_loader
 #----------------------------------------------------------------------
-class MirrorWidget_loader(object):
+class mirrorWidget_loader(object):
 
     def __init__(self, pfactor=0):
-        self.cfg = Configuration.cfg
-        if self.cfg.debug: print("< MirrorWidget_loader__init__ >")
+        self.cfg = configuration.cfg
+        if self.cfg.debug: print("< mirrorWidget_loader__init__ >")
         self.polygons = []
         self.pFactor = pfactor  # adjust polygon points by adding this value
         polygonFp = open(self.cfg.polygonPath, 'r')
@@ -26,7 +26,7 @@ class MirrorWidget_loader(object):
     #
     #--------------------------------------------------
     def load_polygons(self, file_ptr):
-        if self.cfg.debug: print("< MirrorWidget_loader.load_polygons >")
+        if self.cfg.debug: print("< mirrorWidget_loader.load_polygons >")
         polygon_points = []
         for line in file_ptr:
             plist = self.getInt(line)  # returns list of pgon-points

@@ -1,5 +1,5 @@
 #===============================================================================
-# File : RtData.py
+# File : rtData.py
 #      : Data handler for AO 188 mirror gui
 #
 # Notes:
@@ -14,8 +14,8 @@ from __future__ import (absolute_import, print_function, division)
 from PyQt5.QtCore import QObject
 import sys
 import numpy as np
-import Configuration
-import Constants as Kst
+import configuration
+import constants as Kst
 
 DATA_HEADER_CHARS = 32
 DATA_GEN_NITEMS = 32
@@ -33,14 +33,14 @@ DATA_TOTAL_ITEMS        = DATA_GEN_NITEMS+DATA_DM_NITEMS+DATA_CRV_NITEMS + \
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
-class RtData(QObject):
+class rtData(QObject):
 
     def __init__(self, parent=None):
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
-        if self.cfg.debug: print("<RtData.__init__>")
+        if self.cfg.debug: print("<rtData.__init__>")
 
-        super(RtData, self).__init__(parent)
+        super(rtData, self).__init__(parent)
         self.hist = False
         self.chunksize = Kst.RTDATACHUNKSIZE  # ~ 5000
         self.frameN = 0  # frame number sent by RTdata
@@ -51,7 +51,7 @@ class RtData(QObject):
         #.......................................................................
         # Read string data from socket
         #.......................................................................
-        if (self.cfg.debug >= 5): print("RtData.data_handler")
+        if (self.cfg.debug >= 5): print("rtData.data_handler")
 
         #.......................................................................
         if bytes_buffer == b"":  # if nothing, return
@@ -136,5 +136,5 @@ class RtData(QObject):
     # s.connect (s, SIGNAL(sig), handler) # Good #1
     #def connect_handler(s, sig, handler):
     #     if s.cfg.debug:
-    #         print("RtData.connect_handler")
+    #         print("rtData.connect_handler")
     #     s.connect (s, QtCore.SIGNAL(sig), handler)

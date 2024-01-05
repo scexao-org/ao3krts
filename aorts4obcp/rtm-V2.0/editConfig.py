@@ -18,13 +18,13 @@ from PyQt5.QtWidgets import (QWidget, QFrame, QApplication, QMainWindow, QLabel,
                              QSizePolicy)
 
 import sys
-import Configuration
+import configuration
 
 import util
 
 _fromUtf8 = lambda s: s
 
-import Constants as Kst
+import constants as Kst
 
 from yaml import dump as yamlDump
 
@@ -37,7 +37,7 @@ class editConfigWindowMwin(QMainWindow):
     def __init__(self, parent=None):
 
         super(editConfigWindowMwin, self).__init__(parent)
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
         #s.setWindowFlags(Qt.WindowFlags(Qt.NonModal|Qt.WindowStaysOnTopHint) )
         self.setWindowModality(Qt.NonModal)
@@ -46,7 +46,7 @@ class editConfigWindowMwin(QMainWindow):
         self.toolbar.addAction('Save', self.saveDict)
         self.toolbar.addAction('Quit', self.quit)
 
-        self.panel = DictLabelsPanel(self.cfg.cfgD, self)
+        self.panel = DictlabelsPanel(self.cfg.cfgD, self)
         self.scrollArea = QScrollArea(self)
         self.scrollArea.setWidget(self.panel)
         self.setCentralWidget(self.scrollArea)
@@ -60,7 +60,7 @@ class editConfigWindowMwin(QMainWindow):
     #
     #...........................................................................
     def saveDict(self):
-        if self.cfg.debug: print("<DictLabelsPanel.saveDict>")
+        if self.cfg.debug: print("<DictlabelsPanel.saveDict>")
         self.cfg.lg.info("Saving configuration to file: %s" %
                          self.cfg.configpath)
 
@@ -81,7 +81,7 @@ class editConfigWindowMwin(QMainWindow):
     #   'Apply' button handler
     #...........................................................................
     def applyDict(self):
-        if self.cfg.debug: print("<DictLabelsPanel.applyDict>")
+        if self.cfg.debug: print("<DictlabelsPanel.applyDict>")
         for lbp in self.panel.lbpairs:
             lbp.setDictValue(lbp.valText)
         self.emit(SIGNAL('ConfigChanged'))
@@ -95,19 +95,19 @@ class editConfigWindowMwin(QMainWindow):
     # called on edit-window close
     #...........................................................................
     def closeEvent(self, ev):
-        #s.lg.info("Configuration edit close")
+        #s.lg.info("configuration edit close")
         pass
 
 
 #^------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
-class DictLabelsPanel(QFrame):
+class DictlabelsPanel(QFrame):
 
     def __init__(self, D, parent=None, bgcolor=None, fgcolor=None, font=None,
                  fontSz=None):
 
-        super(DictLabelsPanel, self).__init__(parent)
+        super(DictlabelsPanel, self).__init__(parent)
 
         self.D = D
         self.vbox = QVBoxLayout()
@@ -346,7 +346,7 @@ class DictLabelPair(LabelPair):
     def __init__(self, D, pkey, key, parent=None, bgcolor=None, fgcolor=None,
                  font=None):
 
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         if self.cfg.debug > 9: print("<DictLabelPair__init__>", pkey, key)
         super(DictLabelPair, self).__init__(D[pkey][key]['label'],
                                             D[pkey][key]['value'], parent)
@@ -379,8 +379,8 @@ class DictLabelPair(LabelPair):
 #-------------------------------------------------------------------------------
 if __name__ == '__main__':
 
-    import Constants as Kst
-    import Logger
+    import constants as Kst
+    import logger
 
     #import defaultConfig
 
@@ -394,20 +394,20 @@ if __name__ == '__main__':
     def btn00Handler():
         raise_editConfigWindow(mwin)
 
-    import Configurer
-    import Constants as Kst
+    import configurator
+    import constants as Kst
     app = QApplication(sys.argv)
     mwin = QMainWindow()
     mwin.setWindowTitle("Test Window")
 
-    #lg=Logger.Logger(logpath=Kst.LOGPATH, nfiles=10,level='INFO').lg
-    #configurer = Configurer.Configurer(  Kst.CONFIGFILE, lg )
+    #lg=logger.Logger(logpath=Kst.LOGPATH, nfiles=10,level='INFO').lg
+    #configurer = configurator.Configurer(  Kst.CONFIGFILE, lg )
     #btn00  = QPushButton(mwin)
     #mwin.connect( btn00, SIGNAL('clicked()'), btn00Handler)
     #mwin.show()
 
     logpath = "%s/%s" % (Kst.LOGDIR, Kst.LOGFILE)  # use constants default
-    logger = Logger.Logger(logpath, nfiles=5, level='INFO', debug=0)
+    logger = logger.Logger(logpath, nfiles=5, level='INFO', debug=0)
     logpath = logger.logpath  # logpath from logger
     lg = logger.lg  # 'lg' will be python logging system
     logger.setLevel('INFO')  # set console & file logging level

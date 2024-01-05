@@ -1,5 +1,5 @@
 #===============================================================================
-# File: CmdlineOptions.py : generic command-line arguments parser
+# File: cmdLineOptions.py : generic command-line arguments parser
 #
 #
 #===============================================================================

@@ -6,13 +6,13 @@
 #===============================================================================
 from __future__ import (absolute_import, print_function, division)
 
-import Constants as Kst
-import Configuration
+import constants as Kst
+import configuration
 from PyQt5.QtCore import (Qt, QDateTime, QDateTime)
 from PyQt5.QtWidgets import (QFrame, QLabel, QGridLayout, QHBoxLayout,
                              QVBoxLayout, QSizePolicy, QButtonGroup,
                              QRadioButton, QLCDNumber, QPushButton)
-import Stripchart
+import stripchart
 
 import timeUtil as tUtil
 
@@ -23,7 +23,7 @@ import timeUtil as tUtil
 class ChartsFrame(QFrame):
 
     def __init__(self, name="noname", parent=None):
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
         self.lg.debug("<SHFrame.__init__>:%s" % name)
         #............................................................
@@ -61,16 +61,16 @@ class ChartsFrame(QFrame):
         # current y-value of the four stripcharts
         self.y1 = self.y2 = self.y3 = self.y4 = self.apdRmag = self.ShRmag = 0
 
-        self.pwdg1 = Stripchart.Stripchart(name='APD Count high-order WFS',
+        self.pwdg1 = stripchart.Stripchart(name='APD Count high-order WFS',
                                            qtt=self.qdt0, chartNumber=1)
 
-        self.pwdg2 = Stripchart.Stripchart(name='APD Count low-order WFS',
+        self.pwdg2 = stripchart.Stripchart(name='APD Count low-order WFS',
                                            qtt=self.qdt0, chartNumber=2)
 
-        self.pwdg3 = Stripchart.Stripchart(name='Wavefront Error',
+        self.pwdg3 = stripchart.Stripchart(name='Wavefront Error',
                                            qtt=self.qdt0, chartNumber=3)
 
-        self.pwdg4 = Stripchart.Stripchart(name='Dm Variance', qtt=self.qdt0,
+        self.pwdg4 = stripchart.Stripchart(name='Dm Variance', qtt=self.qdt0,
                                            chartNumber=4)
 
         # X/Y Mouse plot-coordinate labels

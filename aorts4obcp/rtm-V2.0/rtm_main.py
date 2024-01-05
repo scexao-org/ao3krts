@@ -16,25 +16,25 @@ import zmq
 
 import sys
 #sys.path.append("../lib")
-import Configurer
-import Configuration
+import configurator
+import configuration
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QMainWindow, QApplication, QHBoxLayout,
                              QVBoxLayout, QFrame, QStatusBar)
 
-import CmdlineOptions as Clo
-import Constants as Kst
-from EventLoopSocket import EventLoopDataRecvMgr
-import RtData
-import frm_MirrorFrame
-import frm_SHFrame
-import frm_TTPlotFrame
-import frm_ChartsFrame
-import Labels
-import Constants as Kst
-import Logger
+import cmdLineOptions as Clo
+import constants as Kst
+from eventLoopSocket import EventLoopDataRecvMgr
+import rtData
+import frameMirror
+import frameSH
+import frameTTPlot
+import frameCharts
+import labels
+import constants as Kst
+import logger
 import toolbar  # our toolbar.py
 
 
@@ -79,20 +79,20 @@ class mainWindow(QMainWindow):
             Clo.prn_options()  # If debug, list commandline options
 
         #.......................................................................
-        # Configure logging independently from Configurer so Configurer
+        # Configure logging independently from configurator so Configurer
         # can log configuration problems.
         #.......................................................................
 
-        # logpath from command line or Constants.py
+        # logpath from command line or constants.py
         if Clo.logpath is not None:  # given on commandline?
             logpath = Clo.logpath
-        else:  # try the logpath from Constants.py
+        else:  # try the logpath from constants.py
             logpath = "%s/%s" % (Kst.LOGDIR, Kst.LOGFILE
                                  )  # use constants default
 
         # 's.logger' is our wrapper instance, s.lg = s.logger.lg will be the
         # python logging module instance
-        self.logger = Logger.Logger(logpath, nfiles=5, level='INFO',
+        self.logger = logger.Logger(logpath, nfiles=5, level='INFO',
                                     debug=self.debug)
         logpath = self.logger.logpath  # logpath from logger
         self.log = self.logger.lg  # 's.lg' will be python logging system
@@ -112,8 +112,8 @@ class mainWindow(QMainWindow):
                 self.logger.level)  #restore console logging level
 
         # Configure all other startup-values from a config file (Kst.CONFIGFILE)
-        Configurer.Configurer(Kst.CONFIGFILE, logpath, self.log)
-        cfg = Configuration.cfg
+        configurator.Configurator(Kst.CONFIGFILE, logpath, self.log)
+        cfg = configuration.cfg
         cfg.logpath = self.logger.logpath
         self.log.info("o Invoked as               : %s" % cfg.execname)
         self.log.info("o Executable is            : %s" % cfg.execpath)
@@ -123,7 +123,7 @@ class mainWindow(QMainWindow):
 
         #s.lg.info("o QWT VERSION:", Qwt.
         #s.lg.info("o Executable directory    : %s" % cfg.execDir)
-        #s.lg.info("o Configuration Path      : %s" % cfg.configpath)
+        #s.lg.info("o configuration Path      : %s" % cfg.configpath)
 
         # mainwin status bar
         cfg.statusBar = QStatusBar()
@@ -163,16 +163,15 @@ class mainWindow(QMainWindow):
 
         #.......................................................................
         # Create subframes & their widgets
-        self.Dmf1 = frm_MirrorFrame.MirrorFrame('DM')  # Dm Eye
-        self.Crvf2 = frm_MirrorFrame.MirrorFrame('Curvature')  # Curvature Eye
-        self.Apdf3 = frm_MirrorFrame.MirrorFrame('HOWFS/APD')  # Apd Eye
-        self.Shf4 = frm_SHFrame.SHFrame('LOWFS/SH')  # S.Hartmann Eye
-        self.Ttf5 = frm_TTPlotFrame.TTPlotFrame(
-                'TipTilt Mount')  # TipTilt plots
-        self.Chf6 = frm_ChartsFrame.ChartsFrame('ChartsFrame')  # stripcharts
-        self.Lbf7 = Labels.GainsLabelFrame()
+        self.Dmf1 = frameMirror.MirrorFrame('DM')  # Dm Eye
+        self.Crvf2 = frameMirror.MirrorFrame('Curvature')  # Curvature Eye
+        self.Apdf3 = frameMirror.MirrorFrame('HOWFS/APD')  # Apd Eye
+        self.Shf4 = frameSH.SHFrame('LOWFS/SH')  # S.Hartmann Eye
+        self.Ttf5 = frameTTPlot.TTPlotFrame('TipTilt Mount')  # TipTilt plots
+        self.Chf6 = frameCharts.ChartsFrame('ChartsFrame')  # stripcharts
+        self.Lbf7 = labels.GainsLabelFrame()
 
-        #Labels.fixLabelStyle(Lbf7)
+        #labels.fixLabelStyle(Lbf7)
 
         #.......................................................................
         # Layouts
@@ -209,7 +208,7 @@ class mainWindow(QMainWindow):
 
         #........................................................................
         # Create receiver for Mirror Data
-        self.rtData = RtData.RtData(self)
+        self.rtData = rtData.RtData(self)
 
         # Connect Eyeball data-handlers
         self.rtData.EyeDataReady.connect(self.Dmf1.mrr.data_ready)
@@ -264,7 +263,7 @@ class mainWindow(QMainWindow):
         self.rtData.connect(self.rtData, QtCore.SIGNAL('MountPlotDataReady'),
                             self.Ttf5.data_ready)
 
-        # Stripcharts
+        # stripcharts
         self.rtData.connect(self.rtData, QtCore.SIGNAL('ChartDataReady'),
                             self.Chf6.data_ready)
 
@@ -320,10 +319,10 @@ if __name__ == "__main__":
     mwin.show()  # show it
 
     # temporary Kludge to get correct border around labelled values on ao188
-    Labels.fixLabelStyle(mwin.Dmf1.labelsFrame)
-    Labels.fixLabelStyle(mwin.Crvf2.labelsFrame)
-    Labels.fixLabelStyle(mwin.Apdf3.labelsFrame)
-    Labels.fixLabelStyle(mwin.Shf4.labelsFrame)
-    Labels.fixLabelStyle(mwin.Lbf7)
+    labels.fixLabelStyle(mwin.Dmf1.labelsFrame)
+    labels.fixLabelStyle(mwin.Crvf2.labelsFrame)
+    labels.fixLabelStyle(mwin.Apdf3.labelsFrame)
+    labels.fixLabelStyle(mwin.Shf4.labelsFrame)
+    labels.fixLabelStyle(mwin.Lbf7)
 
     qap.exec_()  # enter application event loop

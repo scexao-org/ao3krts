@@ -6,16 +6,16 @@
 #
 #===============================================================================
 from __future__ import (absolute_import, print_function, division)
-import Configuration
+import configuration
 
 from PyQt5.QtCore import Qt
 
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QFormLayout, QSizePolicy, QLabel, QFrame)
 
-import Constants as Kst
-import ClickableLabel
-import AlarmDialogue
+import constants as Kst
+import clickableLabel
+import alarmDialog
 
 
 #------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ class nameValueColumn(QFormLayout):
     #..........................................................................
     def __init__(self, names, parent=None):
 
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
         super(nameValueColumn, self).__init__(parent)
         self.names = names
@@ -46,7 +46,7 @@ class nameValueColumn(QFormLayout):
             nlbl = QLabel(item['label'])  # Tag   label
 
             # Create clickable label
-            vlbl = ClickableLabel.ClickableLabel(parent)
+            vlbl = clickableLabel.ClickableLabel(parent)
 
             # set same tooltip for label and value widgets
             vlbl.setToolTip(item['desc'])
@@ -56,10 +56,10 @@ class nameValueColumn(QFormLayout):
             # Pass name and alarm parameters dictionary
             title = "%s  ALARMS" % name
 
-            #  create AlarmDialogue instance
-            self.alarmDlg = AlarmDialogue.AlarmDialog(title.upper(), item,
-                                                      parent=vlbl)
-            # Set AlarmDialogue as clickable label popup
+            #  create alarmDialog instance
+            self.alarmDlg = alarmDialog.AlarmDialog(title.upper(), item,
+                                                    parent=vlbl)
+            # Set alarmDialog as clickable label popup
             vlbl.setClickAction(self.alarmDlg.popup)
 
             # Create dictionary items for this label

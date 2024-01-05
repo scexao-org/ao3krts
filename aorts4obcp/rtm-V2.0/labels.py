@@ -1,30 +1,30 @@
 #===============================================================================
-# File : DMLabelsFrame.py
+# File : DMlabelsFrame.py
 #
 #
 #===============================================================================
 from __future__ import (absolute_import, print_function, division)
 
-import Configuration
+import configuration
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QFrame, QGridLayout, QSizePolicy, QHBoxLayout)
 
-import Constants as Kst
+import constants as Kst
 import nameValueColumn as nvc
 
 
 #------------------------------------------------------------------------------
-# DMLabelsFrame
+# DMlabelsFrame
 #------------------------------------------------------------------------------
-class DmLabelsFrame(QFrame):
+class DmlabelsFrame(QFrame):
 
     #.......................................................................
     def __init__(self, parent=None):
-        super(DmLabelsFrame, self).__init__(parent)
+        super(DmlabelsFrame, self).__init__(parent)
 
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
-        if self.cfg.debug: print("<DMLabels.__init__>")
+        if self.cfg.debug: print("<DMlabels.__init__>")
 
         self.columns = []
         self.layout = QHBoxLayout(self)
@@ -45,24 +45,24 @@ class DmLabelsFrame(QFrame):
     #.......................................................................
     def data_ready(self, data):
         if self.cfg.debug > Kst.DBGLEVEL_RATE2:
-            print("<DmLabels.data_ready>")
+            print("<Dmlabels.data_ready>")
         for column in self.columns:
             column.updateData(data)
 
 
 #------------------------------------------------------------------------------
-# CrvLabelsFrame
+# CrvlabelsFrame
 #------------------------------------------------------------------------------
-class CrvLabelsFrame(QFrame):
+class CrvlabelsFrame(QFrame):
 
     #.......................................................................
     def __init__(self, parent=None):
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
-        if self.cfg.debug: print("<CrvLabels.__init__>")
+        if self.cfg.debug: print("<Crvlabels.__init__>")
 
         #............................................................
-        super(CrvLabelsFrame, self).__init__(parent)
+        super(CrvlabelsFrame, self).__init__(parent)
         self.columns = []
         self.layout = QHBoxLayout(self)
         self.columns.append( nvc.nameValueColumn( \
@@ -85,24 +85,24 @@ class CrvLabelsFrame(QFrame):
     #.......................................................................
     def data_ready(self, data):
         if self.cfg.debug > Kst.DBGLEVEL_RATE2:
-            print("<CRVLabels.data_ready>")
+            print("<CRVlabels.data_ready>")
         for column in self.columns:
             column.updateData(data)
 
 
 #------------------------------------------------------------------------------
-# ApdLabelsFrame
+# ApdlabelsFrame
 #------------------------------------------------------------------------------
-class ApdLabelsFrame(QFrame):
+class ApdlabelsFrame(QFrame):
 
     #.......................................................................
     def __init__(self, parent=None):
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
-        if self.cfg.debug: print("<ApdLabels.__init__>")
+        if self.cfg.debug: print("<Apdlabels.__init__>")
 
         #............................................................
-        super(ApdLabelsFrame, self).__init__(parent)
+        super(ApdlabelsFrame, self).__init__(parent)
         self.columns = []
         self.layout = QHBoxLayout(self)
 
@@ -128,24 +128,24 @@ class ApdLabelsFrame(QFrame):
     #.......................................................................
     def data_ready(self, data):
         if self.cfg.debug > Kst.DBGLEVEL_RATE2:
-            print("<DmLabels.data_ready>")
+            print("<Dmlabels.data_ready>")
         for column in self.columns:
             column.updateData(data)
 
 
 #------------------------------------------------------------------------------
-# ApdLabelsFrame
+# ApdlabelsFrame
 #------------------------------------------------------------------------------
-class SHLabelsFrame(QFrame):
+class SHlabelsFrame(QFrame):
 
     #.......................................................................
     def __init__(self, parent=None):
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
-        if self.cfg.debug: print("<SHLabels.__init__>")
+        if self.cfg.debug: print("<SHlabels.__init__>")
 
         #............................................................
-        super(SHLabelsFrame, self).__init__(parent)
+        super(SHlabelsFrame, self).__init__(parent)
         self.columns = []
         self.layout = QHBoxLayout(self)
 
@@ -172,7 +172,7 @@ class SHLabelsFrame(QFrame):
     #.......................................................................
     def data_ready(self, data):
         if self.cfg.debug > Kst.DBGLEVEL_RATE2:
-            print("<DmLabels.data_ready>")
+            print("<Dmlabels.data_ready>")
         for column in self.columns:
             column.updateData(data)
 
@@ -185,7 +185,7 @@ class GainsLabelFrame(QFrame):
     def __init__(self, name="noname", parent=None, flags=Qt.WindowFlags()):
         super(GainsLabelFrame, self).__init__(parent, flags)
 
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
         self.name = name
         self.wd = 400
@@ -249,7 +249,7 @@ class GainsLabelFrame(QFrame):
     #............................................................
     def data_ready(self, data):
         if self.cfg.debug > Kst.DBGLEVEL_RATE2:
-            print("<TtLabels.data_ready>")
+            print("<Ttlabels.data_ready>")
 
         for column in self.columns:
             column.updateData(data)

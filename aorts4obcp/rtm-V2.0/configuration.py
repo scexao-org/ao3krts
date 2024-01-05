@@ -1,5 +1,5 @@
 #===============================================================================
-# File: Configuration.py
+# File: configuration.py
 #
 # Notes:
 #  o Set logging level:
@@ -18,24 +18,24 @@ STR, BOOL, INT, FLT = list(range(4))  # data types
 
 import copy
 
-import CmdlineOptions as Clo
+import cmdLineOptions as Clo
 
 #import shelvedDict as shd
 from yaml import dump as yamlDump
 
 
 #-------------------------------------------------------------------------------
-# CLASS Configuration : Dynamic configuration values to be set from .cfg file
+# CLASS configuration : Dynamic configuration values to be set from .cfg file
 #                       or overridden fromcommandline.
 #-------------------------------------------------------------------------------
-class Configuration(object):
+class configuration(object):
 
     def __init__(self, parent=None):
-        super(Configuration, self).__init__()
-        self.cfgD = None  # to be set by Configurer
+        super(configuration, self).__init__()
+        self.cfgD = None  # to be set by configurator
         self.logpath = None
-        self.lg = None  # to be set by Configurer
-        self.configpath = None  # from Constants
+        self.lg = None  # to be set by configurator
+        self.configpath = None  # from constants
         self.libpath = None  # unused
         self.debug = None  # from cmdLine
         self.test = None  # from cmdline
@@ -45,7 +45,7 @@ class Configuration(object):
     #---------------------------------------------------------------------------
     def setCfgFromDict(self):
         if self.debug:
-            print("<Configuration.setCfgFromDict>")
+            print("<configuration.setCfgFromDict>")
         #
         d = self.cfgD
 
@@ -75,12 +75,12 @@ class Configuration(object):
         self.tags = self.tags_to_tuple(self.cfgD)
 
     #---------------------------------------------------------------------------
-    # setDictFromCfg : called only from Configurer.py
+    # setDictFromCfg : called only from configurator.py
     # set commandline options in dictionary
     #---------------------------------------------------------------------------
     def setDictFromCfg(self):
         if self.debug:
-            print("<Configuration.setDictFromCfg>")
+            print("<configuration.setDictFromCfg>")
             print("-----------------------------------------------------------")
         dct = self.cfgD
         #dct['gen']['configpath']['value']      = s.logpath # !!! ???
@@ -119,18 +119,18 @@ class Configuration(object):
 
         value = self.cfgD[sectionKey][itemKey]['value']
         if self.debug > 2:
-            print("<Configuration.get_dictValue>", sectionKey, itemKey, value)
+            print("<configuration.get_dictValue>", sectionKey, itemKey, value)
         if value is None:
             return None
         return value
 
     #---------------------------------------------------------------------------
-    #  debug is initially set by Configurer from commandline opts
+    #  debug is initially set by configurator from commandline opts
     #---------------------------------------------------------------------------
     def set_cmdline_overrides(self):
 
         if self.debug:
-            print("<Configuration.set_cmdline_overrides>")
+            print("<configuration.set_cmdline_overrides>")
         if Clo.debug is not None:
             self.debug = int(Clo.debug)
         else:
@@ -161,7 +161,7 @@ class Configuration(object):
     #---------------------------------------------------------------------------
     def prn_cfg(self):
         print("---------------------------------------------------------------")
-        print("                   Configuration                               ")
+        print("                   configuration                               ")
         print("---------------------------------------------------------------")
         print("%-12s: %s" % ("Logpath", self.logpath))
         #print("%-12s: %s"% ("Libpath" ,  s.libpath))
@@ -184,7 +184,7 @@ class Configuration(object):
     #---------------------------------------------------------------------------
     def get_row_column_data(self, row, column):
         if self.debug > 2:
-            print("<Configuration.get_row_column_data>", row, column)
+            print("<configuration.get_row_column_data>", row, column)
 
         # Get section number for given row
         rowcount = 0
@@ -203,7 +203,7 @@ class Configuration(object):
     #---------------------------------------------------------------------------
     def get_datum(self, sectionNdx, datumNdx):
         # DM,CRV,GEN=range(3)
-        if self.debug > 2: print("<Configuration.get_value>")
+        if self.debug > 2: print("<configuration.get_value>")
 
         DICT, SECTION, LABEL, DATUM = list(range(4))
 
@@ -230,7 +230,7 @@ class Configuration(object):
     #---------------------------------------------------------------------------
     def tags_to_tuple(self, D):
         if self.debug:
-            print("<Configuration.tags_to_tuple>")
+            print("<configuration.tags_to_tuple>")
 
         dicts = {'D0': D}
         topkeys = ('D0', )
@@ -241,7 +241,7 @@ class Configuration(object):
             try:
                 k = list(dicts[topkeys[i]].keys())
             except Exception as exc:
-                print("<Configuration.tags_to_tuple> Exception:", exc)
+                print("<configuration.tags_to_tuple> Exception:", exc)
                 continue
             keylist.append(tuple(k))
 
@@ -268,5 +268,5 @@ class Configuration(object):
         return (dkeys)
 
 
-cfg = Configuration()
+cfg = configuration()
 lg = cfg.lg

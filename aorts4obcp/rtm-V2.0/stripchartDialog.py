@@ -11,18 +11,18 @@ from PyQt5.QtCore import (Qt, QRect)
 from PyQt5.QtWidgets import (QLabel, QDialog, QDoubleSpinBox, QPushButton,
                              QGridLayout, QHBoxLayout, QFrame, QButtonGroup,
                              QRadioButton, QFrame)
-import Constants as Kst
+import constants as Kst
 
 
 #-------------------------------------------------------------------------------
 #
 #
 #-------------------------------------------------------------------------------
-class StripchartDialog(QDialog):
+class stripchartDialog(QDialog):
 
     def __init__(self, titleStr, pDct, parent=None):
 
-        super(StripchartDialog,
+        super(stripchartDialog,
               self).__init__(parent, Qt.Dialog | Qt.FramelessWindowHint)
         self.pwdg = parent
         self.pDct = pDct  # stripchart parameters dictionary

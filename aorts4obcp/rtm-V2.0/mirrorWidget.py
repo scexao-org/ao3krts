@@ -1,6 +1,6 @@
 #===============================================================================
-# File : MirrorWidget.py
-#      : Offers class 'MirrorWidget'. A painted polygon map modelling
+# File : mirrorWidget.py
+#      : Offers class 'mirrorWidget'. A painted polygon map modelling
 #        Subaru adaptive optics deformable mirror,
 #
 # Notes:
@@ -16,12 +16,12 @@ from PyQt5.QtWidgets import QWidget, QSizePolicy
 
 from math import *
 import numpy as np
-#import MirrorWidget_loader as loader
+#import mirrorWidget_loader as loader
 import loadPolygons as loader
-import CmdlineOptions as opts
-import Configuration
-import Constants as Kst
-import MirrorCellMap as cellMap  # map of device cells to display cells
+import cmdLineOptions as opts
+import configuration
+import constants as Kst
+import mirrorCellMap as cellMap  # map of device cells to display cells
 
 # Mouse buttons
 LMB = 1
@@ -30,22 +30,22 @@ RMB = 2
 
 
 #------------------------------------------------------------------------------
-# MirrorWidget
+# mirrorWidget
 #------------------------------------------------------------------------------
-class MirrorWidget(QWidget):
+class mirrorWidget(QWidget):
 
     #.......................................................................
     def __init__(self, name="noname", parent=None, flags=Qt.WindowFlags()):
-        super(MirrorWidget, self).__init__(parent)
+        super(mirrorWidget, self).__init__(parent)
 
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
-        if self.cfg.debug: print("<MirrorWidget.__init__>:", name)
+        if self.cfg.debug: print("<mirrorWidget.__init__>:", name)
         self.name = name
         self.alarmDlg = None  # to be set by instantiater
 
         # read mirror polygons. Subtract 30 from coords for each vertex
-        self.poly = loader.MirrorWidget_loader(pfactor=-30)
+        self.poly = loader.mirrorWidget_loader(pfactor=-30)
 
         # dump polygon list to stdout if debug greater than five
         if self.cfg.debug > 5:
@@ -268,7 +268,7 @@ class MirrorWidget(QWidget):
 
     #----------------------------------------------------------------------
     def setAlarms(self, lAlarm, lEnable, hAlarm, hEnable):
-        #print("<MirrorWidget>.setAlarms", s.name, lAlarm, lEnable, hAlarm, hEnable)
+        #print("<mirrorWidget>.setAlarms", s.name, lAlarm, lEnable, hAlarm, hEnable)
         self.lAlarm = float(lAlarm)
         self.lAlarmEnable = bool(lEnable)
         self.hAlarm = float(hAlarm)
@@ -422,7 +422,7 @@ class MirrorWidget(QWidget):
 
     #-----------------------------------------------------------------------
     #def ColorbarWheel(s): # called on action from mousewheel on colorbar
-    #    print("< MirrorWidget.colorbarWheelEvent >")
+    #    print("< mirrorWidget.colorbarWheelEvent >")
     #
 
     #-----------------------------------------------------------------------

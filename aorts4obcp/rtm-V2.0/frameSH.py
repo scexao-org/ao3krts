@@ -13,11 +13,11 @@ from PyQt5.QtWidgets import (QFrame, QLabel, QSlider, QSizePolicy, QSplitter,
                              QMenuBar, QMenu, QVBoxLayout, QHBoxLayout,
                              QActionGroup)
 
-import Constants as Kst
-import Configuration
-import SHWidget
-import Labels
-import AlarmDialogue
+import constants as Kst
+import configuration
+import shWidget
+import labels
+import alarmDialog
 
 
 #------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ import AlarmDialogue
 class SHFrame(QFrame):
 
     def __init__(self, name="noname", parent=None):
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
         self.lg.debug("<SHFrame.__init__>:%s" % name)
         if self.cfg.debug: print("<SHFrame.__init__>:%s" % name)
@@ -52,7 +52,7 @@ class SHFrame(QFrame):
         self.lbl_title.setMaximumHeight(16)
         #............................................................
         self.hzSplit00 = QSplitter(Qt.Horizontal)
-        self.shw = SHWidget.SHWidget(self)
+        self.shw = shWidget.SHWidget(self)
         self.sldfrm = QFrame(self)
 
         # Menu
@@ -62,7 +62,7 @@ class SHFrame(QFrame):
         self.create_defocus_indicator()
 
         # Labelled-values frame
-        self.labelsFrame = Labels.SHLabelsFrame()
+        self.labelsFrame = labels.SHLabelsFrame()
 
         # Layout
         self.topLayout.addWidget(self.lbl_title)
@@ -219,7 +219,7 @@ class SHFrame(QFrame):
         self.menubar.addMenu(self.menu)  # add menu to menubar
 
         dct = self.cfg.cfgD['sheye']
-        self.shw.alarmDlg = AlarmDialogue.AlarmDialog('SH-EYE ALARMS', dct)
+        self.shw.alarmDlg = alarmDialog.AlarmDialog('SH-EYE ALARMS', dct)
         self.connect(self.shw.alarmDlg, SIGNAL('ConfigChanged'),
                      self.configChangeHandler)
         self.menubar.addMenu(self.menu)

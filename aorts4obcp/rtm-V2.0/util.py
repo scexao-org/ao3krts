@@ -16,7 +16,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QSizePolicy
 from PyQt5.QtGui import QFont
 
-import Constants as Kst
+import constants as Kst
 
 
 #

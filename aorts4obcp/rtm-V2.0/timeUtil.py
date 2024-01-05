@@ -8,7 +8,7 @@
 from __future__ import (absolute_import, print_function, division)
 from PyQt5.QtCore import (Qt, QDateTime, QTime)
 
-import Constants as Kst
+import constants as Kst
 
 
 # convert our timezone-strings to Qt timezone code

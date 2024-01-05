@@ -1,6 +1,6 @@
 #!/usr/bin/python -Qnew
 #^==============================================================================
-# File: Logger.py
+# File: logger.py
 #
 #
 # http://docs.python.org/library/logging.html
@@ -12,14 +12,14 @@ import util
 
 
 #-------------------------------------------------------------------------------
-# class Logger:
+# class logger:
 #  logpath     :
 #  nmbytes     : number of megabytes per logfile
 #  nfiles      : number of logfiles
 #-------------------------------------------------------------------------------
 # Notes:
 # o  Create a logger
-#    lg = Logger.Logger().lg
+#    lg = logger.Logger().lg
 #
 #
 # o  Set logging level
@@ -140,7 +140,7 @@ class Logger(object):
             self.logdir = os.path.dirname(self.logpath)
 
         if self.debug:
-            print("<Logger>")
+            print("<logger>")
             print("LOGNAME :", self.logname)
             print("LOGDIR  :", self.logdir)
             print("LOGPATH :", self.logpath)
@@ -150,7 +150,7 @@ class Logger(object):
         try:
             self.lg = logging.getLogger(self.logpath)
         except Exception as e:
-            print("*** Error,Logger: Logger creation exception:", e)
+            print("*** Error,logger: Logger creation exception:", e)
 
             sys.exit(-1)
 
@@ -160,7 +160,7 @@ class Logger(object):
                     self.logpath, maxBytes=self.maxfsize,
                     backupCount=self.nfiles)
         except Exception as e:
-            print("*** Error, Logger: File-handler creation exception:", e)
+            print("*** Error, logger: File-handler creation exception:", e)
             #s.set_null_logger()
             #raise(); return()  # raise same exception to caller
             #return
@@ -177,7 +177,7 @@ class Logger(object):
         try:
             self.console_handler = logging.StreamHandler()
         except Exception as e:
-            print("***Error, Logger: Console-handler creation exception:", e)
+            print("***Error, logger: Console-handler creation exception:", e)
             raise ()
             return ()  # raise same exception to caller
 
@@ -192,7 +192,7 @@ class Logger(object):
         self.lg.addHandler(self.console_handler)
 
         # add the handler to the root logger
-        #logging.getLogger(s.logpath).addHandler(s.console_handler)
+        #logging.getlogger(s.logpath).addHandler(s.console_handler)
         self.lg.addHandler(self.console_handler)
 
         # set console & files log-level
@@ -225,21 +225,21 @@ class Logger(object):
     # NOTSET     0
     #---------------------------------------------------------------------------
     def setLevel(self, level):
-        if self.debug: print("<Logger>setLevel              :", level)
+        if self.debug: print("<logger>setLevel              :", level)
         self.lg.setLevel(self.levels[level])
         self.set_file_level(level)
         self.set_console_level(level)
 
     #---------------------------------------------------------------------------
     def set_console_level(self, level):
-        if self.debug: print("<Logger>set_console_Level     :", level)
+        if self.debug: print("<logger>set_console_Level     :", level)
         self.console_level = level
         self.console_handler.setLevel(self.levels[level])
         #s.lg.setLevel   ( s.levels[level] )
 
     #---------------------------------------------------------------------------
     def set_file_level(self, level):
-        if self.debug: print("<Logger>set_file_Level        :", level)
+        if self.debug: print("<logger>set_file_Level        :", level)
         self.file_level = level
         self.file_handler.setLevel(self.levels[level])
 
@@ -256,7 +256,7 @@ class Logger(object):
     # logging in python book for best solution
     def set_null_logger(self):
         self.lg = None
-        print("<Logger> set_null_logger. Fatal. Exiting...")
+        print("<logger> set_null_logger. Fatal. Exiting...")
         sys.exit()
 
     # Return the full directory path of the executable regardles of how
@@ -277,26 +277,26 @@ if __name__ == "__main__":
 
     def test1():
         try:
-            lg = Logger('./logs/test.log', debug=True)
+            lg = logger('./logs/test.log', debug=True)
         except:
             sys.exit()
         print("..................................................")
 
         try:
-            lg = Logger('./nosuchdirectory/test.log', debug=True)
+            lg = logger('./nosuchdirectory/test.log', debug=True)
         except:
             print("Caught no such directory errror: Good")
         else:
             print("** BAD ** Did not catch no such directory errror: ")
 
         try:
-            lg = Logger(debug=True)
+            lg = logger(debug=True)
         except:
             sys.exit()
         print("..................................................")
 
     try:
-        logger = Logger(debug=True)
+        logger = logger(debug=True)
     except:
         print("*** Goodbye ***")
         sys.exit()
@@ -315,8 +315,8 @@ if __name__ == "__main__":
 
         logger.setLevel('INFO')  # enable all logging >= DEBUG
         # lg.exception
-        #  creates a log message similar to Logger.error(). The difference is
-        #  that Logger.exception() dumps a stack trace along with it. Call
+        #  creates a log message similar to logger.error(). The difference is
+        #  that logger.exception() dumps a stack trace along with it. Call
         #  this method only from an exception handler.
         #
         #

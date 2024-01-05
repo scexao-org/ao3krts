@@ -5,14 +5,14 @@
 #
 #===============================================================================
 from __future__ import (absolute_import, print_function, division)
-import Configuration
+import configuration
 
 from PyQt5.QtCore import (Qt, QSize, QPoint)
 from PyQt5.QtWidgets import (QWidget, QFrame, QLabel, QVBoxLayout, QHBoxLayout,
                              QSizePolicy)
 import ttplotWidget
-import Constants as Kst
-import AlarmDialogue
+import constants as Kst
+import alarmDialog
 
 
 #------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ import AlarmDialogue
 class TTPlotFrame(QFrame):
 
     def __init__(self, name="noname", parent=None):
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
         self.lg.debug("<TTPlotFrame.__init__>:%s" % name)
         #............................................................
@@ -92,17 +92,17 @@ class TTPlotFrame(QFrame):
         self.wfYDataNdx = self.pwdg2.MountYDct['dataNdx']
 
         # Create a set-alarm-popup for each widget. Popup on right-click
-        self.pwdg1.xAlarmDlg=AlarmDialogue.AlarmDialog( \
+        self.pwdg1.xAlarmDlg=alarmDialog.AlarmDialog( \
             self.pwdg1.MountXDct['label'],  self.pwdg1.MountXDct, self)
 
-        self.pwdg1.yAlarmDlg=AlarmDialogue.AlarmDialog( \
+        self.pwdg1.yAlarmDlg=alarmDialog.AlarmDialog( \
              self.pwdg1.MountYDct['label'], self.pwdg1.MountYDct, self)
 
 
-        self.pwdg2.xAlarmDlg=AlarmDialogue.AlarmDialog( \
+        self.pwdg2.xAlarmDlg=alarmDialog.AlarmDialog( \
             self.pwdg2.MountXDct['label'],  self.pwdg2.MountXDct, self)
 
-        self.pwdg2.yAlarmDlg=AlarmDialogue.AlarmDialog( \
+        self.pwdg2.yAlarmDlg=alarmDialog.AlarmDialog( \
              self.pwdg2.MountYDct['label'], self.pwdg1.MountYDct, self)
 
         self.leftlayout.addWidget(self.pwdg1_title)

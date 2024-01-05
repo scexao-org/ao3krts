@@ -6,7 +6,7 @@
 # FILE: simdata.py
 #     : Quick and dirty data simulator for AO realtime-monitor
 #       Sends data to given host at given port @ approx 10 Hz
-#     : Constants from Constants.py
+#     : constants from Constants.py
 #
 # Options:
 #  -h, --help         show this help message and exit
@@ -23,9 +23,9 @@ from __future__ import absolute_import, print_function, division
 import sys, random, time
 import socket
 
-import CmdlineOptions as opts
+import cmdLineOptions as opts
 import numpy as np
-import Constants as Kst
+import constants as Kst
 
 # Test numbers
 TEST_NOCONNECT = 0  # Generate & dump data but no connection, no send.

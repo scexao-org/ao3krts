@@ -10,7 +10,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QLabel, QDialog, QDoubleSpinBox, QPushButton,
                              QGridLayout, QHBoxLayout, QCheckBox, QFrame)
 
-import Constants as Kst
+import constants as Kst
 
 
 #-------------------------------------------------------------------------------

@@ -9,15 +9,15 @@
 from __future__ import (absolute_import, print_function, division)
 
 import sys
-import Configuration
+import configuration
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QSlider, QFrame, QLabel, QVBoxLayout, QHBoxLayout,
                              QSizePolicy, QSplitter, QMenuBar, QMenu)
-import MirrorWidget
-import Labels
-import Constants as Kst
-import AlarmDialogue
+import mirrorWidget
+import labels
+import constants as Kst
+import alarmDialog
 
 
 #-------------------------------------------------------------------------------
@@ -28,7 +28,7 @@ class MirrorFrame(QFrame):
 
     def __init__(self, name="noname", parent=None):
 
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
         self.lg.debug("<MirrorFrame.__init__>:", name)
 
@@ -57,7 +57,7 @@ class MirrorFrame(QFrame):
         self.sld = None
         self.hzSplit00 = QSplitter(Qt.Horizontal)
 
-        self.mrr = MirrorWidget.MirrorWidget(name)
+        self.mrr = mirrorWidget.MirrorWidget(name)
         self.mrr.setWhatsThis(
                 "LeftClick&Drag to set Contrast & Brightness. Double left click to select/unselect cell."
         )
@@ -123,7 +123,7 @@ class MirrorFrame(QFrame):
     def create_label_frame(self):
         if self.name == 'DM':
 
-            self.labelsFrame = Labels.DmLabelsFrame(
+            self.labelsFrame = labels.DmLabelsFrame(
             )  #create label/values frame
             self.mrr.ndxDataStart = Kst.DM_CELLDATASTART  #start of mirrorcell data
             self.mrr.ndxDataEnd = Kst.DM_CELLDATAEND  #end   of mirrorcell data
@@ -144,11 +144,11 @@ class MirrorFrame(QFrame):
             dct = self.cfg.cfgD['dmeye']  # set values dict for this frame
 
             # create popup alarm dialog for mirrorMap widget
-            self.mrr.alarmDlg = AlarmDialogue.AlarmDialog(
-                    'DM-EYE ALARMS', dct, self)
+            self.mrr.alarmDlg = alarmDialog.AlarmDialog('DM-EYE ALARMS', dct,
+                                                        self)
 
         elif self.name == 'Curvature':
-            self.labelsFrame = Labels.CrvLabelsFrame()
+            self.labelsFrame = labels.CrvLabelsFrame()
 
             # set start/end of mirrorcell data
             self.mrr.ndxDataStart = Kst.CRV_CELLDATASTART
@@ -170,11 +170,11 @@ class MirrorFrame(QFrame):
             dct = self.cfg.cfgD['crveye']  # set values dict for this frame
 
             # create popup alarm dialog for mirrorMap widget
-            self.mrr.alarmDlg = AlarmDialogue.AlarmDialog(
-                    'CRV-EYE ALARMS', dct, self)
+            self.mrr.alarmDlg = alarmDialog.AlarmDialog('CRV-EYE ALARMS', dct,
+                                                        self)
 
         elif self.name == 'HOWFS/APD':
-            self.labelsFrame = Labels.ApdLabelsFrame()
+            self.labelsFrame = labels.ApdLabelsFrame()
 
             # set start/end of mirrorcell data
             self.mrr.ndxDataStart = Kst.APD_CELLDATASTART
@@ -195,13 +195,13 @@ class MirrorFrame(QFrame):
             dct = self.cfg.cfgD['apdeye']  # set values dict for this frame
 
             # create popup alarm dialog for mirrorMap widget
-            self.mrr.alarmDlg = AlarmDialogue.AlarmDialog(
-                    'APD-EYE ALARMS', dct, self)
+            self.mrr.alarmDlg = alarmDialog.AlarmDialog('APD-EYE ALARMS', dct,
+                                                        self)
 
         else:
             self.lg.error(
-                    "<frm_MirrorFrame.creat_label_frame> Unrecognized name: %s"
-                    % self.name)
+                    "<frameMirror.creat_label_frame> Unrecognized name: %s" %
+                    self.name)
             sys.exit()
         # notify on alarm edit
         self.connect(self.mrr.alarmDlg, SIGNAL('ConfigChanged'),

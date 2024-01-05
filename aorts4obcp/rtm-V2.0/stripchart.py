@@ -1,10 +1,10 @@
 #!/usr/bin/python
 """
-Stripchart Widget
+stripchart Widget
 """
 
 #===============================================================================
-# File: Stripchart.py
+# File: stripchart.py
 #
 # Notes:
 # http://docs.huihoo.com/qwt/class_qwt_plot-members.html
@@ -14,30 +14,30 @@ from __future__ import absolute_import, print_function, division
 import sys
 import numpy as np
 
-import Configuration
+import configuration
 
 from PyQt5.QtCore import (Qt, QObject, QObject, QDateTime, QEvent, QPoint)
 from PyQt5.QtGui import (QPen, QFont, QColor)
 from PyQt5.QtWidgets import (QFrame, QSizePolicy, QLabel)
 
 import qwt
-import hacked_qwtScaleDiv
-import Constants as Kst
+import hackedQwtScaleDiv
+import constants as Kst
 import stripchartDialog
 import timeUtil as tUtil
 
 
 #------------------------------------------------------------------------------
-# Class Stripchart
+# Class stripchart
 #------------------------------------------------------------------------------
-class Stripchart(qwt.QwtPlot):
+class stripchart(qwt.QwtPlot):
 
     # args is a tuple of positional args
     # kwargs is a dictionary of keyword args
     def __init__(self, *args, **kwargs):
-        self.cfg = Configuration.cfg
+        self.cfg = configuration.cfg
         self.lg = self.cfg.lg
-        self.lg.debug("<Stripchart.__init__>", kwargs['name'])
+        self.lg.debug("<stripchart.__init__>", kwargs['name'])
         qwt.QwtPlot.__init__(self)
 
         # kwargs
@@ -132,7 +132,7 @@ class Stripchart(qwt.QwtPlot):
         self.setAxisTitle(qwt.QwtPlot.yLeft, ' ')
 
         # popup dialog
-        self.dlg = stripchartDialog.StripchartDialog(self.name + ' Stripchart',
+        self.dlg = stripchartDialog.stripchartDialog(self.name + ' Stripchart',
                                                      self.pDct, self)
 
         #s.connect(s.dlg.okButton,  SIGNAL("ChartPopupOK"), s.foo)
@@ -143,7 +143,7 @@ class Stripchart(qwt.QwtPlot):
         self.__initMouseTracking()  # track coords with mouse movement
         #s.__initZooming()     # set up click&drag rubberband zoom
 
-        # Two Labels for mouse plot coordinates
+        # Two labels for mouse plot coordinates
         self.lblX = QLabel('123.456')
         self.lblY = QLabel('789.123')
         self.lblX.setMinimumHeight(18)
@@ -238,15 +238,15 @@ class Stripchart(qwt.QwtPlot):
     #    lower, upper, majorTicks, mediumTicks, minorTicks)
     #...........................................................................
     def setScaleDiv(self, t1, t2):
-        #print("<Stripchart.setScaleDIV>", t1,t2)
+        #print("<stripchart.setScaleDIV>", t1,t2)
         # division ticks
         minTicks = []
         minTicks = list(np.arange(t1, t2, 60, dtype=int))
         medTicks = list(np.arange(t1, t2, 600, dtype=int))
         majTicks = list(np.arange(t1, t2, 3600, dtype=int))
 
-        self.div = hacked_qwtScaleDiv.QwtScaleDiv(t1, t2, majTicks, medTicks,
-                                                  minTicks)
+        self.div = hackedQwtScaleDiv.QwtScaleDiv(t1, t2, majTicks, medTicks,
+                                                 minTicks)
         #s.div.setInterval(t1,t2)
         self.setAxisScaleDiv(self.xaxisId, self.div)
 
@@ -260,8 +260,8 @@ class Stripchart(qwt.QwtPlot):
         minTicks = []
         medTicks = list(np.arange(t1, t2, 5, dtype=int))
         majTicks = list(np.arange(t1, t2, 10, dtype=int))
-        self.div = hacked_qwtScaleDiv.QwtScaleDiv(t1, t2, majTicks, medTicks,
-                                                  minTicks)
+        self.div = hackedQwtScaleDiv.QwtScaleDiv(t1, t2, majTicks, medTicks,
+                                                 minTicks)
         #s.div.setInterval(t1,t2)
         self.setAxisScaleDiv(self.xaxisId, self.div)
 
@@ -697,7 +697,7 @@ class Spy(QObject):
 
 
 #-----------------------------------------------------------------------
-# Stripchart test, probably
+# stripchart test, probably
 #-----------------------------------------------------------------------
 if __name__ == "__main__":
 
@@ -705,10 +705,10 @@ if __name__ == "__main__":
 
     app = QApplication(sys.argv)
 
-    wdg = Stripchart(name='TipTilt', xtickrange=[-1, 1], ytickrange=[-1, 1],
+    wdg = stripchart(name='TipTilt', xtickrange=[-1, 1], ytickrange=[-1, 1],
                      axisTitle='Error')
 
-    wdg = Stripchart(name='TipTilt', xtickrange=[-1, 1], ytickrange=[-1, 1],
+    wdg = stripchart(name='TipTilt', xtickrange=[-1, 1], ytickrange=[-1, 1],
                      axisTitle='Error')
 
     wdg.resize(300, 100)

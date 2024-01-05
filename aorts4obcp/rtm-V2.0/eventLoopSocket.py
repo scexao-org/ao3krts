@@ -16,8 +16,8 @@ import zmq
 import socket
 import errno
 
-import Constants as Kst
-import Configuration
+import constants as Kst
+import configuration
 
 # for qsocketnotifier
 from PyQt5 import QtCore
@@ -31,7 +31,7 @@ class EventLoopDataRecvMgr:
             Host: the RTC
             Port: the port on the RTC that's gonna feed us.
         '''
-        self.config = Configuration.cfg
+        self.config = configuration.cfg
         self.logger = self.config.lg
 
         self.host = host
