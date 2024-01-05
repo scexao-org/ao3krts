@@ -7,9 +7,10 @@
 from __future__ import absolute_import, print_function, division
 import Configuration
 
-from PyQt4.QtCore import (Qt, SIGNAL, QPoint)
-from PyQt4.QtGui import (QToolBar, QPushButton, QIcon, QMenu, QWidget,
-                         QColorDialog)
+from PyQt5.QtCore import (Qt, QPoint)
+from PyQt5.QtWidgets import (QToolBar, QPushButton, QMenu, QWidget,
+                             QColorDialog)
+from PyQt5.QtGui import QIcon
 
 import Constants as Kst
 

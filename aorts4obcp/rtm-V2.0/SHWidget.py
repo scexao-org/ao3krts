@@ -19,14 +19,9 @@
 #===============================================================================
 from __future__ import absolute_import, print_function, division
 
-from PyQt4.QtCore import (
-        Qt,
-        QPoint,
-        QPointF,
-        QRectF,
-        QSize,
-)
-from PyQt4.QtGui import (QColor, QPainter, QWidget, QSizePolicy, QPen)
+from PyQt5.QtCore import (Qt, QPoint, QPointF, QRectF, QSize)
+from PyQt5.QtGui import (QColor, QPainter, QPen)
+from PyQt5.QtWidgets import (QWidget, QSizePolicy)
 
 import math
 

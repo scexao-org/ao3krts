@@ -6,8 +6,10 @@ from __future__ import absolute_import, print_function, division
 
 import sys
 
-from PyQt4.QtGui import (QSlider, QSizePolicy, QFrame, QBrush, QPen, QColor)
-from PyQt4.QtCore import (Qt, QSize)
+from PyQt5.QtCore import (Qt, QSize)
+from PyQt5.QtGui import (QBrush, QPen, QColor)
+from PyQt5.QtWidgets import (QSlider, QSizePolicy, QFrame)
+
 import random
 import Configuration
 import Constants as Kst
@@ -299,7 +301,7 @@ class CartesianAxis(qwt.QwtPlotItem):
 #------------------------------------------------------------------------------
 if __name__ == "__main__":
 
-    from PyQt4.QtGui import (QApplication)
+    from PyQt5.QtWidgets import QApplication
     #from PyQt4 import Qt
 
     app = QApplication(sys.argv)

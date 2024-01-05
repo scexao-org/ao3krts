@@ -6,9 +6,9 @@
 #===============================================================================
 from __future__ import (absolute_import, print_function, division)
 
-from PyQt4.QtCore import (Qt, SIGNAL, SLOT)
-from PyQt4.QtGui import (QLabel, QDialog, QDoubleSpinBox, QPushButton,
-                         QGridLayout, QHBoxLayout, QCheckBox, QFrame)
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QLabel, QDialog, QDoubleSpinBox, QPushButton,
+                             QGridLayout, QHBoxLayout, QCheckBox, QFrame)
 
 import Constants as Kst
 

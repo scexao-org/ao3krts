@@ -8,13 +8,11 @@ from __future__ import (absolute_import, print_function, division)
 
 import Constants as Kst
 import Configuration
-from PyQt4.QtCore import (Qt, SIGNAL, QDateTime, QDateTime)
-from PyQt4.QtGui import (QFrame, QLabel, QGridLayout, QHBoxLayout, QVBoxLayout,
-                         QSizePolicy, QButtonGroup, QRadioButton, QLCDNumber,
-                         QPushButton)
+from PyQt5.QtCore import (Qt, QDateTime, QDateTime)
+from PyQt5.QtWidgets import (QFrame, QLabel, QGridLayout, QHBoxLayout,
+                             QVBoxLayout, QSizePolicy, QButtonGroup,
+                             QRadioButton, QLCDNumber, QPushButton)
 import Stripchart
-
-from PyQt4.QtCore import Qt
 
 import timeUtil as tUtil
 

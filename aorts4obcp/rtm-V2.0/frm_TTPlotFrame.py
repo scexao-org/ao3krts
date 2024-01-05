@@ -7,9 +7,9 @@
 from __future__ import (absolute_import, print_function, division)
 import Configuration
 
-from PyQt4.QtCore import (Qt, QSize, QPoint)
-from PyQt4.QtGui import (QWidget, QFrame, QLabel, QVBoxLayout, QHBoxLayout,
-                         QSizePolicy)
+from PyQt5.QtCore import (Qt, QSize, QPoint)
+from PyQt5.QtWidgets import (QWidget, QFrame, QLabel, QVBoxLayout, QHBoxLayout,
+                             QSizePolicy)
 import ttplotWidget
 import Constants as Kst
 import AlarmDialogue

@@ -16,7 +16,7 @@
 # ('fixedPitch:', True)
 # ('Bold      :', False)
 
-from PyQt4.QtGui import QFont
+from PyQt5.QtGui import QFont
 
 
 # see QFont.QFontInfo

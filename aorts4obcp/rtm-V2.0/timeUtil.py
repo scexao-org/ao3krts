@@ -6,7 +6,8 @@
 #
 #===============================================================================
 from __future__ import (absolute_import, print_function, division)
-from PyQt4.QtCore import (Qt, QDateTime, QTime)
+from PyQt5.QtCore import (Qt, QDateTime, QTime)
+
 import Constants as Kst
 
 

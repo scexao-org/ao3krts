@@ -20,8 +20,8 @@ import Constants as Kst
 import Configuration
 
 # for qsocketnotifier
-from PyQt4 import QtCore
-from PyQt4.QtCore import QSocketNotifier, QObject, SIGNAL
+from PyQt5 import QtCore
+from PyQt5.QtCore import QSocketNotifier, QObject
 
 
 class EventLoopDataRecvMgr:

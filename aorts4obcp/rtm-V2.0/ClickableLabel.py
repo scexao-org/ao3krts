@@ -7,8 +7,8 @@
 #===============================================================================
 from __future__ import (absolute_import, print_function, division)
 
-from PyQt4.QtCore import QPoint
-from PyQt4.QtGui import QLabel
+from PyQt5.QtCore import QPoint
+from PyQt5.QtWidgets import QLabel
 
 
 #------------------------------------------------------------------------------

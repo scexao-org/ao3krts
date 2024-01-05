@@ -8,10 +8,10 @@
 #===============================================================================
 from __future__ import (absolute_import, print_function, division)
 
-from PyQt4.QtCore import (Qt, SIGNAL)
-from PyQt4.QtGui import (QFrame, QLabel, QSlider, QSizePolicy, QSplitter,
-                         QMenuBar, QMenu, QVBoxLayout, QHBoxLayout,
-                         QActionGroup)
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QFrame, QLabel, QSlider, QSizePolicy, QSplitter,
+                             QMenuBar, QMenu, QVBoxLayout, QHBoxLayout,
+                             QActionGroup)
 
 import Constants as Kst
 import Configuration

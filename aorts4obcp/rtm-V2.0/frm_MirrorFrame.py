@@ -11,18 +11,9 @@ from __future__ import (absolute_import, print_function, division)
 import sys
 import Configuration
 
-from PyQt4.QtCore import (Qt, SIGNAL)
-from PyQt4.QtGui import (
-        QSlider,
-        QFrame,
-        QLabel,
-        QVBoxLayout,
-        QHBoxLayout,
-        QSizePolicy,
-        QSplitter,
-        QMenuBar,
-        QMenu,
-)
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QSlider, QFrame, QLabel, QVBoxLayout, QHBoxLayout,
+                             QSizePolicy, QSplitter, QMenuBar, QMenu)
 import MirrorWidget
 import Labels
 import Constants as Kst

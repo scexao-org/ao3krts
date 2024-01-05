@@ -9,9 +9,10 @@
 #===============================================================================
 from __future__ import (absolute_import, print_function, division)
 
-from PyQt4.QtCore import (Qt, QPointF, QPoint, QSize)
+from PyQt5.QtCore import Qt, QPointF, QPoint, QSize
 
-from PyQt4.QtGui import (QColor, QWidget, QSizePolicy, QPainter, QPainterPath)
+from PyQt5.QtGui import QColor, QPainter, QPainterPath
+from PyQt5.QtWidgets import QWidget, QSizePolicy
 
 from math import *
 import numpy as np

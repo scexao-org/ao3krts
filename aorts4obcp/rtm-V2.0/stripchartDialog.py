@@ -6,10 +6,11 @@
 #===============================================================================
 from __future__ import (absolute_import, print_function, division)
 
-from PyQt4.QtCore import (Qt, SIGNAL, SLOT, QRect)
-from PyQt4.QtGui import (QLabel, QDialog, QDoubleSpinBox, QPushButton,
-                         QGridLayout, QHBoxLayout, QFrame, QButtonGroup,
-                         QRadioButton, QFrame)
+import PyQt5
+from PyQt5.QtCore import (Qt, QRect)
+from PyQt5.QtWidgets import (QLabel, QDialog, QDoubleSpinBox, QPushButton,
+                             QGridLayout, QHBoxLayout, QFrame, QButtonGroup,
+                             QRadioButton, QFrame)
 import Constants as Kst
 
 

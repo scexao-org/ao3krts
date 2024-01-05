@@ -6,8 +6,8 @@
 from __future__ import (absolute_import, print_function, division)
 
 import Configuration
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import (QFrame, QGridLayout, QSizePolicy, QHBoxLayout)
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QFrame, QGridLayout, QSizePolicy, QHBoxLayout)
 
 import Constants as Kst
 import nameValueColumn as nvc

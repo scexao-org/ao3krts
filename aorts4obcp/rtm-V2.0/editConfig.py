@@ -11,11 +11,12 @@
 #
 #===============================================================================
 from __future__ import absolute_import, print_function, division
-from PyQt4.QtCore import (Qt, QSize, QRect, SIGNAL)
-from PyQt4.QtGui import (QWidget, QBrush, QColor, QPalette, QFrame,
-                         QApplication, QMainWindow, QLabel, QFont, QPalette,
-                         QHBoxLayout, QVBoxLayout, QLineEdit, QScrollArea,
-                         QSizePolicy)
+from PyQt5.QtCore import (Qt, QSize, QRect)
+from PyQt5.QtGui import (QBrush, QColor, QPalette, QFont)
+from PyQt5.QtWidgets import (QWidget, QFrame, QApplication, QMainWindow, QLabel,
+                             QHBoxLayout, QVBoxLayout, QLineEdit, QScrollArea,
+                             QSizePolicy)
+
 import sys
 import Configuration
 

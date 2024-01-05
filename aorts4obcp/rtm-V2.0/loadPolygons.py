@@ -4,7 +4,7 @@
 #===============================================================================
 from __future__ import absolute_import, print_function
 
-from PyQt4.QtGui import QPolygon
+from PyQt5.QtGui import QPolygon
 import Configuration
 
 

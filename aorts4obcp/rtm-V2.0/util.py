@@ -8,8 +8,9 @@
 #===============================================================================
 from __future__ import absolute_import, print_function, division
 import os, sys
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import (QFrame, QSizePolicy, QFont)
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QFrame, QSizePolicy
+from PyQt5.QtGui import QFont
 
 import Constants as Kst
 

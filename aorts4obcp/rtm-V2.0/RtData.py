@@ -11,7 +11,7 @@
 #
 #===============================================================================
 from __future__ import (absolute_import, print_function, division)
-from PyQt4.QtCore import (SIGNAL, QObject)
+from PyQt5.QtCore import QObject
 import sys
 import numpy as np
 import Configuration

@@ -8,9 +8,10 @@
 from __future__ import (absolute_import, print_function, division)
 import Configuration
 
-from PyQt4.QtCore import Qt
+from PyQt5.QtCore import Qt
 
-from PyQt4.QtGui import (QFormLayout, QSizePolicy, QLabel, QFont, QFrame)
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import (QFormLayout, QSizePolicy, QLabel, QFrame)
 
 import Constants as Kst
 import ClickableLabel

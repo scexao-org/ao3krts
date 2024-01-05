@@ -15,11 +15,11 @@ import sys
 import numpy as np
 
 import Configuration
-import PyQt4.Qt as Qt
 
-from PyQt4.QtGui import (QFrame, QPen, QFont, QColor, QSizePolicy, QLabel)
-from PyQt4.QtCore import (Qt, QObject, SIGNAL, QObject, QDateTime, QEvent,
-                          QPoint)
+from PyQt5.QtCore import (Qt, QObject, QObject, QDateTime, QEvent, QPoint)
+from PyQt5.QtGui import (QPen, QFont, QColor)
+from PyQt5.QtWidgets import (QFrame, QSizePolicy, QLabel)
+
 import qwt
 import hacked_qwtScaleDiv
 import Constants as Kst
@@ -697,11 +697,11 @@ class Spy(QObject):
 
 
 #-----------------------------------------------------------------------
-#
+# Stripchart test, probably
 #-----------------------------------------------------------------------
 if __name__ == "__main__":
 
-    from PyQt4.QtGui import (QApplication)
+    from PyQt5.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
 
