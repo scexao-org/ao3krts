@@ -1,0 +1,11 @@
+
+
+                   Stripchart Y-Axis Range Settings
+
+
+    Stripchart Y-axis range has the following settings:
+
+        1. Automatic
+        2. Fixed
+        3. Automatic with Zero base
+        4. Fixed     with Zero base

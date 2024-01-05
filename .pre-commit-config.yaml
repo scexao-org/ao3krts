@@ -5,6 +5,7 @@ repos:
     hooks:
     -   id: yapf
         additional_dependencies: [toml]
+        exclude: rtm-V1.3
 -   repo: https://github.com/pre-commit/pre-commit-hooks.git
     rev: v4.1.0
     hooks:
@@ -14,7 +15,9 @@ repos:
         exclude: \.fits
     -   id: check-yaml
     -   id: debug-statements
+        exclude: rtm-V1.3
     -   id: requirements-txt-fixer
     -   id: check-added-large-files
     -   id: check-ast
+        exclude: rtm-V1.3
     -   id: check-merge-conflict

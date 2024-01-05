@@ -1,0 +1,93 @@
+
+                                                              2012-06-18
+
+                          Rtm Data Description
+
+
+
+
+
+    I. Overview
+
+        Realtime Data Monitor (RTM) is a python/qt gui for display of data from
+    the Subaru Adaptive Optics realtime-system. (RTS)
+
+        RTS connects to the listening RTM-gui tcp/ip socket then sends a set
+    of space-delimitted ascii number values in constant-sized chunks.  The
+    number of ascii-values is constant (roughly 660 values); the number of
+    bytes per ascii-datum is variable and the chunk-size (in bytes) is
+    constant (5000 bytes). The unused remainder of each chunk is padded with
+    ascii-spaces.  Framerate is approx 15 Hz.  That is, the AO-RTS sends
+    approximately 15 chunks of data each containing a 32-byte header and some 660
+    variable length ascii numbers to the RTM each second.
+
+        The RTM reads a data frame, offsets 32 bytes (past the 32-byte header
+    reserved for future use) and converts the remainder of the ascii chunk
+    to a floating point array by a single call to the numpy python/C-library.
+    Each value in the resulting floating point array may then be accessed by
+    an offset listed in a table of name/offset-value pairs.
+
+
+    II. Data-frame Subsections are:
+      1) Frame Header               :  32 bytes  ( not necessarily numerical )
+      2) Deformable Mirror Celldata : 188 values
+      3) Curvature Celldata         : 188 values
+      4) APD Celldata               : 188 values (aka:High-Order-Wavefront sensor)
+      5) Shack-Hartmann Celldata    :  16 values (aka:Low-Order wavefront sensor)
+      6) General Data Section       :  80 values for labelled-value display,etc
+
+
+        Some constants:
+          CHUNKSIZE   : 5000 # Number of bytes in a data frame
+          HEADER_SIZE :   32 # bytes
+          NMRRCELLS   :  188 # Number of Mirror Cells
+          NSHCELLS    :   16 # Number of Shack-Hartmann cells
+
+
+      1.Frame Header : Reserved for future use e.g. RTS->RTM command strings,
+                       etc.  This section is not limitted to ascii number
+                       values and is not converted to floating point. The
+                       first five bytes are an id-string. ('AORTS').
+                       The header is currently thrown away.
+
+        HEADER_SIZE  : 32 (bytes)
+        HEADER_START : 0   # offset within ascii-data-frame sent by RTS
+        HEADER_END   : HEADER_START + HEADER_SIZE
+
+
+
+      2. Deformable Mirror Celldata: Float values for 188 cells of the
+                                     DM-mirror display.  First value is
+                                     zero-eth element of floating point array.
+
+
+         Size              : NMRRCELLS                        (188)
+         DM_CELLDATASTART  : 0  # offset from start of floating point array
+         DM_CELLDATAEND    : DM_CELLDATASTART + NMRRCELLS     (188)
+
+
+      3. Curvature Celldata  : 188 Values for CRV-mirror display cells
+          Size               : NMRRCELLS                      (188)
+          CRV_CELLDATASTART  : DM_CELLDATAEND                 (188)
+          CRV_CELLDATAEND    : CRV_CELLDATASTART + NMRRCELLS  (376)
+
+
+
+      3. APD Celldata       : 188 Values for APD mirror display cells
+          Size              : NMRRCELLS                       (188)
+          APD_CELLDATASTART : CRV_CELLDATAEND                 (376)
+          APD_CELLDATAEND   : APD_CELLDATASTART + NMRRCELLS   (564)
+
+
+      4. SH Celldata       : Shack-Hartmann Celldata
+          Size             : NSHCELLS                          (16)
+          SH_CELLDATASTART : CRV_CELLDATAEND                  (564)
+          SH_CELLDATAEND   : SH_CELLDATASTART + NSHCELLS      (580)
+
+
+    0 - 80  General-Data-Section
+        Various values for individual labelled-value display on RTM gui.
+
+          Size             : GENDATASZ                          80
+          GENDATASTART     : SH_CELLDATAEND                   (580)
+          GENDATASTART     : GENDATASTART + GENDATASZ

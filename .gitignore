@@ -5,3 +5,8 @@ g2if_server/g2if/bin
 Makefile.depend
 
 .vscode
+
+*.egg-info
+__pycache__
+
+# pyproject.toml # symlink to either rts or obcp # TBC
