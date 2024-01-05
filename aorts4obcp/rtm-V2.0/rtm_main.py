@@ -8,6 +8,11 @@
 #  o Test connection and data with datasource.py
 #===============================================================================
 from __future__ import absolute_import, print_function, division
+# PyQt5 fails to link the proper libstdc++ in a conda environment, and goes
+# for the system one (usually older), which creates conflict with subsequent imports.
+# We import ZMQ BEFORE any Qt import to force linkage to libstdc++ in the proper environment
+# (zmq caused the conflict, but anything that loads some cython / compiled stuff would work)
+import zmq
 
 import sys
 #sys.path.append("../lib")
@@ -15,7 +20,6 @@ import Configurer
 import Configuration
 
 from PyQt5 import QtCore
-
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QMainWindow, QApplication, QHBoxLayout,
                              QVBoxLayout, QFrame, QStatusBar)
@@ -68,7 +72,9 @@ class mainWindow(QMainWindow):
         print("||||||||||||  RTM V%s START |||||||||||||||" % Kst.VERSION)
         print("||||||||||||||||||||||||||||||||||||||||||||")
 
-        self.debug = int(Clo.debug)  # commandline debug value
+        self.debug = int(
+                bool(Clo.debug)
+        )  # commandline debug value # bool(None) legal but not int(None)
         if Clo.debug:
             Clo.prn_options()  # If debug, list commandline options
 

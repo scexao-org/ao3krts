@@ -7,7 +7,11 @@
 #
 #===============================================================================
 from __future__ import absolute_import, print_function, division
+
 import os, sys
+
+import zmq
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QSizePolicy
 from PyQt5.QtGui import QFont
