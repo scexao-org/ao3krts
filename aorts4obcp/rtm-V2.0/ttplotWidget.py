@@ -115,7 +115,7 @@ class TTplotWidget(qwt.QwtPlot):
 
             scaleDraw.enableComponent(qwt.QwtAbstractScaleDraw.Ticks, False)
 
-            scaleDraw.enableComponent(qwt.QwtAbstractScaleDraw.labels, False)
+            scaleDraw.enableComponent(qwt.QwtAbstractScaleDraw.Labels, False)
 
         #s.plot.setPen(QPen(Qt.green))
         self.plot.setSymbol(

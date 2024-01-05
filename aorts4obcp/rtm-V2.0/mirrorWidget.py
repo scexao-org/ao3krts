@@ -32,11 +32,11 @@ RMB = 2
 #------------------------------------------------------------------------------
 # mirrorWidget
 #------------------------------------------------------------------------------
-class mirrorWidget(QWidget):
+class MirrorWidget(QWidget):
 
     #.......................................................................
     def __init__(self, name="noname", parent=None, flags=Qt.WindowFlags()):
-        super(mirrorWidget, self).__init__(parent)
+        super(MirrorWidget, self).__init__(parent)
 
         self.cfg = configuration.cfg
         self.lg = self.cfg.lg

@@ -220,8 +220,7 @@ class SHFrame(QFrame):
 
         dct = self.cfg.cfgD['sheye']
         self.shw.alarmDlg = alarmDialog.AlarmDialog('SH-EYE ALARMS', dct)
-        self.connect(self.shw.alarmDlg, SIGNAL('ConfigChanged'),
-                     self.configChangeHandler)
+        self.shw.alarmDlg.configChanged.connect(self.configChangeHandler)
         self.menubar.addMenu(self.menu)
 
     #.............................................

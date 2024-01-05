@@ -67,11 +67,8 @@ class stripchartDialog(QDialog):
         self.btmSpinner.setValue(self.scaleMinv)
         self.btmSpinner.Xid = 'SP2'  # our tag: spinner-2
 
-        self.connect(self.topSpinner, SIGNAL('valueChanged(double)'),
-                     self.pwdg.fixedScaleHandler)
-
-        self.connect(self.btmSpinner, SIGNAL('valueChanged(double)'),
-                     self.pwdg.fixedScaleHandler)
+        self.topSpinner.valueChanged.connect(self.pwdg.fixedScaleHandler)
+        self.btmSpinner.valueChanged.connect(self.pwdg.fixedScaleHandler)
 
         # 3 radio buttons
         self.rBtnLbl = QLabel('Step:')
@@ -90,8 +87,7 @@ class stripchartDialog(QDialog):
         self.rBtn2.setToolTip("Set indicated spinboxes increment")
         self.rBtn3.setToolTip("Set indicated spinboxes increment")
 
-        self.connect(self.btnGroup, SIGNAL('buttonClicked(int)'),
-                     self.stepBtnHandler)
+        self.btnGroup.buttonClicked.connect(self.stepBtnHandler)
 
         self.line = QFrame()
         self.line.setGeometry(QRect(130, 230, 361, 41))
@@ -140,9 +136,8 @@ class stripchartDialog(QDialog):
         # Wire Ok/Cancel buttons to handlers
         # These would also work using builtin slots, 'accept'  & 'reject'
 
-        self.connect(self.okButton, SIGNAL('clicked()'), self.ok)
-        self.connect(self.closeButton, SIGNAL('clicked()'), self,
-                     SLOT("reject()"))
+        self.okButton.clicked.connect(self.ok)
+        self.closeButton.clicked.connect(self.reject)
 
     #def setDatesTimes(s,min,max):
     #    print("---- setDatesTimes ----")

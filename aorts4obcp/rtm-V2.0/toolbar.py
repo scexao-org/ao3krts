@@ -58,8 +58,7 @@ class Toolbar(QToolBar):
         self.addWidget(self.menuBtn)
 
         # connect buttons to handlers
-        self.conBtn.connect(self.conBtn, SIGNAL('clicked()'),
-                            self.conBtnHandler)
+        self.conBtn.clicked.connect(self.conBtnHandler)
 
         # preload edit popup window
         self.editConfigWindow = editConfig.editConfigWindowMwin()

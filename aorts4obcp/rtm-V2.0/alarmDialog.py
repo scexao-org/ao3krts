@@ -6,6 +6,7 @@
 #===============================================================================
 from __future__ import (absolute_import, print_function, division)
 
+from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QLabel, QDialog, QDoubleSpinBox, QPushButton,
                              QGridLayout, QHBoxLayout, QCheckBox, QFrame)
@@ -19,17 +20,20 @@ import constants as Kst
 #-------------------------------------------------------------------------------
 class AlarmDialog(QDialog):
 
-    def __init__(s, alarmName, dct, parent=None):
+    # Custom signal
+    configChanged = QtCore.pyqtSignal()
 
-        super(AlarmDialog, s).__init__(parent,
-                                       Qt.Dialog | Qt.FramelessWindowHint)
+    def __init__(self, alarmName, dct, parent=None):
 
-        s.alarmName = "%s" % alarmName  # set name
-        s.dct = dct  # set parameters dictionary
+        super(AlarmDialog, self).__init__(parent,
+                                          Qt.Dialog | Qt.FramelessWindowHint)
+
+        self.alarmName = "%s" % alarmName  # set name
+        self.dct = dct  # set parameters dictionary
 
         # set popup-window bkg color
-        s.setStyleSheet("QDialog{ background-color: %s }" %
-                        Kst.SETALARMPOPUPBKG)
+        self.setStyleSheet("QDialog{ background-color: %s }" %
+                           Kst.SETALARMPOPUPBKG)
 
         # Create boxed alarm-name-label
         alarmNameLbl = QLabel(alarmName)
@@ -49,23 +53,23 @@ class AlarmDialog(QDialog):
         hAlarmLbl = QLabel('High Alarm')  # create high alarm tag
         lAlarmLbl = QLabel('Low Alarm')  # create low  alarm tag
         #s.setLblStyle(alarmNameLbl)
-        s.setLblStyle(hAlarmLbl)
-        s.setLblStyle(lAlarmLbl)
+        self.setLblStyle(hAlarmLbl)
+        self.setLblStyle(lAlarmLbl)
 
         # Create alarm-enable checkboxes
-        s.hAlarmEnableCheckbox = QCheckBox("Enable")  # create checkbox
-        s.lAlarmEnableCheckbox = QCheckBox("Enable")  # create checkbox
+        self.hAlarmEnableCheckbox = QCheckBox("Enable")  # create checkbox
+        self.lAlarmEnableCheckbox = QCheckBox("Enable")  # create checkbox
 
         # Spinboxes
-        s.hAlarmSbx = QDoubleSpinBox()  # create double spinbox
-        s.lAlarmSbx = QDoubleSpinBox()  # create double spinbox
-        s.hAlarmSbx.setDecimals(3)
-        s.lAlarmSbx.setDecimals(3)
-        s.hAlarmSbx.setRange(-9999.0,
-                             9999.0)  # min/max high-alarm spinbox value
-        s.lAlarmSbx.setRange(-9999.0,
-                             9999.0)  # min/max low-alarm  spinbox value
-        le = s.hAlarmSbx.lineEdit()
+        self.hAlarmSbx = QDoubleSpinBox()  # create double spinbox
+        self.lAlarmSbx = QDoubleSpinBox()  # create double spinbox
+        self.hAlarmSbx.setDecimals(3)
+        self.lAlarmSbx.setDecimals(3)
+        self.hAlarmSbx.setRange(-9999.0,
+                                9999.0)  # min/max high-alarm spinbox value
+        self.lAlarmSbx.setRange(-9999.0,
+                                9999.0)  # min/max low-alarm  spinbox value
+        le = self.hAlarmSbx.lineEdit()
         le.setFocusPolicy(Qt.StrongFocus)
 
         # Buttons:  OK, Cancel
@@ -82,28 +86,27 @@ class AlarmDialog(QDialog):
         #----------------------------
         layout.addWidget(alarmNameLbl, 0, 0, 1, 8)
         layout.addWidget(hAlarmLbl, 1, 0)
-        layout.addWidget(s.hAlarmSbx, 2, 0, 1, 2)
-        layout.addWidget(s.hAlarmEnableCheckbox, 2, 2)
+        layout.addWidget(self.hAlarmSbx, 2, 0, 1, 2)
+        layout.addWidget(self.hAlarmEnableCheckbox, 2, 2)
 
         layout.addWidget(lAlarmLbl, 4, 0)
-        layout.addWidget(s.lAlarmSbx, 5, 0, 1, 2)
-        layout.addWidget(s.lAlarmEnableCheckbox, 5, 2)
+        layout.addWidget(self.lAlarmSbx, 5, 0, 1, 2)
+        layout.addWidget(self.lAlarmEnableCheckbox, 5, 2)
         layout.addLayout(buttonLayout, 7, 0, 1, 3)
 
-        s.setLayout(layout)
+        self.setLayout(layout)
 
         # Wire Ok/Cancel buttons to handlers
-        # These would also work using builtin slots, 'accept'  & 'reject'
-        s.connect(okButton, SIGNAL('clicked()'), s.ok)
-        s.connect(cancelButton, SIGNAL('clicked()'), s, SLOT("reject()"))
+        okButton.clicked.connect(self.ok)
+        cancelButton.clicked.connect(self.reject)
 
     #...........................................................................
-    def popup(s, qp):
-        s.setDictValues()  # apply new values every time
-        s.move(qp.x(), qp.y())
-        s.show()
+    def popup(self, qp):
+        self.setDictValues()  # apply new values every time
+        self.move(qp.x(), qp.y())
+        self.show()
 
-    def setLblStyle(s, lbl):
+    def setLblStyle(self, lbl):
         fg = " QLabel {color:%s}" % Kst.LBLFGCOLOR
         bg = " QLabel {background-color:%s}" % Kst.SETALARMPOPUPBKG
         border = " QLabel {border-color:%s}" % '#000000'
@@ -113,33 +116,36 @@ class AlarmDialog(QDialog):
     # get new alarm&enable values from dict
     # checkbox signals stateChanged when box checked/unchecked
     #...........................................................................
-    def setDictValues(s):
-        s.hAlarmSbx.setValue(s.dct['alarmHi']['value'])
-        s.lAlarmSbx.setValue(s.dct['alarmLow']['value'])
+    def setDictValues(self):
+        self.hAlarmSbx.setValue(self.dct['alarmHi']['value'])
+        self.lAlarmSbx.setValue(self.dct['alarmLow']['value'])
 
         # Set High alarm enable checkbox
-        if s.dct['alarmHi']['enable']:
-            s.hAlarmEnableCheckbox.setCheckState(Qt.Checked)
+        if self.dct['alarmHi']['enable']:
+            self.hAlarmEnableCheckbox.setCheckState(Qt.Checked)
         else:
-            s.hAlarmEnableCheckbox.setCheckState(Qt.Unchecked)
+            self.hAlarmEnableCheckbox.setCheckState(Qt.Unchecked)
 
         # Low alarm enable enable checkbox
-        if s.dct['alarmLow']['enable']:
-            s.lAlarmEnableCheckbox.setCheckState(Qt.Checked)
+        if self.dct['alarmLow']['enable']:
+            self.lAlarmEnableCheckbox.setCheckState(Qt.Checked)
         else:
-            s.lAlarmEnableCheckbox.setCheckState(Qt.Unchecked)
+            self.lAlarmEnableCheckbox.setCheckState(Qt.Unchecked)
 
     #...........................................................................
     # Ok button handler: get values to dict
     #...........................................................................
-    def ok(s):
-        s.dct['alarmHi']['value'] = s.hAlarmSbx.value()
-        s.dct['alarmHi']['enable'] = s.hAlarmEnableCheckbox.isChecked()
-        s.dct['alarmLow']['value'] = s.lAlarmSbx.value()
-        s.dct['alarmLow']['enable'] = s.lAlarmEnableCheckbox.isChecked()
-        s.emit(SIGNAL('ConfigChanged'))
+    def ok(self):
+        self.dct['alarmHi']['value'] = self.hAlarmSbx.value()
+        self.dct['alarmHi']['enable'] = self.hAlarmEnableCheckbox.isChecked()
+        self.dct['alarmLow']['value'] = self.lAlarmSbx.value()
+        self.dct['alarmLow']['enable'] = self.lAlarmEnableCheckbox.isChecked()
 
-        s.accept()  # dismiss dialogue w. QDialog.accept()
+        from PyQt5 import QtCore
+
+        self.configChanged.emit()
+
+        self.accept()  # dismiss dialogue w. QDialog.accept()
 
     #----------------------------------------------------------------------
     #def wheelEvent (s, we):

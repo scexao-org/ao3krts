@@ -16,7 +16,8 @@ import numpy as np
 
 import configuration
 
-from PyQt5.QtCore import (Qt, QObject, QObject, QDateTime, QEvent, QPoint)
+from PyQt5.QtCore import (Qt, QObject, QObject, QDateTime, QEvent, QPoint,
+                          pyqtSignal)
 from PyQt5.QtGui import (QPen, QFont, QColor)
 from PyQt5.QtWidgets import (QFrame, QSizePolicy, QLabel)
 
@@ -30,7 +31,7 @@ import timeUtil as tUtil
 #------------------------------------------------------------------------------
 # Class stripchart
 #------------------------------------------------------------------------------
-class stripchart(qwt.QwtPlot):
+class Stripchart(qwt.QwtPlot):
 
     # args is a tuple of positional args
     # kwargs is a dictionary of keyword args
@@ -275,15 +276,12 @@ class stripchart(qwt.QwtPlot):
 
     #...........................................................................
     ##
-    #...........................................................................
-    def timerEvent(self, e):
-        print("Null timer event")
-        #x = random.uniform(-s.xvLen,s.xvLen,10)
-        ## shift array left by 10 & set 10 new values at end
-        #s.fakeyv =  concatenate((s.fakeyv[10:], s.fakeyv[:10]), 1)
-        #s.fakeyv[s.xvLen-10:s.xvLen] =  x
-        #s.plot1.setData(s.fakexv, s.fakeyv)
-        #s.replot()
+    #......................................class Spen,10)
+    ## shift array left by 10 & set 10 new values at end
+    #s.fakeyv =  concatenate((s.fakeyv[10:], s.fakeyv[:10]), 1)
+    #s.fakeyv[s.xvLen-10:s.xvLen] =  x
+    #s.plot1.setData(s.fakexv, s.fakeyv)
+    #s.replot()
 
     #...........................................................................
     # Mousewheel event handler  (not thumbwheel widget handler)
@@ -382,8 +380,7 @@ class stripchart(qwt.QwtPlot):
     def __initMouseTracking(self):
         """Initialize mouse tracking
         """
-        self.connect(Spy(self.canvas()), SIGNAL("MouseMove"),
-                     self.showCoordinates)
+        Spy(self.canvas()).mouseMove.connect(self.showCoordinates)
 
         #s.cfg.statusBar().showMessage(
         #    'Mouse movements in the plot canvas are shown in the status bar')
@@ -685,6 +682,8 @@ class TimeScaleDraw(qwt.QwtScaleDraw):
 #------------------------------------------------------------------------------
 class Spy(QObject):
 
+    mouseMove = pyqtSignal(tuple)
+
     def __init__(self, parent):
         QObject.__init__(self, parent)
         parent.setMouseTracking(True)
@@ -692,7 +691,7 @@ class Spy(QObject):
 
     def eventFilter(self, _, event):
         if event.type() == QEvent.MouseMove:
-            self.emit(SIGNAL("MouseMove"), event.pos())
+            self.mouseMove.emit(event.pos())
         return False
 
 
@@ -705,10 +704,10 @@ if __name__ == "__main__":
 
     app = QApplication(sys.argv)
 
-    wdg = stripchart(name='TipTilt', xtickrange=[-1, 1], ytickrange=[-1, 1],
+    wdg = Stripchart(name='TipTilt', xtickrange=[-1, 1], ytickrange=[-1, 1],
                      axisTitle='Error')
 
-    wdg = stripchart(name='TipTilt', xtickrange=[-1, 1], ytickrange=[-1, 1],
+    wdg = Stripchart(name='TipTilt', xtickrange=[-1, 1], ytickrange=[-1, 1],
                      axisTitle='Error')
 
     wdg.resize(300, 100)

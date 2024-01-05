@@ -40,11 +40,11 @@ RMB = 2
 #------------------------------------------------------------------------------
 # LensletWidget
 #------------------------------------------------------------------------------
-class shWidget(QWidget):
+class SHWidget(QWidget):
 
     #.......................................................................
     def __init__(self, parent=None):
-        super(shWidget, self).__init__(parent)
+        super(SHWidget, self).__init__(parent)
 
         self.cfg = configuration.cfg
         if self.cfg.debug: print("<shWidget.__init__>")

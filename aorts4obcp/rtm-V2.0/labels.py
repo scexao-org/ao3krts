@@ -16,11 +16,11 @@ import nameValueColumn as nvc
 #------------------------------------------------------------------------------
 # DMlabelsFrame
 #------------------------------------------------------------------------------
-class DmlabelsFrame(QFrame):
+class DmLabelsFrame(QFrame):
 
     #.......................................................................
     def __init__(self, parent=None):
-        super(DmlabelsFrame, self).__init__(parent)
+        super(DmLabelsFrame, self).__init__(parent)
 
         self.cfg = configuration.cfg
         self.lg = self.cfg.lg
@@ -53,7 +53,7 @@ class DmlabelsFrame(QFrame):
 #------------------------------------------------------------------------------
 # CrvlabelsFrame
 #------------------------------------------------------------------------------
-class CrvlabelsFrame(QFrame):
+class CrvLabelsFrame(QFrame):
 
     #.......................................................................
     def __init__(self, parent=None):
@@ -62,7 +62,7 @@ class CrvlabelsFrame(QFrame):
         if self.cfg.debug: print("<Crvlabels.__init__>")
 
         #............................................................
-        super(CrvlabelsFrame, self).__init__(parent)
+        super(CrvLabelsFrame, self).__init__(parent)
         self.columns = []
         self.layout = QHBoxLayout(self)
         self.columns.append( nvc.nameValueColumn( \
@@ -93,7 +93,7 @@ class CrvlabelsFrame(QFrame):
 #------------------------------------------------------------------------------
 # ApdlabelsFrame
 #------------------------------------------------------------------------------
-class ApdlabelsFrame(QFrame):
+class ApdLabelsFrame(QFrame):
 
     #.......................................................................
     def __init__(self, parent=None):
@@ -102,7 +102,7 @@ class ApdlabelsFrame(QFrame):
         if self.cfg.debug: print("<Apdlabels.__init__>")
 
         #............................................................
-        super(ApdlabelsFrame, self).__init__(parent)
+        super(ApdLabelsFrame, self).__init__(parent)
         self.columns = []
         self.layout = QHBoxLayout(self)
 
@@ -136,7 +136,7 @@ class ApdlabelsFrame(QFrame):
 #------------------------------------------------------------------------------
 # ApdlabelsFrame
 #------------------------------------------------------------------------------
-class SHlabelsFrame(QFrame):
+class SHLabelsFrame(QFrame):
 
     #.......................................................................
     def __init__(self, parent=None):
@@ -145,7 +145,7 @@ class SHlabelsFrame(QFrame):
         if self.cfg.debug: print("<SHlabels.__init__>")
 
         #............................................................
-        super(SHlabelsFrame, self).__init__(parent)
+        super(SHLabelsFrame, self).__init__(parent)
         self.columns = []
         self.layout = QHBoxLayout(self)
 

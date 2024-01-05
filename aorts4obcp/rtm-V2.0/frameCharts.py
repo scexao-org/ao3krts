@@ -128,8 +128,8 @@ class ChartsFrame(QFrame):
         self.btnGroup.addButton(self.rBtn1)
         self.btnGroup.addButton(self.rBtn2)
         self.btnGroup.addButton(self.rBtn3)
-        self.connect(self.btnGroup, SIGNAL('buttonClicked(int)'),
-                     self.btnHandler_plotTime)
+        self.btnGroup.buttonClicked.connect(self.btnHandler_plotTime)
+
         self.btnLayout = QHBoxLayout()
         self.btnLayout.addWidget(self.rBtn1)
         self.btnLayout.addWidget(self.rBtn2)
@@ -405,6 +405,7 @@ class ChartsFrame(QFrame):
 
         layout.addWidget(btn1)
         layout.addWidget(btn2)
-        self.connect(btn1, SIGNAL('toggled(bool)'), pwdg.fixedScaleHandler)
-        self.connect(btn2, SIGNAL('toggled(bool)'), pwdg.fixedScaleHandler)
+
+        btn1.toggled.connect(pwdg.fixedScaleHandler)
+        btn2.toggled.connect(pwdg.fixedScaleHandler)
         return layout

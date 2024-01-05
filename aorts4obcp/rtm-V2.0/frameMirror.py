@@ -204,8 +204,7 @@ class MirrorFrame(QFrame):
                     self.name)
             sys.exit()
         # notify on alarm edit
-        self.connect(self.mrr.alarmDlg, SIGNAL('ConfigChanged'),
-                     self.configChangeHandler)
+        self.mrr.alarmDlg.configChanged.connect(self.configChangeHandler)
 
     #------------------------------------------------------------------------
     # safety alarm

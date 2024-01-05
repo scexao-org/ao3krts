@@ -99,9 +99,8 @@ class Configurator(object):
             #for key in d.keys():
             #    s.cfg.cfgD[key] = d[key]
 
-            fs = open(self.cfg.configpath, 'r')
-            self.cfg.cfgD = deepcopy(yaml.load(fs))
-            fs.close()
+            with open(self.cfg.configpath, 'r') as fs:
+                self.cfg.cfgD = deepcopy(yaml.load(fs, yaml.SafeLoader))
 
             #print("CONFIGPATH:", s.cfg.cfgD['gen']['configpath']['valu'])
         # set values from dict. Override cmdline opts

@@ -6,14 +6,19 @@
 
 DEBUG_OVERRIDE = True
 
+import pathlib
+
+this_file = pathlib.Path(__file__)
+this_folder = this_file.parent
+
 VERSION = 2.0
 DGPRAD = 57.295  # Degrees per radian = (360 / 2*pi )
 RESERVEDPORTSTOP = 1024  # legal user ports must be greater than this value
 CONFIGFILE = "rtmConfig.yaml"  # configuration file
 POLYGONFILE = "mirrorWidget_polygons.cfg"
 LOGFILE = "rtm.log"
-LOGDIR = "/home/ao/ao188/log"  # default logpath
-SOURCEFOLDER = "/home/ao/ao188/src/rtm/rtm-V1.3"
+LOGDIR = str(this_folder.parent / "log")  # default logpath
+SOURCEFOLDER = str(this_folder)
 
 # RATES
 RTSFRAMERATE = 10  # target data rate in Hz
@@ -251,7 +256,3 @@ IRM2TTY = 78
 IRM2TTVAR = 79
 GENDATASZ = 80
 GENDATAEND = GENDATASTART + GENDATASZ
-
-if DEBUG_OVERRIDE:
-    LOGDIR = '/home/vdeo/logs'
-    SOURCEFOLDER = '/home/vdeo/repos/ao188/rtm/rtm-V2.0'

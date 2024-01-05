@@ -228,15 +228,12 @@ class LabelPair(QWidget):
         self.palette.setBrush(QPalette.Active, QPalette.WindowText, self.brush)
         self.palette.setBrush(QPalette.Active, QPalette.Text, self.brush)
 
-        self.connect(self.lineEdit, SIGNAL("selectionChanged()"),
-                     self.changedSelection)
-        self.connect(self.lineEdit, SIGNAL("cursorPositionChanged(int,int)"),
-                     self.cursorMoved)
-        self.connect(self.lineEdit, SIGNAL("editingFinished()"),
-                     self.editFinished)
-        self.connect(self.lineEdit, SIGNAL("textEdited()"), self.textEdited)
-        self.connect(self.lineEdit, SIGNAL("textChanged()"), self.updateVal)
-        self.connect(self.lineEdit, SIGNAL("returnPressed()"), self.returned)
+        self.lineEdit.selectionChanged.connect(self.changedSelection)
+        self.lineEdit.cursorPositionChanged.connect(self.cursorMoved)
+        self.lineEdit.editingFinished.connect(self.editFinished)
+        self.lineEdit.textEdited.connect(self.textEdited)
+        self.lineEdit.textChanged.connect(self.updateVal)
+        self.lineEdit.returnPressed.connect(self.returned)
 
     def setValue(self, value):
         if self.debug > 2: print("<labelPair.setValue>", value)

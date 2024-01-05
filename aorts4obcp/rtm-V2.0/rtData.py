@@ -33,14 +33,14 @@ DATA_TOTAL_ITEMS        = DATA_GEN_NITEMS+DATA_DM_NITEMS+DATA_CRV_NITEMS + \
 #-------------------------------------------------------------------------------
 #
 #-------------------------------------------------------------------------------
-class rtData(QObject):
+class RtData(QObject):
 
     def __init__(self, parent=None):
         self.cfg = configuration.cfg
         self.lg = self.cfg.lg
         if self.cfg.debug: print("<rtData.__init__>")
 
-        super(rtData, self).__init__(parent)
+        super(RtData, self).__init__(parent)
         self.hist = False
         self.chunksize = Kst.RTDATACHUNKSIZE  # ~ 5000
         self.frameN = 0  # frame number sent by RTdata
