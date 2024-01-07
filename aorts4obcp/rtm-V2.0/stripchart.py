@@ -136,7 +136,6 @@ class Stripchart(qwt.QwtPlot):
         self.dlg = stripchartDialog.stripchartDialog(self.name + ' Stripchart',
                                                      self.pDct, self)
 
-        #s.connect(s.dlg.okButton,  SIGNAL("ChartPopupOK"), s.foo)
         # Mouse wheel
         self.wheelVal = 0  # mouse delta value = +1:foreward, -1:backward
         self.wheelAccumVal = 0  # mousewheel accrued value after wheel event
@@ -328,9 +327,7 @@ class Stripchart(qwt.QwtPlot):
 
         self.picker.setRubberBandPen(QPen(Qt.black))
 
-        self.picker.connect(self.picker,
-                            SIGNAL('selected(const QwtDoubleRect&)'),
-                            self.pickerHandler)
+        self.picker.selected.connect(self.pickerHandler)
 
     #...........................................................................
     # Rectangle-picker handler called on left-mouse click & drag
@@ -426,18 +423,18 @@ class Stripchart(qwt.QwtPlot):
         """
         if index == 0:
             pattern = [
-                    qwt.QwtEventPattern.MousePattern(Qt.Qt.LeftButton,
-                                                     Qt.Qt.NoModifier),
-                    qwt.QwtEventPattern.MousePattern(Qt.Qt.MidButton,
-                                                     Qt.Qt.NoModifier),
-                    qwt.QwtEventPattern.MousePattern(Qt.Qt.RightButton,
-                                                     Qt.Qt.NoModifier),
-                    qwt.QwtEventPattern.MousePattern(Qt.Qt.LeftButton,
-                                                     Qt.Qt.ShiftModifier),
-                    qwt.QwtEventPattern.MousePattern(Qt.Qt.MidButton,
-                                                     Qt.Qt.ShiftModifier),
-                    qwt.QwtEventPattern.MousePattern(Qt.Qt.RightButton,
-                                                     Qt.Qt.ShiftModifier),
+                    qwt.QwtEventPattern.MousePattern(Qt.LeftButton,
+                                                     Qt.NoModifier),
+                    qwt.QwtEventPattern.MousePattern(Qt.MidButton,
+                                                     Qt.NoModifier),
+                    qwt.QwtEventPattern.MousePattern(Qt.RightButton,
+                                                     Qt.NoModifier),
+                    qwt.QwtEventPattern.MousePattern(Qt.LeftButton,
+                                                     Qt.ShiftModifier),
+                    qwt.QwtEventPattern.MousePattern(Qt.MidButton,
+                                                     Qt.ShiftModifier),
+                    qwt.QwtEventPattern.MousePattern(Qt.RightButton,
+                                                     Qt.ShiftModifier),
             ]
             self.zoomer.setMousePattern(pattern)
         elif index in (1, 2, 3):
@@ -682,7 +679,7 @@ class TimeScaleDraw(qwt.QwtScaleDraw):
 #------------------------------------------------------------------------------
 class Spy(QObject):
 
-    mouseMove = pyqtSignal(tuple)
+    mouseMove = pyqtSignal(QPoint)
 
     def __init__(self, parent):
         QObject.__init__(self, parent)

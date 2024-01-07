@@ -177,10 +177,6 @@ class stripchartDialog(QDialog):
     # Ok button handler: get values to dict
     #...........................................................................
     def ok(self):
-        #s.emit(SIGNAL("ChartPopupOK"))
-        #s.pwdg.fixedScaleTop = s.scaleMaxv
-        #s.pwdg.fixedScaleBtm = s.scaleMinv
-        #s.pwdg.setYScale(s.scaleMinv, s.scaleMaxv)
 
         self.scaleMaxv = self.topSpinner.value()
         self.scaleMinv = self.btmSpinner.value()

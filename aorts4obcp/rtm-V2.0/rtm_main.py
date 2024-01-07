@@ -211,61 +211,37 @@ class mainWindow(QMainWindow):
         self.rtData = rtData.RtData(self)
 
         # Connect Eyeball data-handlers
-        self.rtData.EyeDataReady.connect(self.Dmf1.mrr.data_ready)
-        self.rtData.connect(self.rtData, SIGNAL('EyeDataReady'),
-                            self.Dmf1.mrr.data_ready)
-
-        self.rtData.connect(self.rtData, SIGNAL('EyeDataReady'),
-                            self.Crvf2.mrr.data_ready)
-
-        self.rtData.connect(self.rtData, SIGNAL('EyeDataReady'),
-                            self.Apdf3.mrr.data_ready)
-
-        self.rtData.connect(self.rtData, SIGNAL('SHEyeDataReady'),
-                            self.Shf4.shw.data_ready)
+        self.rtData.sig_EyeDataReady.connect(self.Dmf1.mrr.data_ready)
+        self.rtData.sig_EyeDataReady.connect(self.Crvf2.mrr.data_ready)
+        self.rtData.sig_EyeDataReady.connect(self.Apdf3.mrr.data_ready)
+        self.rtData.sig_EyeDataReady.connect(self.Shf4.shw.data_ready)
 
         #........................................................................
         # Connect labelled-data handlers
         #........................................................................
         # Dm labels
-        self.rtData.connect(self.rtData, SIGNAL('LabelDataReady'),
-                            self.Dmf1.labelsFrame.data_ready)
-
-        # Crv labels
-        self.rtData.connect(self.rtData, SIGNAL('LabelDataReady'),
-                            self.Crvf2.labelsFrame.data_ready)
-
-        # Apd labels
-        self.rtData.connect(self.rtData, SIGNAL('LabelDataReady'),
-                            self.Apdf3.labelsFrame.data_ready)
-
-        # Sh labels
-        self.rtData.connect(self.rtData, SIGNAL('LabelDataReady'),
-                            self.Shf4.labelsFrame.data_ready)
-
-        # Remaining labels
-        self.rtData.connect(self.rtData, SIGNAL('LabelDataReady'),
-                            self.Lbf7.data_ready)
+        self.rtData.sig_LabelDataReady.connect(self.Dmf1.labelsFrame.data_ready)
+        self.rtData.sig_LabelDataReady.connect(
+                self.Crvf2.labelsFrame.data_ready)
+        self.rtData.sig_LabelDataReady.connect(
+                self.Apdf3.labelsFrame.data_ready)
+        self.rtData.sig_LabelDataReady.connect(self.Shf4.labelsFrame.data_ready)
+        self.rtData.sig_LabelDataReady.connect(self.Lbf7.data_ready)
 
         # Shack-Hartmann defocus indicator
-        self.rtData.connect(self.rtData, QtCore.SIGNAL('SHArrowDataReady'),
-                            self.Shf4.defocus_data_ready)
+        self.rtData.sig_SHArrowDataReady.connect(self.Shf4.defocus_data_ready)
 
         # Mirror frame defocus indicators
-        self.rtData.connect(self.rtData, QtCore.SIGNAL('DefocusDataReady'),
-                            self.Dmf1.defocus_data_ready)
+        self.rtData.sig_DefocusDataReady.connect(self.Dmf1.defocus_data_ready)
 
         # Curvature frame defocus indicator
-        self.rtData.connect(self.rtData, QtCore.SIGNAL('DefocusDataReady'),
-                            self.Crvf2.defocus_data_ready)
+        self.rtData.sig_DefocusDataReady.connect(self.Crvf2.defocus_data_ready)
 
         # tt plot Mount plots
-        self.rtData.connect(self.rtData, QtCore.SIGNAL('MountPlotDataReady'),
-                            self.Ttf5.data_ready)
+        self.rtData.sig_MountPlotDataReady.connect(self.Ttf5.data_ready)
 
         # stripcharts
-        self.rtData.connect(self.rtData, QtCore.SIGNAL('ChartDataReady'),
-                            self.Chf6.data_ready)
+        self.rtData.sig_ChartDataReady.connect(self.Chf6.data_ready)
 
         if cfg.debug:
             self.log.info(" o Debug          : %d" % (cfg.debug))

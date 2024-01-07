@@ -11,7 +11,7 @@
 #
 #===============================================================================
 from __future__ import absolute_import, print_function, division
-from PyQt5.QtCore import (Qt, QSize, QRect)
+from PyQt5.QtCore import (Qt, QSize, QRect, pyqtSignal)
 from PyQt5.QtGui import (QBrush, QColor, QPalette, QFont)
 from PyQt5.QtWidgets import (QWidget, QFrame, QApplication, QMainWindow, QLabel,
                              QHBoxLayout, QVBoxLayout, QLineEdit, QScrollArea,
@@ -33,6 +33,8 @@ from yaml import dump as yamlDump
 #
 #-------------------------------------------------------------------------------
 class editConfigWindowMwin(QMainWindow):
+
+    configChanged = pyqtSignal()
 
     def __init__(self, parent=None):
 
@@ -84,7 +86,7 @@ class editConfigWindowMwin(QMainWindow):
         if self.cfg.debug: print("<DictlabelsPanel.applyDict>")
         for lbp in self.panel.lbpairs:
             lbp.setDictValue(lbp.valText)
-        self.emit(SIGNAL('ConfigChanged'))
+        self.configChanged.emit()
 
     #-..........................................................................
     def quit(self):
@@ -396,12 +398,6 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     mwin = QMainWindow()
     mwin.setWindowTitle("Test Window")
-
-    #lg=logger.Logger(logpath=Kst.LOGPATH, nfiles=10,level='INFO').lg
-    #configurer = configurator.Configurer(  Kst.CONFIGFILE, lg )
-    #btn00  = QPushButton(mwin)
-    #mwin.connect( btn00, SIGNAL('clicked()'), btn00Handler)
-    #mwin.show()
 
     logpath = "%s/%s" % (Kst.LOGDIR, Kst.LOGFILE)  # use constants default
     logger = logger.Logger(logpath, nfiles=5, level='INFO', debug=0)

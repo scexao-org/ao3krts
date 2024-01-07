@@ -142,21 +142,6 @@ class Toolbar(QToolBar):
         skt.close()
         return (True)
 
-    def saveConfig(self):
-        self.editConfigWindow.saveDict()  # Perfrom a shelve sync
-
-    #...........................................................................
-    def editConfig(self):
-
-        #s.editConfigWindow  = editConfig.editConfigWindowMwin()
-        #s.editConfigWindow.setWindowModality(Qt.NonModal)
-        #s.editConfigWindow.setGeometry(20,80, 500,900)
-
-        qp = QWidget.mapToGlobal(self, QPoint(0, 0))  # where to pop up
-        self.editConfigWindow.move(qp.x(), qp.y())
-        self.editConfigWindow.setValues()
-        self.editConfigWindow.show()
-
     #....................................................
     def colorSelected(self, color):
         print("ColorSelected", color)
@@ -167,43 +152,13 @@ class Toolbar(QToolBar):
     #...........................................................................
 
 
-#    def colorChoice(s,color):
-#        print("ColorChoice")
-#        print("Hue:", color.hsvHue())
-#        print("Sat:", color.saturation())
-#        print("Val:", color.value())
-
 #...........................................................................
 #  Good for later versions of pyqt
 #...........................................................................
 
     def raise_hsvWindow(self):
         print("* hsv ")
-
-        #s.connect (s.colordlg, QtCore.SIGNAL('currentColorChanged(QColor)'),
-        #           s.colorChoice)
-
-        #s.connect (s.colordlg, QtCore.SIGNAL('colorSelected(QColor)'),
-        #           s.colorSelected)
-
-        #s.colordlg.show()
-
         QColorDialog(self).show()  # early pyqt
-
-    #...........................................................................
-    #  raise color picker window.
-    #  >>> No good for ao188.  Needs pyqt update
-    #...........................................................................
-    def later_raise_hsvWindow(self):
-        print("* hsv ")
-
-        #s.connect (s.colordlg, QtCore.SIGNAL('currentColorChanged(QColor)'),
-        #           s.colorChoice)
-
-        #s.connect (s.colordlg, QtCore.SIGNAL('colorSelected(QColor)'),
-        #           s.colorSelected)
-
-        #s.colordlg.show()
 
     #...........................................................................
     def editConfig(self):

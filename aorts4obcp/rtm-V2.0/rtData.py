@@ -11,7 +11,7 @@
 #
 #===============================================================================
 from __future__ import (absolute_import, print_function, division)
-from PyQt5.QtCore import QObject
+from PyQt5.QtCore import QObject, pyqtSignal
 import sys
 import numpy as np
 import configuration
@@ -34,6 +34,15 @@ DATA_TOTAL_ITEMS        = DATA_GEN_NITEMS+DATA_DM_NITEMS+DATA_CRV_NITEMS + \
 #
 #-------------------------------------------------------------------------------
 class RtData(QObject):
+
+    # Now time to define our custom signals for data passing.
+    sig_EyeDataReady = pyqtSignal(np.ndarray)
+    sig_LabelDataReady = pyqtSignal(np.ndarray)
+    sig_ChartDataReady = pyqtSignal(np.ndarray)
+    sig_MountPlotDataReady = pyqtSignal(np.ndarray)
+    sig_SHEyeDataReady = pyqtSignal(np.ndarray)
+    sig_SHArrowDataReady = pyqtSignal(np.ndarray)
+    sig_DefocusDataReady = pyqtSignal(np.ndarray)
 
     def __init__(self, parent=None):
         self.cfg = configuration.cfg
@@ -108,33 +117,24 @@ class RtData(QObject):
             print("...................................................")
 
         if self.frameN % self.cfg.framesPerEye == 0:
-            self.emit(SIGNAL('EyeDataReady'), self.fdata)
+            self.sig_EyeDataReady.emit(self.fdata)  # With self.fdata
 
         if self.frameN % self.cfg.framesPerLabel == 0:
-            self.emit(SIGNAL('LabelDataReady'), self.fdata)
+            self.sig_LabelDataReady.emit(self.fdata)
 
         if self.frameN % self.cfg.framesPerChart == 0:
-            self.emit(SIGNAL('ChartDataReady'), self.fdata)
+            self.sig_ChartDataReady.emit(self.fdata)
 
         if self.frameN % self.cfg.framesPerMountPlot == 0:
-            self.emit(SIGNAL('MountPlotDataReady'), self.fdata)
+            self.sig_MountPlotDataReady.emit(self.fdata)
 
         if self.frameN % self.cfg.framesPerSH == 0:
-            self.emit(SIGNAL('SHEyeDataReady'), self.fdata)
+            self.sig_SHEyeDataReady.emit(self.fdata)
 
         if self.frameN % self.cfg.framesPerSHArrow == 0:
-            self.emit(SIGNAL('SHArrowDataReady'), self.fdata)
-            # Also SH defocus indicator
+            self.sig_SHArrowDataReady.emit(self.fdata)
 
         if self.frameN % self.cfg.framesPerDefocusUpdate == 0:
-            self.emit(SIGNAL('DefocusDataReady'), self.fdata)
+            self.sig_DefocusDataReady.emit(self.fdata)
 
         return True
-
-    #---------------------------------------------------------------------------
-    # connect data ready signal to data sinks as instructed
-    # s.connect (s, SIGNAL(sig), handler) # Good #1
-    #def connect_handler(s, sig, handler):
-    #     if s.cfg.debug:
-    #         print("rtData.connect_handler")
-    #     s.connect (s, QtCore.SIGNAL(sig), handler)
