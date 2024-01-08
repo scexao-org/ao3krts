@@ -18,7 +18,7 @@ import configuration
 
 from PyQt5.QtCore import (Qt, QObject, QObject, QDateTime, QEvent, QPoint,
                           pyqtSignal)
-from PyQt5.QtGui import (QPen, QFont, QColor)
+from PyQt5.QtGui import (QPen, QFont, QColor, QWheelEvent)
 from PyQt5.QtWidgets import (QFrame, QSizePolicy, QLabel)
 
 import qwt
@@ -139,7 +139,7 @@ class Stripchart(qwt.QwtPlot):
         # Mouse wheel
         self.wheelVal = 0  # mouse delta value = +1:foreward, -1:backward
         self.wheelAccumVal = 0  # mousewheel accrued value after wheel event
-        self.wheelIncr = 120  # probable delta from wheel event=ev.delta
+        self.wheelIncr = 120 / 15  # probable delta from wheel event=ev.delta
         self.__initMouseTracking()  # track coords with mouse movement
         #s.__initZooming()     # set up click&drag rubberband zoom
 
@@ -207,15 +207,18 @@ class Stripchart(qwt.QwtPlot):
     # t1,t2 are seconds since timeZero
     # They become pointers, acmP1,acmP2 to the accumulated data
     #...........................................................................
-    def setPlot(self, unit, t1, t2):
-        #print("<setPlot> ", t1,t2)
+    def setPlot(self, unit, t1: float, t2: float):
         self.plotUnits = unit
-        self.acmP1 = t1
-        self.acmP2 = t2
+        self.acmP1 = int(t1)
+        self.acmP2 = int(t2)
         self.yvWd = self.yvMax = self.xvMax = t2 - t1
 
         # create & zero Y-plot vector mapped to section of accumulator
-        self.yv = self.accumY[self.acmP1:self.acmP2]
+
+        try:
+            self.yv = self.accumY[self.acmP1:self.acmP2]
+        except:
+            print(self.acmP1, self.acmP2)
 
         self.draw = TimeScaleDraw(self.plotUnits, when=self.dt0.addSecs(t1),
                                   timespec=self.timeSpec)
@@ -287,8 +290,8 @@ class Stripchart(qwt.QwtPlot):
     # we.delta() : forward:128 backward:-128
     # delta # forward 1 backward -1
     #...........................................................................
-    def wheelEvent(self, we):
-        delta = we.delta() / self.wheelIncr
+    def wheelEvent(self, we: QWheelEvent):
+        delta = we.angleDelta().y() / self.wheelIncr
         self.wheelVal = delta
         self.wheelAccumVal += delta
 

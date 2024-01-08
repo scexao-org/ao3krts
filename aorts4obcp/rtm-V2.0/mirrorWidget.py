@@ -11,7 +11,8 @@ from __future__ import (absolute_import, print_function, division)
 
 from PyQt5.QtCore import Qt, QPointF, QPoint, QSize
 
-from PyQt5.QtGui import QColor, QPainter, QPainterPath
+from PyQt5.QtGui import (QColor, QPainter, QPainterPath, QWheelEvent,
+                         QMouseEvent)
 from PyQt5.QtWidgets import QWidget, QSizePolicy
 
 from math import *
@@ -120,7 +121,7 @@ class MirrorWidget(QWidget):
         #.......................................................................
         self.wheelVal = 0  # mouse delta value = +1:foreward, -1:backward
         self.wheelAccumVal = 0  # mousewheel accrued value after wheel event
-        self.wheelIncr = 120  # probable delta from wheel event=ev.delta
+        self.wheelIncr = 120 / 15  # probable delta from wheel event=ev.delta # Divide by 15 because pyqt5 -> degrees instead of clicks.
         #.......................................................................
         self.painter = QPainter()
         self.ppath = QPainterPath()
@@ -333,12 +334,13 @@ class MirrorWidget(QWidget):
 
     #-----------------------------------------------------------------------
     # buttons: L:1 M:4 R:2
-    def mouseDoubleClickEvent(self, ev):
+    def mouseDoubleClickEvent(self, ev: QMouseEvent):
         button = ev.button()
         if button == LMB:  # Left Button
             ev.accept()
-            x = ev.posF().x()
-            y = ev.posF().y()
+            ev.pos()
+            x = ev.localPos().x()
+            y = ev.localPos().y()
             ratio = self.logicalSize / self.width()
             x1 = x * ratio
             y1 = y * ratio
@@ -410,10 +412,10 @@ class MirrorWidget(QWidget):
         ev.accept()
 
     #----------------------------------------------------------------------
-    def wheelEvent(self, we):
+
+    def wheelEvent(self, we: QWheelEvent):
         #print("< %s wheelEvent >" % s.name )
-        delta = we.delta()  # foreward:128 backware:-128
-        self.wheelVal = we.delta() / self.wheelIncr
+        self.wheelVal = we.angleDelta().y() / self.wheelIncr
         self.wheelAccumVal += self.wheelVal
         #s.qhevent = QHelpEvent(QEvent.WhatsThis)
         #print("Delta:",we.delta(),"Val:",s.wheelVal,"Accum:",s.wheelAccumVal)
