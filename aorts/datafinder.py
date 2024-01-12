@@ -18,7 +18,7 @@ from pyMilk.interfacing.shm import SHM
 
 # Internal
 from . import config
-from .datafetch import fetcher
+from .datafetch import fetcherclasses
 
 
 class RtmDataSupervisor:
@@ -34,7 +34,7 @@ class RtmDataSupervisor:
 
         # APD FETCHER IS SPECIAL, because its 2x216 and we should only have 1x216.
         # TODO: get the correct latest frame
-        self.apd_fetcher = fetcher.APD2DFetcher(
+        self.apd_fetcher = fetcherclasses.APD2DFetcher(
                 self, 'APD_DATA_ARR', config.SHMNAME_APD, shm_callables={
                         'FRAME_NUMBER': SHM.get_counter,
                 }, data_callables={
@@ -44,7 +44,7 @@ class RtmDataSupervisor:
                         'APD_CELLDATAAVG': lambda x: np.mean(x[:188]),
                 })
 
-        self.curvature_fetcher = fetcher.SHMFetcher(
+        self.curvature_fetcher = fetcherclasses.SHMFetcher(
                 self, 'CURV_DATA_ARR', config.SHMNAME_CURV1K, data_callables={
                         'CURV_CELLDATAMIN': lambda x: np.min,
                         'CURV_CELLDATAMAX': lambda x: np.max,
@@ -52,7 +52,7 @@ class RtmDataSupervisor:
                         'CURV_CELLDATAAVG': lambda x: np.mean,
                 })
 
-        self.bim188_fetcher = fetcher.SHMFetcher(
+        self.bim188_fetcher = fetcherclasses.SHMFetcher(
                 self, 'BIM188_DATA_ARR', config.SHMNAME_APD, data_callables={
                         'DM_CELLDATAMIN': np.min,
                         'DM_CELLDATAMAX': np.max,

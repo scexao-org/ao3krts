@@ -56,7 +56,7 @@ class RtData(QObject):
         self.frameCount = 0  # our count
 
     #---------------------------------------------------------------------------
-    def data_handler(self, bytes_buffer):
+    def data_handler(self, bytes_buffer: bytes):
         #.......................................................................
         # Read string data from socket
         #.......................................................................

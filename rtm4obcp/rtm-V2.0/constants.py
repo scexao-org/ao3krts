@@ -82,8 +82,9 @@ SECONDS_SCALE_SHIFT = 10  # stripchart seconds scale leftshift seconds
 MINUTES_SCALE_SHIFT = 60  # stripchart minutes scale leftshift seconds
 HOURS_SCALE_SHIFT = 1800  # stripchart hours   scale leftshift seconds
 
-RTD_CONNECT_CMD = "cntmongui connect"
-RTD_DISCONNECT_CMD = "cntmongui disconnect"
+# Useless since now this really just pings a ZMQ PUB socket.
+RTD_CONNECT_CMD = b"cntmongui connect"
+RTD_DISCONNECT_CMD = b"cntmongui disconnect"
 
 # Mouse button-codes
 LB = 1  # Left Button

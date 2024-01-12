@@ -18,7 +18,7 @@ from pyMilk.interfacing.fps import FPS
 # Internal
 
 
-class TopicFetcher(abc.ABC):
+class TopicFetcher(typ.Protocol):
 
     @abc.abstractmethod
     def __init__(self, data_vault: RtmDataSupervisor, *args, **kwargs) -> None:

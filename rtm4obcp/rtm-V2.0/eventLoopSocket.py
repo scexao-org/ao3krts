@@ -11,17 +11,17 @@
 #===============================================================================
 from __future__ import absolute_import, print_function, division
 
-import sys
-import zmq
-import socket
-import errno
+import typing as typ
 
-import constants as Kst
+import zmq
+
 import configuration
 
 # for qsocketnotifier
 from PyQt5 import QtCore
 from PyQt5.QtCore import QSocketNotifier, QObject
+
+TOPIC = b'RTMFRAME'
 
 
 class EventLoopDataRecvMgr:
@@ -39,8 +39,8 @@ class EventLoopDataRecvMgr:
 
         zmq_context = zmq.Context()
         self.zmq_socket = zmq_context.socket(zmq.SUB)
-        # Subscribed messages should start with "AORTS"
-        self.zmq_socket.setsockopt(zmq.SUBSCRIBE, b'AORTS')
+        # Subscribed messages should start with "RTMFRAME "
+        self.zmq_socket.setsockopt(zmq.SUBSCRIBE, TOPIC)
         # Connect for a SUB socket will pass even if the upstream is not alive yet.
         # No need to care.
 

@@ -133,7 +133,7 @@ class Toolbar(QToolBar):
         self.cfg.lg.info("Sending Command:'%s' ==> rtData server %s:%d "% \
                        (command, host, port))
         try:
-            skt.send(command + '\r')
+            skt.send(command + b'\r')
         except Exception as e:
             print("** Socket Write Exception:", e)
             skt.close()

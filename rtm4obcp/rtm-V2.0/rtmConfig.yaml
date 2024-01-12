@@ -204,7 +204,7 @@ gen:
       buffer-size, value: 1800}
   minutesScaleShift: {desc: Sripchart Minutes-scale left-shift in seconds, label: Plot
       buffer-size, value: 60}
-  rtDataHost: {desc: Realtime-data host, label: Rtd-host, value: 133.40.163.187}
+  rtDataHost: {desc: Realtime-data host, label: Rtd-host, value: 127.0.0.1} # DEV DEV DEV
   rtDataPort: {desc: Realtime-data command port, label: RtdCmd-port, value: 25010}
   secondsScaleShift: {desc: Sripchart Seconds-scale left-shift in seconds, label: Plot
       buffer-size, value: 10}
