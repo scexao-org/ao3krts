@@ -10,3 +10,4 @@ Makefile.depend
 __pycache__
 
 # pyproject.toml # symlink to either rts or obcp # TBC
+IDlog.txt

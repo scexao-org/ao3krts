@@ -5,20 +5,12 @@ from __future__ import annotations
 
 import typing as typ
 
+from .cacao_stuff.loop_manager import CacaoLoopManager
 
-class CacaoLoopManagerObj:
-    '''
-        SHOULD BE AT LEAST IN ANOTHER FILE, POSSIBLY IN ANOTHER PACKAGE ENTIRELY.
-    '''
-
-    def __init__(self, loop_number: int) -> None:
-        self.loop_number = loop_number
-
-    def graceful_stop(self) -> None:
-        pass
+from . import config
 
 
-class RtmControlSupervisor:
+class RtmControlSupervisorBIM188:
     '''
         That's a hairy one... it controls and supervises the initialization
 
@@ -31,9 +23,15 @@ class RtmControlSupervisor:
 
         # While the class themselves should not bother too much,
         # We should not forget to manage expectations like conf running, not running, etc,
-        self.howfs_loop = CacaoLoopManagerObj(1)
-        self.lowfs_loop = CacaoLoopManagerObj(2)
-        self.ttoff_loop = CacaoLoopManagerObj(4)
+        self.howfs_loop = CacaoLoopManager(*config.LINFO_HOAPD_BIM188)
+        self.lowfs_loop = CacaoLoopManager(*config.LINFO_LOAPD_BIM188)
+        self.ttoff_loop = CacaoLoopManager(*config.LINFO_BIM2TTOFFLOAD)
+        self.irpyr_loop = CacaoLoopManager(*config.LINFO_IRPYR_BIM188)
+
+        self.all_loops = [
+                self.howfs_loop, self.lowfs_loop, self.ttoff_loop,
+                self.irpyr_loop
+        ]
 
     def stop_all(self):
         '''

@@ -15,7 +15,7 @@ readme = "README.md"
 version = "1.0"
 
 [tool.setuptools]
-packages = ["aorts4rts", "aorts4obcp"]
+packages = ["aorts", "rtm4obcp"]
 script-files = [
   './scripts/rts_start.sh'
 ]
@@ -26,7 +26,7 @@ script-files = [
 [tool.pyright]
 extraPaths = ["/home/vdeo/src/swmain",] # Need to list scexao's pip install -e packages...
 typeCheckingMode = "basic" # off | basic | standard | strict # Look there https://github.com/microsoft/pyright/blob/main/docs/configuration.md
-include = ["aorts4rts", "aorts4obcp"]
+include = ["aorts", "rtm4obcp"]
 exclude = ["build/",
            "**/__pycache",
            "**/.mypy_cache",

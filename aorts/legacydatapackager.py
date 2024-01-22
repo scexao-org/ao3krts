@@ -29,13 +29,28 @@
 from __future__ import annotations
 
 import typing as typ
+if typ.TYPE_CHECKING:
+    from .datafinder import RTMDataSupervisor
 
 import numpy as np
 
 RTM_PAYLOAD_SIZE = 660
 
 
-class LegacyDataPackager:
+class RTM_PAYLOAD:
+    DM = np.s_[:188]
+    CURV = np.s_[188:188 + 188]
+    HOWFS_APD = np.s_[376:376 + 188]
+    LOWFS_APD = np.s_[564:564 + 16]
+    MISC = np.s_[580:]
+
+
+class APD_PAYLOAD:
+    HOWFS = np.s_[:188]
+    LOWFS = np.s_[188:188 + 16]
+
+
+class ZmqDataPackagerSender:
     '''
         Holds an instance of the RtmDataSupervisor
 
@@ -46,15 +61,24 @@ class LegacyDataPackager:
         Clocked thread feeds zmq socket
     '''
 
-    def __init__(self) -> None:
-        self.numpy_buffer = np.zeros(RTM_PAYLOAD_SIZE, '<f4')
+    def __init__(self, rtmDataSupervisor: RTMDataSupervisor) -> None:
+
+        self.buffer = np.zeros(RTM_PAYLOAD_SIZE, '<f4')
+        self.data_mgr = rtmDataSupervisor
 
     def bufferize_data(self) -> None:
         # DM telemetry
-        self.numpy_buffer[0:188] = self.dm_data
+        self.buffer[RTM_PAYLOAD.DM] = self.data_mgr.get_array('BIM188_DATA_ARR')
         # Curvature data
-        self.numpy_buffer[188:376] = self.curvature_data
+        self.buffer[RTM_PAYLOAD.CURV] = self.data_mgr.get_array('CURV_DATA_ARR')
         # HOWFS APD readout
-        self.numpy_buffer[376:564] = self.apd_data[curv, :188]
+        self.buffer[RTM_PAYLOAD.HOWFS_APD] = self.data_mgr.get_array(
+                'APD_DATA_ARR')[APD_PAYLOAD.HOWFS]
         # Shack APD readout
-        self.numpy_buffer[564:580] = self.apd_data[curv, 188:204]
+        self.buffer[RTM_PAYLOAD.LOWFS_APD] = self.data_mgr.get_array(
+                'APD_DATA_ARR')[APD_PAYLOAD.LOWFS]
+        # Misc data tail - assumes we've done _bufferize_aux_data
+        self.buffer[RTM_PAYLOAD.MISC] = self.data_mgr.aux_arr
+
+    def legacy_string_bufferize(self) -> None:
+        pass

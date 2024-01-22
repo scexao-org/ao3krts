@@ -21,7 +21,7 @@ from . import config
 from .datafetch import fetcherclasses
 
 
-class RtmDataSupervisor:
+class RTMDataSupervisor:
 
     def __init__(self) -> None:
         '''
@@ -30,7 +30,8 @@ class RtmDataSupervisor:
             Where topic / topic interfaces (SHM, FPS+param name) are readily identified.
         '''
 
-        self.DATA_VAULT = {}
+        self.DATA_ARR_DICT: dict[str, np.ndarray] = {}
+        self.DATA_FLOAT_DICT: dict[str, float] = {}
 
         # APD FETCHER IS SPECIAL, because its 2x216 and we should only have 1x216.
         # TODO: get the correct latest frame
@@ -38,22 +39,22 @@ class RtmDataSupervisor:
                 self, 'APD_DATA_ARR', config.SHMNAME_APD, shm_callables={
                         'FRAME_NUMBER': SHM.get_counter,
                 }, data_callables={
-                        'APD_CELLDATAMIN': lambda x: np.min(x[:188]),
-                        'APD_CELLDATAMAX': lambda x: np.max(x[:188]),
-                        'APD_CELLDATAVAR': lambda x: np.var(x[:188]),
-                        'APD_CELLDATAAVG': lambda x: np.mean(x[:188]),
+                        'APD_CELLDATAMIN': lambda x: np.min(x[:, :188]),
+                        'APD_CELLDATAMAX': lambda x: np.max(x[:, :188]),
+                        'APD_CELLDATAVAR': lambda x: np.var(x[:, :188]),
+                        'APD_CELLDATAAVG': lambda x: np.mean(x[:, :188]),
                 })
 
         self.curvature_fetcher = fetcherclasses.SHMFetcher(
                 self, 'CURV_DATA_ARR', config.SHMNAME_CURV1K, data_callables={
-                        'CURV_CELLDATAMIN': lambda x: np.min,
-                        'CURV_CELLDATAMAX': lambda x: np.max,
-                        'CURV_CELLDATAVAR': lambda x: np.var,
-                        'CURV_CELLDATAAVG': lambda x: np.mean,
+                        'CURV_CELLDATAMIN': np.min,
+                        'CURV_CELLDATAMAX': np.max,
+                        'CURV_CELLDATAVAR': np.var,
+                        'CURV_CELLDATAAVG': np.mean,
                 })
 
         self.bim188_fetcher = fetcherclasses.SHMFetcher(
-                self, 'BIM188_DATA_ARR', config.SHMNAME_APD, data_callables={
+                self, 'BIM188_DATA_ARR', config.SHMNAME_BIM188, data_callables={
                         'DM_CELLDATAMIN': np.min,
                         'DM_CELLDATAMAX': np.max,
                         'DM_CELLDATAVAR': np.var,
@@ -62,8 +63,10 @@ class RtmDataSupervisor:
 
         # TODO: have a pointer to the correct curvature.
         self.curv_shm = SHM(config.HOWFS_SHM)
+        self.lowfs_tilts_shm = SHM(config.SHMNAME_LOWFSTILTS)
 
         self.apd_shm = SHM(config.SHMNAME_APD)
+
         self.bim188_shm = SHM(config.SHMNAME_DM)
 
         self.tt_shm = SHM(config.SHMNAME_TT)
@@ -85,6 +88,27 @@ class RtmDataSupervisor:
         APD_CELLDATAMAX = 52  ## OK
         APD_CELLDATAVAR = 53  ## OK
         APD_CELLDATAAVG = 54  ## OK # changed APD_CELLCOUNTAVG APD_CELLDATAAVG
+
+        LWF_DATAMIN = 56
+        LWF_DATAMAX = 57
+        LWF_DATAVAR = 58
+        LWF_COUNTAVG = 59
+
+        LWF_RMAGAVG = 60  # sh label: rmag
+        LWF_TTMODEX = 61  # sh dot plot -1 to 1
+        LWF_TTMODEY = 62  # sh dot plot -1 to 1
+        LWF_TTMODEVAR = 63
+        LWF_DEFOCUS = 64  # sh defocus slider
+        LWF_DEFOCUSVAR = 65
+
+        SH_Q1TTMODEX = 66
+        SH_Q1TTMODEY = 67
+        SH_Q2TTMODEX = 68
+        SH_Q2TTMODEY = 69
+        SH_Q3TTMODEX = 70
+        SH_Q3TTMODEY = 71
+        SH_Q4TTMODEX = 72
+        SH_Q4TTMODEY = 73
 
         VMFREQ = 2  ## ??
         VMVOLT = 3  ## ??
@@ -133,38 +157,113 @@ class RtmDataSupervisor:
         CRV_FLATVAR = 48
         CRV_TIMEVAR = 49
         CRV_WAVEFRONTERROR = 50
-        LWF_DATAMIN = 56
-        LWF_DATAMAX = 57
-        LWF_DATAVAR = 58
-        LWF_COUNTAVG = 59
-        LWF_RMAGAVG = 60  # sh label: rmag
-        LWF_TTMODEX = 61  # sh dot plot -1 to 1
-        LWF_TTMODEY = 62  # sh dot plot -1 to 1
-        LWF_TTMODEVAR = 63
-        LWF_DEFOCUS = 64  # sh defocus slider
-        LWF_DEFOCUSVAR = 65
-        SH_Q1TTMODEX = 66
-        SH_Q1TTMODEY = 67
-        SH_Q2TTMODEX = 68
-        SH_Q2TTMODEY = 69
-        SH_Q3TTMODEX = 70
-        SH_Q3TTMODEY = 71
-        SH_Q4TTMODEX = 72
-        SH_Q4TTMODEY = 73
+
         WFS_TTCH1 = 74  # 0 to 10 both tiptilt mount plot X
         WFS_TTCH2 = 75  # 0 to 10 both tiptilt mount plot Y
         WFS_VAR = 76
         GENDATASZ = 80
 
-    def __getitem__(self, key: typ.Any) -> typ.Any:
-        return self.DATA_VAULT[key]
+    def get_array(self, key: str) -> np.ndarray:
+        return self.DATA_ARR_DICT[key]
 
-    def __setitem__(self, key: typ.Any, value: typ.Any) -> None:
-        self.DATA_VAULT[key] = value
+    def __getitem__(self, key: str) -> float:
+        return self.DATA_FLOAT_DICT[key]
+
+    def __setitem__(self, key: str, value: float) -> None:
+        self.DATA_FLOAT_DICT[key] = value
 
     def process_data(self) -> None:
         # Now all the custom bits.
         pass
 
-    def send(self) -> None:
-        pass
+    def _bufferize_aux_data(self) -> None:
+        assert len(SERIALIZATION_ORDER) == 80  # Just checking.
+
+        self.aux_arr = np.asarray([
+                self.DATA_FLOAT_DICT.get(key, -1.0)
+                for key in SERIALIZATION_ORDER
+        ], '<f4')
+
+
+SERIALIZATION_ORDER = [
+        'FRAME_NUMBER',
+        'VMDRIVE',
+        'VMFREQ',
+        'VMVOLT',
+        'VMPHASE',
+        'LOOPSTATUS',
+        'DMGAIN',
+        'DMGAINHOLD',
+        'TTGAIN',
+        'TTGAINHOLD',
+        'PSUBGAIN',
+        'PSUBGAINHOLD',
+        'STTGAIN',
+        'STTGAINHOLD',
+        'HTTGAIN',
+        'HDFGAIN',
+        'LTTGAIN',
+        'LDFGAIN',
+        'WTTGAIN',
+        'ADFGAIN',
+        'CTRLMTRXSIDE',
+        'APDSAFETY',
+        'DMSAFETY',
+        'DM_CELLDATAMIN',
+        'DM_CELLDATAMAX',
+        'DM_CELLDATAVAR',
+        'DM_CELLDATAAVG',
+        'DM_TTMODEX',
+        'DM_TTMODEY',
+        'DM_TTMODEVAR',
+        'DM_DEFOCUS',
+        'DM_DEFOCUSVAR',
+        'DM_FLATVAR',
+        'DM_TIMEVAR',
+        'DM_TTMOUNTX',
+        'DM_TTMOUNTY',
+        'DM_TTMOUNTVAR',
+        'DM_TTMOUNTFLATVAR',
+        'DM_TTMOUNTTIMEVAR',
+        'CRV_CELLDATAMIN',
+        'CRV_CELLDATAMAX',
+        'CRV_CELLDATAVAR',
+        'CRV_CELLDATAAVG',
+        'CRV_TTMODEX',
+        'CRV_TTMODEY',
+        'CRV_TTMODEVAR',
+        'CRV_DEFOCUS',
+        'CRV_DEFOCUSVAR',
+        'CRV_FLATVAR',
+        'CRV_TIMEVAR',
+        'CRV_WAVEFRONTERROR',
+        'APD_CELLDATAMIN',
+        'APD_CELLDATAMAX',
+        'APD_CELLDATAVAR',
+        'APD_CELLDATAAVG',
+        'APD_RMAGAVG',
+        'LWF_DATAMIN',
+        'LWF_DATAMAX',
+        'LWF_DATAVAR',
+        'LWF_COUNTAVG',
+        'LWF_RMAGAVG',
+        'LWF_TTMODEX',
+        'LWF_TTMODEY',
+        'LWF_TTMODEVAR',
+        'LWF_DEFOCUS',
+        'LWF_DEFOCUSVAR',
+        'SH_Q1TTMODEX',
+        'SH_Q1TTMODEY',
+        'SH_Q2TTMODEX',
+        'SH_Q2TTMODEY',
+        'SH_Q3TTMODEX',
+        'SH_Q3TTMODEY',
+        'SH_Q4TTMODEX',
+        'SH_Q4TTMODEY',
+        'WFS_TTCH1',
+        'WFS_TTCH2',
+        'WFS_VAR',
+        'IRM2TTX',
+        'IRM2TTY',
+        'IRM2TTVAR',
+]
