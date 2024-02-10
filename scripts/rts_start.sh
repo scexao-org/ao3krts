@@ -59,6 +59,11 @@ ln -sf /milk/shm/apapane.im.shm /milk/shm/iiwi.im.shm
 
 echo -e "${RED}Startup executed. Check apapane/iiwi SHM.${ECOL}\n"
 
+echo -e "${GREEN}Starting APD acquisition... ${ECOL}\n"
+python -m camstack.cams.ao_apd tmux -u 0
+
+echo -e "${RED}Startup executed. Check apapane/iiwi SHM.${ECOL}\n"
+
 # -----------------------------------------
 # Spin up the CACAO loop(s)
 #------------------------------------------
@@ -68,10 +73,14 @@ echo -e "${GREEN}Reconfiguring CACAO loops... ${ECOL}\n"
 echo -e "${RED}Done.${ECOL}\n"
 
 (cd ${HOME}/AOloop;
-rm -rf .nir188.cacaotaskmanager-log/;
-rm -rf .ttoff188.cacaotaskmanager-log/;
-cacao-loop-deploy ao3k-nirpyr188;
-cacao-loop-deploy ao3k-ttoff188
+rm -rf .apd188.cacaotaskmanager-log/;   # Loop 1
+rm -rf .lowfs188.cacaotaskmanager-log/; # Loop 2
+rm -rf .nir188.cacaotaskmanager-log/;   # Loop 3
+rm -rf .ttoff188.cacaotaskmanager-log/; # Loop 4
+cacao-loop-deploy ao3k-nirpyr188; # Loop 3 but also spins up DM00 / DM10
+cacao-loop-deploy ao3k-ttoff188;  # Loop 4 and spins up DM01 / DM11
+cacao-loop-deploy ao3k-apd188;    # Loop 1
+cacao-loop-deploy ao3k-lowfs188;  # Loop 2
 )
 
 # -----------------------------------------
@@ -100,18 +109,22 @@ ln -sf /milk/shm/dm00disp.im.shm /milk/shm/bim188_float.im.shm
 # Assert DMch2disp-01 (TToffload loop) is running!! And that it has created dm00disp.
 ln -sf /milk/shm/dm01disp.im.shm /milk/shm/tt_value_float.im.shm
 
+# Non-loop input SHMs
+creashmim ctt_value_float 1 2 -z --type=f32
 creashmim wtt_value_float 1 2 -z --type=f32
+
+# Output telemetry SHMs
 creashmim bim188_tele 1 188 -z --type=f32
+creashmim ctt_telemetry 1 2 -z --type=f32
 creashmim tt_telemetry 1 2 -z --type=f32
 creashmim wtt_telemetry 1 2 -z --type=f32
 
 creashmim dmvolt 1 188 -z --type=u16 # This one is to make dm_displouf happy.
 
-
 bim188-hwint lo # Start the loopback DAC40 interface
 
 echo -e "${BLUE}DM communication available TO LOOPBACK FAKE DAC40"
-echo -e "${BLUE}DM communication available on SHMs "bim188_float" "tt_value_float" "wtt_value_float"  ... ${ECOL}\n"
+echo -e "${BLUE}DM communication available on SHMs "bim188_float" "tt_value_float" "wtt_value_float" "ctt_value_float" ... ${ECOL}\n"
 
 sleep 3
 
@@ -173,9 +186,6 @@ creashmim LO_defocus_gain 1 1 -z --type=f32
 creashmim ADF_gain 1 1 -z --type=f32
 creashmim ADFg 1 1 -z --type=f32
 creashmim wttg 1 1 -z --type=f32
-creashmim apdmatrix 1 216 -z --type=u16
-creashmim apdcount 1 216 -z --type=u16
-creashmim curv_ord 1 188 -z --type=f32
 creashmim LO_tt 1 2 -z --type=f32
 creashmim LO_defocus 1 1 -z --type=f32
 

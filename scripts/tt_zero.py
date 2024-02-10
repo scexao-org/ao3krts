@@ -30,4 +30,10 @@ if __name__ == "__main__":
 
     tt_float.set_data(0.0 * tt_float.get_data())
 
+    try: # If TT loop is found, zero modevalDM to avoid MVM re-propagating again to dmXXch03
+        modeval_dm = SHM('aol4_modevalDM')
+        modeval_dm.set_data(0.0 * modeval_dm.get_data())
+    except:
+        pass
+    
     logg.info('TT mount zeroed through tt_value_float')

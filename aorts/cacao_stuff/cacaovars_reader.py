@@ -18,10 +18,10 @@ def load_cacao_environment(cacaovars_path: pathlib.Path) -> dict[str, str]:
         This function should never have been allowed to exist.
     '''
 
-    assert os.path.isfile(cacaovars_path)
+    assert os.path.isfile(cacaovars_path) and cacaovars_path.is_absolute()
 
     subproc = subprocess.Popen(
-            'bash -c "source cacaovars.bash > /dev/null; env"',
+            f'bash -c "source {cacaovars_path} > /dev/null; env"',
             stdout=subprocess.PIPE, shell=True)
     lines = subproc.communicate()[0].decode().split('\n')
 

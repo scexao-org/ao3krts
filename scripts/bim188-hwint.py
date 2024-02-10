@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     HW = args['hw']
     if HW:
-        UNIT = 0
+        UNIT = 1
     else:
         UNIT = 2
 

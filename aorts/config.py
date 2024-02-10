@@ -1,8 +1,13 @@
+from __future__ import annotations
+
+import os
+
+from dataclasses import dataclass, fields
+
 #######################
 # LOOP AND DM NUMBERS #
 #######################
 
-from dataclasses import dataclass, fields
 
 
 @dataclass(frozen=True)
@@ -49,10 +54,19 @@ SHMNAME_APD = 'apd'
 SHMNAME_LOWFS = 'lowfs_data'
 
 SHMNAME_CURV1K = 'curv_1kdouble'
+SHMNAME_CURV2KS = 'curv_2kdouble'
+SHMNAME_CURV2KD = 'curv_2ksingle'
 
 SHMNAME_BIM188 = 'bim188_tele'
 SHMNAME_TT = 'tt_telemetry'
 SHMNAME_CTT = 'wtt_telemetry'
 SHMNAME_WTT = 'ctt_telemetry'
 
-HOWFS_SHM = 'aol3_wfsim'
+HOWFS_SHM = f'aol{LOOPNUM_HOAPD_BIM188}_wfsim'
+
+###################
+# DATAVAULT STUFF #
+###################
+
+
+DATASTORE_PATH = os.environ.get('DATASTORE_PATH', os.environ['HOME'] + '/datastore')

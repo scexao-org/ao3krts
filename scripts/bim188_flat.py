@@ -41,5 +41,5 @@ if __name__ == "__main__":
     bim_chan_0.set_data(flat)
 
     logg.info(
-            f'TT mount flattened using {most_alphabetical_flat.split("/")[-1]} on dm{DM}disp00.'
+        f'BIM188 flattened using {most_alphabetical_flat.split("/")[-1]} on dm{DM}disp00.'
     )

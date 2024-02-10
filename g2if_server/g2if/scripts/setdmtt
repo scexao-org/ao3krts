@@ -10,7 +10,7 @@ Usage:
 	setdmtt incr <tip> <tilt>
 '''
 
-TT_DM = 5
+TT_DM = 1
 
 SHM_REFPOINT = f'dm{TT_DM:02d}disp00'
 SHM_ABSPOINT = f'dm{TT_DM:02d}disp'

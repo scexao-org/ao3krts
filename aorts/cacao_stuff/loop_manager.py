@@ -7,8 +7,8 @@ import glob
 import pathlib
 
 import logging
-
 logg = logging.getLogger(__name__)
+
 # Check bindings to swmain for logging. Duh.
 
 import typing as typ
@@ -50,19 +50,22 @@ class CacaoLoopManager(CacaoConfigReader):
         super().__init__(loop_full_name, loop_number)
 
         self.fps_ctrl = FPSManager(
-                f'*-{loop_number}')  # We should DISCARD any DM we'd get in here
-        assert len(self.fps_ctrl.fps_cache) > 0,\
-            f"FPSCtrl cache is suspiciously empty for regex {self.fps_ctrl.fps_name_glob}.fps.shm"
+                f'*-{self.loop_number}'
+        )  # We should DISCARD any DM we'd get in here
+        if len(self.fps_ctrl.fps_cache) == 0:
+            logg.warning(
+                    f"FPSCtrl cache is suspiciously empty for regex {self.fps_ctrl.fps_name_glob}.fps.shm"
+            )
 
     def __str__(self) -> str:
         self.fps_ctrl.rescan_all()
         return '\n'.join([
                 'CacaoLoopManager @ cacao_stuff.loop_manager',
-                f'loop_full_name: {self.loop_full_name}',
-                f'loop_name: {self.loop_name} | loop_number: {self.loop_number}',
-                f'conf_folder: {self.conf_folder} | root_dir: {self.rootdir}'
+                f'{self.loop_full_name:20s} | {self.loop_name:16s} | {self.loop_number}',
+                f'conf_folder: {self.conf_folder}',
+                f'root_dir:    {self.rootdir}'
         ]) + '\n' + '\n'.join(
-                ['    ' + fps.__str__() for fps in self.fps_ctrl.fps_cache])
+                ['    ' + fps.__str__() for fps in self.fps_ctrl.fps_cache.values()])
 
     @property
     def acquWFS(self) -> FPS:
@@ -139,6 +142,9 @@ def cacao_open_all_loops(clean_decay: bool = True) -> None:
 
 
 def guess_loops() -> list[CacaoLoopManager]:
+    '''
+    Look for folders in $HOME/AOloop and guess what loops may be hanging around the system.
+    '''
     aoloop_folder = pathlib.Path(os.environ['HOME'] + '/AOloop/')
     assert aoloop_folder.is_dir()
 
@@ -149,7 +155,7 @@ def guess_loops() -> list[CacaoLoopManager]:
     regex_conf = '(.*)-conf'
     for pathstr in conf_folders:
         fold_name = str(pathlib.Path(pathstr).name)
-        loop_full_name = re.match(regex_conf, fold_name).group()
+        loop_full_name = re.match(regex_conf, fold_name).groups()[0]
         loop_managers.append(CacaoLoopManager(loop_full_name, None))
 
     return loop_managers
