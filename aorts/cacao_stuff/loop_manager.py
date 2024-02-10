@@ -7,6 +7,8 @@ import glob
 import pathlib
 
 import logging
+
+logg = logging.getLogger(__name__)
 # Check bindings to swmain for logging. Duh.
 
 import typing as typ
@@ -16,7 +18,7 @@ from pyMilk.interfacing.fps import FPS, FPSManager
 from .cacaovars_reader import load_cacao_environment
 
 
-class CacaoLoopManager:
+class CacaoConfigReader:
 
     def __init__(self, loop_full_name: str, loop_number: int | None) -> None:
 
@@ -39,6 +41,13 @@ class CacaoLoopManager:
 
         self.rootdir = pathlib.Path(
                 os.environ['HOME']) / 'AOloop' / f'{self.loop_name}-rootdir'
+
+
+class CacaoLoopManager(CacaoConfigReader):
+
+    def __init__(self, loop_full_name: str, loop_number: int | None) -> None:
+
+        super().__init__(loop_full_name, loop_number)
 
         self.fps_ctrl = FPSManager(
                 f'*-{loop_number}')  # We should DISCARD any DM we'd get in here
