@@ -3,7 +3,7 @@
  *
  * -------------------------------------------------------------------------
  * Update History:
- *    <Date>       <Who>         <What>    
+ *    <Date>       <Who>         <What>
  *    2019/04/11   Y. Ono        Initial version
  *    2019/10/01   Y. Ono        Complete loop and gain status through fifo
  *    2023/04/19   V. Deo        See https://github.com/scexao-org/ao3krts
@@ -92,6 +92,9 @@ void init_status_fast(struct status_fast *stat){
   stat->ave_hmag = 0;
   stat->ave_lmag = 0;
 
+  for(i=0; i<8; i++) stat->ave_lslope[i] = 0;
+
+
   init_statistics(&(stat->ave_hapdstat));
   init_statistics(&(stat->ave_lapdstat));
   init_statistics(&(stat->ave_curvstat));
@@ -175,16 +178,16 @@ static void *status_poll_fast(status_t *status){
 
   // LOWFS slope
   data = stat.ave_lapdcnt;
-  i1 = 0; i2 = 1; i3 = 4; i4 = 5; 
+  i1 = 0; i2 = 1; i3 = 4; i4 = 5;
   stat.ave_lslope[0] = ((data[i2]+data[i4])-(data[i1]+data[i3]))/2/(data[i1]+data[i2]+data[i3]+data[i4]);
   stat.ave_lslope[1] = ((data[i1]+data[i2])-(data[i3]+data[i4]))/2/(data[i1]+data[i2]+data[i3]+data[i4]);
-  i1 = 2; i2 = 3; i3 = 6; i4 = 7; 
+  i1 = 2; i2 = 3; i3 = 6; i4 = 7;
   stat.ave_lslope[2] = ((data[i2]+data[i4])-(data[i1]+data[i3]))/2/(data[i1]+data[i2]+data[i3]+data[i4]);
   stat.ave_lslope[3] = ((data[i1]+data[i2])-(data[i3]+data[i4]))/2/(data[i1]+data[i2]+data[i3]+data[i4]);
-  i1 = 8; i2 = 9; i3 = 12; i4 = 13; 
+  i1 = 8; i2 = 9; i3 = 12; i4 = 13;
   stat.ave_lslope[4] = ((data[i2]+data[i4])-(data[i1]+data[i3]))/2/(data[i1]+data[i2]+data[i3]+data[i4]);
   stat.ave_lslope[5] = ((data[i1]+data[i2])-(data[i3]+data[i4]))/2/(data[i1]+data[i2]+data[i3]+data[i4]);
-  i1 = 10; i2 = 11; i3 = 14; i4 = 15; 
+  i1 = 10; i2 = 11; i3 = 14; i4 = 15;
   stat.ave_lslope[6] = ((data[i2]+data[i4])-(data[i1]+data[i3]))/2/(data[i1]+data[i2]+data[i3]+data[i4]);
   stat.ave_lslope[7] = ((data[i1]+data[i2])-(data[i3]+data[i4]))/2/(data[i1]+data[i2]+data[i3]+data[i4]);
 
@@ -204,7 +207,7 @@ static void *status_poll_fast(status_t *status){
   pthread_rwlock_wrlock(&(status->cache_lock));
   status->stat_fast = stat;
   pthread_rwlock_unlock(&(status->cache_lock));
-  
+
   if(status->log_telemetry == 1){
     pthread_rwlock_rdlock(&(status->cache_lock));
     gettimeofday(&tv, NULL);
