@@ -3,7 +3,7 @@
  *
  * -------------------------------------------------------------------------
  * Update History:
- *    <Date>       <Who>         <What>    
+ *    <Date>       <Who>         <What>
  *    2019/04/11   Y. Ono        Initial version
  *    2019/09/26   Y. Ono        Add fifo for DMG
  * -------------------------------------------------------------------------
@@ -141,8 +141,8 @@ int gain_getdmg(gain_t *gain, float *dmg){
   /* read fifo */
   if((ret = fifo_read(&(gain->fifo), buff)) == 0){
     /* parse text */
-    ret = strsplit_delim(buff, arg, " ,=:{}()[]'\n\r\t\v\f", GAIN_STATARG_MAX);
-    *dmg = (float)atof(arg[4]);
+    ret = strsplit_delim(buff, arg, " \n\r\t\v\f", GAIN_STATARG_MAX);
+    *dmg = (float)atof(arg[5]);
   } else{
     info(RES_HEAD_ERR"%s: %s\n", gain->header, buff);
     *dmg = -99;
@@ -165,8 +165,8 @@ int gain_getttg(gain_t *gain, float *ttg){
   /* read fifo */
   if((ret = fifo_read(&(gain->fifo), buff)) == 0){
     /* parse text */
-    ret = strsplit_delim(buff, arg, " ,=:{}()[]'\n\r\t\v\f", GAIN_STATARG_MAX);
-    *ttg = (float)atof(arg[4]);
+    ret = strsplit_delim(buff, arg, " '\n\r\t\v\f", GAIN_STATARG_MAX);
+    *ttg = (float)atof(arg[5]);
   } else{
     info(RES_HEAD_ERR"%s: %s\n", gain->header, buff);
     *ttg = -99;

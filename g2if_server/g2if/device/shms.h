@@ -3,7 +3,7 @@
  *
  * -------------------------------------------------------------------------
  * Update History:
- *    <Date>       <Who>         <What>    
+ *    <Date>       <Who>         <What>
  *    2019/04/18   Y. Ono        Initial version (tested with dummy shm)
  *
  * -------------------------------------------------------------------------
@@ -30,15 +30,15 @@ enum {
 };
 
 
-/* Default interval for status polling */
-#define KEY_STR_MAX	16
+/* String length for SHM name */
+#define KEY_STR_MAX	100
 
 
 /* Default header string for logging messages */
 #define SHMS_HEADER_DEFAULT	"shms"
 
 /* The number of shared memries for SHM */
-#define SHMS_NUM_MAX 100
+#define SHMS_NUM_MAX 1000
 
 
 /* cacao image structure */
@@ -69,7 +69,7 @@ int shms_free(shms_t *shms);
 int shms_open(shms_t *shms);
 int shms_close(shms_t *shms);
 int shms_procconf(shms_t *shms, const char *subsec, int argc, const char **argv);
-int shms_postconf(shms_t *shms);    
+int shms_postconf(shms_t *shms);
 int shms_proccmd(client_t *client, shms_t *shms);
 
 int shms_search_comp(const void *key, const void *shm);
@@ -88,11 +88,11 @@ int shms_read_uint32(shms_t *shms, const char *key, uint32_t *value, const int n
 #define KEY_ADF_GAIN        "ADF_gain"           // SHM Keyword for ADF gain                     // USED in gain_cmd.c, gain.c, adf_cmd.c
 #define KEY_TTM_TT          "tt_value_float"     // SHM Keyword for Tip/Tilt of TTM              // USED in tt.c, status.c
 #define KEY_WTT_TT          "wtt_value_float"    // SHM Keyword for Tip/Tilt of WTTM             // USED in status.c
-#define KEY_APD_COUNT       "apdmatrix"          // SHM Keyword for APD count                    // USED in status.c
-#define KEY_APD_COUNT2      "apdcount"           // SHM Keyword for APD count (for APD safety)   // USED in apdsafe.c
+#define KEY_APD_COUNT       "apd"                // SHM Keyword for APD count                    // USED in status.c
+#define KEY_APD_COUNT2      "apd"                 // SHM Keyword for APD count (for APD safety)   // USED in apdsafe.c
 #define KEY_ADFGAIN_X_DF    "ADFg"               // SHM Keyword for ADF_gain x defocus           // USED in adf_cmd.c
 #define KEY_DM_VOLT         "bim188_tele"        // SHM Keyword for dm voltage                   // USED in dm.c, status.c
-#define KEY_CURV            "curv_ord"           // SHM Keyword for curvature                    // USED in status.c, gain.c, gain_cmd.c+292?
+#define KEY_CURV            "curv_1kdouble"      // SHM Keyword for curvature                    // USED in status.c, gain.c, gain_cmd.c+292?
 #define KEY_LO_TT           "LO_tt"              // SHM Keyword for LOWFS tip/tilt               // USED in status.c
 #define KEY_LO_DF           "LO_defocus"         // SHM Keyword for LOWFS defocus                // USED in status.c
 #define KEY_BIMWRITE        "bim188_float"       // SHM Keyword for dm01disp                     // USED in dm.c

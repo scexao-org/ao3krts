@@ -3,7 +3,7 @@
  *
  * -------------------------------------------------------------------------
  * Update History:
- *    <Date>       <Who>         <What>    
+ *    <Date>       <Who>         <What>
  *    2019/04/18   Y. Ono        Initial version (tested with dummy shm)
  *
  * -------------------------------------------------------------------------
@@ -89,7 +89,7 @@ typedef struct status{
   /* shm */
   shms_t *shms;
   IMAGE *shm_apdcnt;
-  float *apdcnt; // shortcut for APD shm
+  uint16_t *apdcnt; // shortcut for APD shm (2x216)
   float *curv;   // shortcut for Curv shm
   float *dmvolt; // shortcut for DM shm
   float *dmtt;   // shortcut for DM shm
@@ -135,7 +135,7 @@ int status_free(status_t *status);
 int status_open(status_t *status);
 int status_close(status_t *status);
 int status_procconf(status_t *status, const char *subsec, int argc, const char **argv);
-int status_postconf(status_t *status);    
+int status_postconf(status_t *status);
 int status_proccmd(client_t *client, status_t *status);
 
 #endif /* _STATUS_H */

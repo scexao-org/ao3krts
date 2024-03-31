@@ -363,7 +363,7 @@ int status_open(status_t *status){
     error_num(errno, "%s", errstr);
     return -1;
   }
-  status->apdcnt = shm->image.array.F;
+  status->apdcnt = shm->image.array.UI16;
   status->shm_apdcnt = &(shm->image);
 
   /* set DM volt shm shortcut */
