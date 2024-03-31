@@ -31,7 +31,7 @@ if __name__ == "__main__":
     logg = logging.getLogger()
 
     most_alphabetical_flat = max(glob.glob(CONF + '/*.fits'))
-    flat = fits.get_data(most_alphabetical_flat).astype(
+    flat = fits.getdata(most_alphabetical_flat).astype(
             np.float32).squeeze()  # astropy messing with endianess...
 
     tt_chan_0 = SHM(f'dm{TT_DM}disp00')

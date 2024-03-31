@@ -32,7 +32,7 @@
 - `wtt_telemetry`, command sent to WTT.s
 
 
-### Misc for g2if to be happy.
+## Misc for g2if to be happy.
 
 Disregard entirely until we work through LGS and/or APD WFS.
 But we need them to spin up the g2if OBCP/RTS communication server.

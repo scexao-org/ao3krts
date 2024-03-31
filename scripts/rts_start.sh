@@ -7,6 +7,7 @@
 # HARDWARE
 ###################################################
 
+
 RED="\e[1;31m"
 GREEN="\e[1;32m"
 BLUE="\e[1;34m"
@@ -25,9 +26,9 @@ echo -e "\n"
 echo -e "${GREEN}Reset fpdp boads connections${ECOL} \n"
 echo -e "\n"
 
-${RTS_PACK_ROOT}/bin/ctr_init
+${RTS_PACK_ROOT}/scripts/fpdp_reset.sh
 sleep 1.0
-${RTS_PACK_ROOT}/bin/ctr_init
+${RTS_PACK_ROOT}/scripts/fpdp_reset.sh
 sleep 1.0
 
 # ------------------------
@@ -55,8 +56,6 @@ echo ""
 
 echo -e "${GREEN}Starting IIWI acquisition... ${ECOL}\n"
 cam-iiwistart
-ln -sf /milk/shm/apapane.im.shm /milk/shm/iiwi.im.shm
-
 echo -e "${RED}Startup executed. Check apapane/iiwi SHM.${ECOL}\n"
 
 echo -e "${GREEN}Starting APD acquisition... ${ECOL}\n"
