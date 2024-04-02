@@ -48,7 +48,7 @@ class DocoptDispatchingObject(InvokableObjectForServer):
         self.SERVER_LOCK = common_lock
         self.TCP_CALLS = {'test': self.sample_locked_func}
 
-    def function_dispatch(self, cmd: str) -> str:
+    def invoke_call(self, cmd: str) -> str:
         '''
             This is a stub for reference, where a
             given implementing class could use
@@ -72,6 +72,9 @@ class DocoptDispatchingObject(InvokableObjectForServer):
 
         return self.TCP_CALLS[cmd_head.lower()](**argdict)
 
+    def help_string(self) -> str:
+        return self.DOCOPTSTR
+
     @classmethod
     def main(cls):
         '''
@@ -81,7 +84,7 @@ class DocoptDispatchingObject(InvokableObjectForServer):
         import sys
         instance = cls()
         print(' '.join(sys.argv[1:]))
-        return instance.function_dispatch(' '.join(sys.argv[1:]))
+        return instance.invoke_call(' '.join(sys.argv[1:]))
 
     def set_lock_obj(self, lock: threading.Lock) -> None:
         self.SERVER_LOCK = lock

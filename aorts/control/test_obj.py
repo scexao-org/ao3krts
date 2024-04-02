@@ -38,8 +38,8 @@ Options:
                 'y': self.y_func,
         }
 
-    def function_dispatch(self, cmd: str) -> str:
-        return str(super().function_dispatch(cmd))
+    def invoke_call(self, cmd: str) -> str:
+        return str(super().invoke_call(cmd))
 
     @locking_func_decorator
     def x_func(self, **kwargs):
