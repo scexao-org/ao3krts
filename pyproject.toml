@@ -20,7 +20,8 @@ script-files = [
   './scripts/rts_start.sh'
 ]
 
-# [project.scripts]
+[project.scripts]
+g2if-pyserver = "aorts.server.server_main:main_g2if"
 
 
 [tool.pyright]

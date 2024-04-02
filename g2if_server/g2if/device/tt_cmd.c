@@ -3,7 +3,7 @@
  *
  * -------------------------------------------------------------------------
  * Update History:
- *    <Date>       <Who>         <What>    
+ *    <Date>       <Who>         <What>
  *    2019/06/17   Y. Ono        Initial version (tested with dummy shm)
  *    2019/09/20   Y. Ono        Add saveflat
  * -------------------------------------------------------------------------
@@ -162,14 +162,14 @@ static int tt_cmd_set(client_t *client, tt_t *tt){
   if(getargv_int(client, 2, &val, -10.0, 10.0) < 0){
     return -1;
   }
-  val = val*VOLT_TO_DAC;
+  val = val*VOLT_TO_DAC; // TODO
 
   if (getargc(client) == 3) {
 
     /* Log command */
     info("> %s: %s %d", tt->header, cmd, val);
-    
-    sprintf(script,"bash %s %s %d",tt->set,cmd,(int)val);
+
+    sprintf(script,"bash %s %s %d",tt->set,cmd,(int)val); // TODO python
     system(script);
     usleep(100000); // wait 0.1s
   }
@@ -182,15 +182,15 @@ static int tt_cmd_set(client_t *client, tt_t *tt){
  */
 int tt_proccmd(client_t *client, tt_t *tt){
   char *cmd = getargv(client, 1);
-  
+
   if (cmd != NULL) {
     strtolower(cmd);
   }
-  
+
   if (cmd == NULL) { /* help */
     return tt_cmd_help(client, tt);
   }
-  
+
   switch(cmd[0]) {
   case 'f':
     if (strcmp(cmd, "flat") == 0) { /* TT flat */
