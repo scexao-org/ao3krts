@@ -63,6 +63,11 @@ python -m camstack.cams.ao_apd tmux -u 0
 
 echo -e "${RED}Startup executed. Check apapane/iiwi SHM.${ECOL}\n"
 
+echo -e "${GREEN}Starting APD acquisition... ${ECOL}\n"
+python -m camstack.cams.ao_apd tmux -u 0
+
+echo -e "${RED}Startup executed. Check apapane/iiwi SHM.${ECOL}\n"
+
 # -----------------------------------------
 # Spin up the CACAO loop(s)
 #------------------------------------------
