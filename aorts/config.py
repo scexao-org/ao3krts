@@ -9,7 +9,6 @@ from dataclasses import dataclass, fields
 #######################
 
 
-
 @dataclass(frozen=True)
 class LOOP_INFO:
     full_name: str
@@ -61,6 +60,7 @@ SHMNAME_BIM188 = 'bim188_tele'
 SHMNAME_TT = 'tt_telemetry'
 SHMNAME_CTT = 'wtt_telemetry'
 SHMNAME_WTT = 'ctt_telemetry'
+SHMNAME_ALPAO = 'dm64out'
 
 HOWFS_SHM = f'aol{LOOPNUM_HOAPD_BIM188}_wfsim'
 
@@ -68,5 +68,5 @@ HOWFS_SHM = f'aol{LOOPNUM_HOAPD_BIM188}_wfsim'
 # DATAVAULT STUFF #
 ###################
 
-
-DATASTORE_PATH = os.environ.get('DATASTORE_PATH', os.environ['HOME'] + '/datastore')
+DATASTORE_PATH = os.environ.get('DATASTORE_PATH',
+                                os.environ['HOME'] + '/datastore')
