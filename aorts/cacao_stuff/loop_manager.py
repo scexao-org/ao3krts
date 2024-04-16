@@ -7,6 +7,7 @@ import glob
 import pathlib
 
 import logging
+
 logg = logging.getLogger(__name__)
 
 # Check bindings to swmain for logging. Duh.
@@ -15,6 +16,7 @@ import typing as typ
 
 from pyMilk.interfacing.fps import FPS, FPSManager
 
+from .mfilt import MFilt
 from .cacaovars_reader import load_cacao_environment
 
 
@@ -51,7 +53,7 @@ class CacaoLoopManager(CacaoConfigReader):
 
         self.fps_ctrl = FPSManager(
                 f'*-{self.loop_number}'
-        )  # We should DISCARD any DM we'd get in here
+        )  # We should DISCARD any DM we'd get in here, but there should be any.
         if len(self.fps_ctrl.fps_cache) == 0:
             logg.warning(
                     f"FPSCtrl cache is suspiciously empty for regex {self.fps_ctrl.fps_name_glob}.fps.shm"
@@ -64,8 +66,10 @@ class CacaoLoopManager(CacaoConfigReader):
                 f'{self.loop_full_name:20s} | {self.loop_name:16s} | {self.loop_number}',
                 f'conf_folder: {self.conf_folder}',
                 f'root_dir:    {self.rootdir}'
-        ]) + '\n' + '\n'.join(
-                ['    ' + fps.__str__() for fps in self.fps_ctrl.fps_cache.values()])
+        ]) + '\n' + '\n'.join([
+                '    ' + fps.__str__()
+                for fps in self.fps_ctrl.fps_cache.values()
+        ])
 
     @property
     def acquWFS(self) -> FPS:
@@ -76,8 +80,9 @@ class CacaoLoopManager(CacaoConfigReader):
         return self.fps_ctrl.find_fps(f'wfs2cmodeval-{self.loop_number}')
 
     @property
-    def mfilt(self) -> FPS:
-        return self.fps_ctrl.find_fps(f'mfilt-{self.loop_number}')
+    def mfilt(self) -> MFilt:
+        return MFilt.cast_from_FPS(
+                self.fps_ctrl.find_fps(f'mfilt-{self.loop_number}'))
 
     @property
     def mvalC2dm(self) -> FPS:
@@ -86,59 +91,83 @@ class CacaoLoopManager(CacaoConfigReader):
     def init_input_symlink(self, sim: bool = False):
         pass
 
-    def confstart_processes(self) -> bool:
-        ...
+    def confstart_processes(self) -> None:
+        self.fps_ctrl.rescan_all()
+        for fps in self.fps_ctrl.fps_cache.values():
+            fps.conf_start()
 
-    def confstop_processes(self) -> bool:
-        ...
+    def confstop_processes(self) -> None:
+        self.fps_ctrl.rescan_all()
+        for fps in self.fps_ctrl.fps_cache.values():
+            fps.conf_stop()
 
-    def runstart_processes(self) -> bool:
+    '''
+    # Not implemented - it's dangerous to just fire everything at once, including mlat and
+    # cals and all... makes no sense.
+    def runstart_processes(self):
         ...
+    def runstop_processes(self):
+        ...
+    '''
 
-    def runstop_processes(self) -> bool:
-        ...
+    def runstart_aorun(self) -> None:
+        '''
+        # TODO
+        Use synchronous waits instead
+        On a cold start, each process allocates necessary inputs for the next one,
+        it could
+        take time
+        '''
+        self.acquWFS.run_start()
+        time.sleep(1.0)
+        self.wfs2cmodeval.run_start()
+        time.sleep(1.0)
+        self.mfilt.run_start()
+        time.sleep(1.0)
+        self.mvalC2dm.run_start()
+
+    def runstop_aorun(self, stop_acqWFS: bool = False) -> None:
+        self.mvalC2dm.run_stop()
+        time.sleep(.3)
+        self.mfilt.run_stop()
+        time.sleep(.3)
+        self.wfs2cmodeval.run_stop()
+
+        if stop_acqWFS:
+            time.sleep(.3)
+            self.acquWFS.run_stop()
 
     def graceful_stop(self, do_runstop: bool) -> None:
         # assume the loop is running
         # perform a graceful fade-out of the mfilt
         # the open the loop, then stop the processes
 
+        saved_gain = self.mfilt.get_gain()
+        saved_mult = self.mfilt.get_mult()
+        self.mfilt.set_gain(0.0)
+        self.mfilt.set_mult(0.98)
+        time.sleep(5.0)
+
+        self.mfilt.loop_open()
+        self.mfilt.set_gain(saved_gain)
+        self.mfilt.set_mult(saved_mult)
+
         if do_runstop:
-            self.runstart_processes()
+            self.runstop_aorun()
 
 
-def cacao_locate_all_mfilts() -> dict[int, FPS]:
-    ...
+def cacao_locate_all_mfilts() -> dict[int, MFilt]:
+    fps_ctrl = FPSManager(
+            'mfilt-*'
+    )  # We should DISCARD any DM we'd get in here, but there should be any.
+    return {
+            fps.get_param('AOloopindex'): MFilt.cast_from_FPS(fps)
+            for fps in fps_ctrl.fps_cache.values()
+    }
 
 
 def cacao_locate_mfilt(loop_index: int) -> FPS:
-    ...
-
-
-def cacao_open_one_loop(clean_decay: bool = True) -> None:
-    cacao_prep_open_one_loop()
-    time.sleep(5.0)
-    cacao_finalize_open_one_loop()
-
-
-def cacao_prep_open_one_loop():
-    pass
-
-
-def cacao_finalize_open_one_loop():
-    pass
-
-
-def cacao_open_all_loops(clean_decay: bool = True) -> None:
-    # Scan mfilt FPS
-    # Save gain and leak
-    # Set gain to 0 and leak to appropriate value (from framerate?) 0.995
-    # Wait
-    # Send dmzero to mfilt
-    # runstop mfilt
-    #
-
-    mfilts = cacao_locate_all_mfilts()
+    return MFilt(f'mfilt-{loop_index}')
 
 
 def guess_loops() -> list[CacaoLoopManager]:
