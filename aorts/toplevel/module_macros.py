@@ -37,6 +37,7 @@ def general_startup():
     '''
 
 
+@cmn.RTS_MODULE.IIWI.register_startup_function
 def iiwi_startup() -> cmn.T_RetCodeMessage:
     '''
     This shouldn't happen much either.
@@ -63,6 +64,7 @@ def iiwi_startup() -> cmn.T_RetCodeMessage:
     return (ERR, "Iiwi startup failure (no pyro proxy after 20 seconds).")
 
 
+@cmn.RTS_MODULE.IIWI.register_stop_function
 def iiwi_teardown() -> cmn.T_RetCodeMessage:
     '''
     This really should not be needed at all.
@@ -77,6 +79,7 @@ def iiwi_teardown() -> cmn.T_RetCodeMessage:
     return (OK, "Iiwi acquisition halted successfully.")
 
 
+@cmn.RTS_MODULE.APD.register_startup_function
 def apd_startup() -> cmn.T_RetCodeMessage:
     from camstack.cam_mains.main import main
     main(cam_name_arg='APD')
@@ -100,6 +103,7 @@ def apd_startup() -> cmn.T_RetCodeMessage:
     return (ERR, "APD startup failure (no pyro proxy after 20 seconds).")
 
 
+@cmn.RTS_MODULE.APD.register_stop_function
 def apd_teardown() -> cmn.T_RetCodeMessage:
     '''
     Should only be needed when switching to passthrough.
@@ -114,6 +118,7 @@ def apd_teardown() -> cmn.T_RetCodeMessage:
     return (OK, "APD acquisition halted successfully.")
 
 
+@cmn.RTS_MODULE.PT_APD.register_startup_function
 def pt_apd_startup() -> cmn.T_RetCodeMessage:
     '''
     Starter for passthrough (no conversion) mode.
@@ -134,6 +139,7 @@ def pt_apd_startup() -> cmn.T_RetCodeMessage:
     return (OK, "FPDP passthrough startup complete.")
 
 
+@cmn.RTS_MODULE.PT_DAC.register_startup_function
 def pt_dac_startup() -> cmn.T_RetCodeMessage:
     tmux_dac = tmux.find_or_create('pt_dac')
     tmux.kill_running(tmux_dac)
@@ -151,6 +157,7 @@ def pt_dac_startup() -> cmn.T_RetCodeMessage:
     return (OK, "FPDP passthrough startup complete.")
 
 
+@cmn.RTS_MODULE.PT_APD.register_stop_function
 def pt_apd_teardown() -> cmn.T_RetCodeMessage:
     '''
     Teardown for passthrough (no conversion) mode.
@@ -165,6 +172,7 @@ def pt_apd_teardown() -> cmn.T_RetCodeMessage:
     return (OK, "FPDP DAC passthrough halted successfully.")
 
 
+@cmn.RTS_MODULE.PT_DAC.register_stop_function
 def pt_dac_teardown() -> cmn.T_RetCodeMessage:
     tmux_dac = tmux.find_or_create('pt_dac')
     tmux.kill_running(tmux_dac)
@@ -175,6 +183,7 @@ def pt_dac_teardown() -> cmn.T_RetCodeMessage:
     return (OK, "FPDP DAC passthrough halted successfully.")
 
 
+@cmn.RTS_MODULE.DAC40.register_startup_function
 def dac40_startup() -> cmn.T_RetCodeMessage:
     tmux_sesh = tmux.find_or_create('fpdp_dm')
     tmux_sesh.send_keys('hwint-dac40 -s bim188_float -u 1')
@@ -201,6 +210,7 @@ def dac40_startup() -> cmn.T_RetCodeMessage:
     return (OK, "DAC40 FPDP startup complete.")
 
 
+@cmn.RTS_MODULE.DAC40.register_stop_function
 def dac40_teardown() -> cmn.T_RetCodeMessage:
     # DM zero --all
     from ..control.bim188 import Bim188Manager
@@ -229,6 +239,7 @@ def dac40_teardown() -> cmn.T_RetCodeMessage:
     return (ERR, "DAC40 halt error. Inspect tmux fpdp_dm.")
 
 
+@cmn.RTS_MODULE.DM3K.register_startup_function
 def dm3k_startup():
     tmux_sesh = tmux.find_or_create('dm64_drv')
     tmux_sesh.send_keys('hwint-alpao -L')
@@ -252,9 +263,10 @@ def dm3k_startup():
     return (OK, "DM3k driver startup complete.")
 
 
+@cmn.RTS_MODULE.DM3K.register_stop_function
 def dm3k_teardown():
     # DM zero --all
-    from ..control import DM3kManager
+    from ..control.dm3k import DM3kManager
 
     DM3kManager().zero(zero_all=True)  # Eh.
 
