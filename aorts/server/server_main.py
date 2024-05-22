@@ -11,9 +11,10 @@ from swmain.network.tcpserver import ObjectDispatchingServer
 
 import threading
 
-from . import command_objs as cmd
-
 import time
+
+# Collection of control objects
+from ..control.test_obj import TestControl
 
 
 def main_g2if():
@@ -28,7 +29,8 @@ def main_g2if():
             'AOCMD_BIM188': cmd.Bim188Cmd(),
     }
     '''
-    CMD_OBJS = {'TEST': cmd.TestCmd()}
+    # Create singleton control objects -- actually should check of a running instance to avoid dupletons
+    CMD_OBJS = {'TEST': TestControl()}
 
     GLOBAL_LOCK = threading.RLock()
 

@@ -74,6 +74,12 @@ Options:
 
         return '\n'.join(string)
 
-    def status_report(self):
+    def status_report(self) -> str:
         self.update_status()
         return self.__str__()
+
+    def update_status(self) -> None:
+        '''
+            This function performs the internal polling necessary to have an up-to-date status
+        '''
+        raise NotImplementedError('This is not implemented.')
