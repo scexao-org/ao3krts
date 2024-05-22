@@ -8,6 +8,8 @@ possibly to dispatch the command to a given function call
 '''
 from __future__ import annotations
 
+import click
+
 import typing as typ
 
 import threading
@@ -17,20 +19,76 @@ import logging
 logg = logging.getLogger(__name__)
 
 from swmain.network.tcpserver import InvokableObjectForServer
+'''
+    Messy decorator
+    Takes a method definition on class S and return an indentical, locking method
+    if the SERVER_LOCK is set.
+
+    Note that I use a reentrant lock so that locked function may chain each other.
+
+'''
+S = typ.TypeVar('S', bound=InvokableObjectForServer)
+P = typ.ParamSpec('P')
+R = typ.TypeVar('R')
 
 
-def locking_func_decorator(func):
+def locking_func_decorator(
+        func: typ.Callable[typ.Concatenate[S, P], R]
+) -> typ.Callable[typ.Concatenate[S, P], R]:
 
-    def lock_wrapped_func(self: DocoptDispatchingObject, *args, **kwargs):
+    def lock_wrapped_method(self: S, *args: P.args, **kwargs: P.kwargs) -> R:
         if self.SERVER_LOCK is not None:
             with self.SERVER_LOCK:
                 return func(self, *args, **kwargs)
         else:
             return func(self, *args, **kwargs)
 
-    return lock_wrapped_func
+    return lock_wrapped_method
 
 
+@click.group()
+def cli():
+    pass
+
+
+@cli.group()
+@click.pass_context
+def net(ctx):
+    ctx.obj = Command()
+
+
+class Command:
+
+    @net.command('ip')
+    @click.pass_obj
+    def get_public_ip(self, *args):
+        print('Invoking get_public_ip')
+
+
+def main() -> None:
+    cli()
+
+
+if __name__ == "__main__":
+
+    c = Command()
+    c.get_public_ip()
+    main()
+
+
+class ClickInvokableObjectForServer(InvokableObjectForServer):
+
+    def invoke_call(self, argstring: str) -> typ.Any:
+        self.click_invokator(['click_invokator'] + argstring.split(),
+                             standalone_mode=False)
+
+    @click.group()
+    @click.pass_obj
+    def click_invokator(self):
+        pass
+
+
+# Let's toss this and use click instead.
 class DocoptDispatchingObject(InvokableObjectForServer):
     # From superclass
     # NAME: str
@@ -44,7 +102,7 @@ class DocoptDispatchingObject(InvokableObjectForServer):
     # Mapper to dispatch function calls based on the command
     TCP_CALLS: dict[str, typ.Callable]
 
-    def __init__(self, common_lock: threading.Lock | None = None) -> None:
+    def __init__(self, common_lock: threading.RLock | None = None) -> None:
         self.SERVER_LOCK = common_lock
         self.TCP_CALLS = {'test': self.sample_locked_func}
 
@@ -86,7 +144,7 @@ class DocoptDispatchingObject(InvokableObjectForServer):
         print(' '.join(sys.argv[1:]))
         return instance.invoke_call(' '.join(sys.argv[1:]))
 
-    def set_lock_obj(self, lock: threading.Lock) -> None:
+    def set_lock_obj(self, lock: threading.RLock) -> None:
         self.SERVER_LOCK = lock
 
     @locking_func_decorator

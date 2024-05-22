@@ -8,14 +8,14 @@ logg = logging.getLogger(__name__)
 
 import numpy as np
 
-from .dispatcher import DocoptDispatchingObject, locking_func_decorator
+from .dispatcher import ClickInvokableObjectForServer, locking_func_decorator
 
 from pyMilk.interfacing.shm import SHM
 
 from .. import config
 
 
-class TestControl(DocoptDispatchingObject):
+class TestControl(ClickInvokableObjectForServer):
     NAME = 'TEST'
 
     DESCR = 'Simple debug object'
@@ -32,21 +32,13 @@ Options:
 
     DOCOPTCASTER = {'<val>': float, '-a': str, '-b': float}
 
-    def __init__(self) -> None:
-        self.TCP_CALLS = {
-                'x': self.x_func,
-                'y': self.y_func,
-        }
-
-    def invoke_call(self, cmd: str) -> str:
-        return str(super().invoke_call(cmd))
-
+    @self.click_invokator.command('x')
     @locking_func_decorator
-    def x_func(self, **kwargs):
+    def x_func(self) -> float:
         print('Calling x')
-        print(kwargs)
         return 1.0
 
+    @self.click_invokator.command('x')
     @locking_func_decorator
     def y_func(self, **kwargs):
         print('Calling y')
