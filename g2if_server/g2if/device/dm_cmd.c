@@ -3,7 +3,7 @@
  *
  * -------------------------------------------------------------------------
  * Update History:
- *    <Date>       <Who>         <What>    
+ *    <Date>       <Who>         <What>
  *    2019/06/17   Y. Ono        Initial version
  *    2019/09/20   Y. Ono        Add saveflat
  * -------------------------------------------------------------------------
@@ -52,8 +52,7 @@ static int dm_cmd_zero(client_t *client, dm_t *dm){
   info("> %s: %s", dm->header, cmd);
 
   /* dm zero */
-  sprintf(script,"bash %s",dm->zero);
-  system(script);
+  system(dm->zero);
 
   return 0;
 }
@@ -67,8 +66,8 @@ static int dm_cmd_flat(client_t *client, dm_t *dm){
   info("> %s: %s", dm->header, cmd);
 
   /* dm flat */
-  sprintf(script,"bash %s",dm->flat);
-  system(script);
+
+  system(dm->flat);
 
   return 0;
 }
@@ -82,13 +81,11 @@ static int dm_cmd_saveflat(client_t *client, dm_t *dm){
   info("> %s: %s", dm->header, cmd);
 
   /* dm save flat */
-  sprintf(script,"python %s",dm->saveflat);
-  system(script);
+  system(dm->saveflat);
   usleep(100000); // wait 0.1s
 
   /* dm load flat */
-  sprintf(script,"bash %s",dm->flat);
-  system(script);
+  system(dm->flat);
   usleep(100000); // wait 0.1s
 
   return 0;
@@ -128,15 +125,15 @@ static int dm_cmd_makeflat(client_t *client, dm_t *dm){
  */
 int dm_proccmd(client_t *client, dm_t *dm){
   char *cmd = getargv(client, 1);
-  
+
   if (cmd != NULL) {
     strtolower(cmd);
   }
-  
+
   if (cmd == NULL) { /* help */
     return dm_cmd_help(client, dm);
   }
-  
+
   switch(cmd[0]) {
   case 'f':
     if (strcmp(cmd, "flat") == 0) { /* DM flat */

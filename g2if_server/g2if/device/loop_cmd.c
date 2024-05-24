@@ -3,7 +3,7 @@
  *
  * -------------------------------------------------------------------------
  * Update History:
- *    <Date>       <Who>         <What>    
+ *    <Date>       <Who>         <What>
  *    2019/04/18   Y. Ono        Initial version (tested with dummy shm)
  *    2019/10/01   Y. Ono        Add fifo control for loop on/off status
  * -------------------------------------------------------------------------
@@ -75,6 +75,9 @@ static int loop_cmd_on(client_t *client, loop_t *loop){
 
   /* Log command */
   info("> %s: on", loop->header);
+  system("echo \""FIFO_SET_COMMAND" "LOOP_FIFO_FLUSH" ON\" >> "FIFO_FPSCTRL_NAME);
+  system("echo \""FIFO_SET_COMMAND" "LOOPTT_FIFO_FLUSH" ON\" >> "FIFO_FPSCTRL_NAME);
+  sleep(0.1);
   system("echo \""FIFO_SET_COMMAND" "LOOP_FIFO_ONOFF" ON\" >> "FIFO_FPSCTRL_NAME);
   system("echo \""FIFO_SET_COMMAND" "LOOPTT_FIFO_ONOFF" ON\" >> "FIFO_FPSCTRL_NAME);
 
@@ -121,6 +124,9 @@ static int loop_cmd_off(client_t *client, loop_t *loop){
   info("> %s: off", loop->header);
   system("echo \""FIFO_SET_COMMAND" "LOOP_FIFO_ONOFF" OFF\" >> "FIFO_FPSCTRL_NAME);
   system("echo \""FIFO_SET_COMMAND" "LOOPTT_FIFO_ONOFF" OFF\" >> "FIFO_FPSCTRL_NAME);
+  sleep(0.1);
+  system("echo \""FIFO_SET_COMMAND" "LOOP_FIFO_FLUSH" ON\" >> "FIFO_FPSCTRL_NAME);
+  system("echo \""FIFO_SET_COMMAND" "LOOPTT_FIFO_FLUSH" ON\" >> "FIFO_FPSCTRL_NAME);
 
   /* get current time */
   clock_gettime(CLOCK_REALTIME, &ts1);
@@ -157,15 +163,15 @@ static int loop_cmd_off(client_t *client, loop_t *loop){
  */
 int loop_proccmd(client_t *client, loop_t *loop){
   char *cmd = getargv(client, 1);
-  
+
   if (cmd != NULL) {
     strtolower(cmd);
   }
-  
+
   if (cmd == NULL) { /* help */
     return loop_cmd_help(client, loop);
   }
-  
+
   switch(cmd[0]) {
   case 'c':
     if (strcmp(cmd, "close") == 0) { /* loop on */
