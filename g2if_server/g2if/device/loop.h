@@ -3,7 +3,7 @@
  *
  * -------------------------------------------------------------------------
  * Update History:
- *    <Date>       <Who>         <What>    
+ *    <Date>       <Who>         <What>
  *    2019/04/18   Y. Ono        Initial version (tested with dummy shm)
  *    2019/09/20   Y. Ono        Add cashe
  *    2019/09/26   Y. Ono        Add fifo for LOOP status
@@ -38,7 +38,9 @@ enum {
 /* FIFO INFO for LOOP */
 #define LOOP_FIFO_NAME      "/milk/shm/g2if_loop.fifo"
 #define LOOP_FIFO_ONOFF     "mfilt-3.loopON" // 1 = hardware
+#define LOOP_FIFO_FLUSH     "mfilt-3.loopZERO" // 1 = hardware
 #define LOOPTT_FIFO_ONOFF     "mfilt-4.loopON" // 1 = hardware
+#define LOOPTT_FIFO_FLUSH     "mfilt-4.loopZERO" // 1 = hardware
 #define LOOP_STATARG_MAX    100
 
 /* structure to store info */
@@ -72,7 +74,7 @@ int loop_free(loop_t *loop);
 int loop_open(loop_t *loop);
 int loop_close(loop_t *loop);
 int loop_procconf(loop_t *loop, const char *subsec, int argc, const char **argv);
-int loop_postconf(loop_t *loop);    
+int loop_postconf(loop_t *loop);
 int loop_proccmd(client_t *client, loop_t *loop);
 int loop_getstat(loop_t *loop, struct loop_stat *stat);
 int loop_savestat(loop_t *loop, struct loop_stat *stat);
