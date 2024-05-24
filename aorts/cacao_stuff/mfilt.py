@@ -21,6 +21,9 @@ class MFilt(FPS):
     def loop_close(self) -> None:
         self.set_param('loopON', True)
 
+    def get_loop_status(self) -> bool:
+        return self.get_param('loopON')
+
     def get_gain(self) -> float:
         return self.get_param('loopgain')  # type: ignore
 

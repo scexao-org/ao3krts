@@ -8,26 +8,14 @@ logg = logging.getLogger(__name__)
 
 import numpy as np
 
-from .dispatcher import DocoptDispatchingObject, locking_func_decorator
+from ..cacao_stuff.mfilt import MFilt
 
 from pyMilk.interfacing.shm import SHM
 
 from .. import config
 
 
-class StatusObj(DocoptDispatchingObject):
-
-    NAME = 'STATUS'
-
-    DESCR = 'RTS Status report'
-
-    DOCOPTSTR = '''RTS Status report
-Usage:
-    status gen2     # Ask for status message. On a fresh instance, this will result in a 1-second poll.
-
-Options:
-
-'''
+class StatusObj:
 
     def __init__(self):
 
@@ -56,7 +44,11 @@ Options:
 
         # End report variables
 
-        self.TCP_CALLS = {'gen2': self.status_report}
+        # Reporting objects
+        self.mfilt_nir3kloop = MFilt(f'mfilt-{config.LOOPNUM_IRPYR_ALPAO}')
+        self.mfilt_ttoffload = MFilt(f'mfilt-{config.LOOPNUM_ALPAO2TT_OFFLOAD}')
+        self.tt_shm = SHM('tt_telemetry')
+        self.wtt_shm = SHM('wtt_telemetry')
 
     def __str__(self) -> str:
         s = self
@@ -82,4 +74,27 @@ Options:
         '''
             This function performs the internal polling necessary to have an up-to-date status
         '''
-        raise NotImplementedError('This is not implemented.')
+        self.loop_state = self.mfilt_nir3kloop.get_loop_status()
+
+        self.dmg = self.mfilt_nir3kloop.get_gain()
+        self.ttg = self.mfilt_ttoffload.get_gain()
+        self.htt: float = 0.0
+        self.hdf: float = 0.0
+        self.ltt: float = 0.0
+        self.ldf: float = 0.0
+        self.wtt: float = 0.0
+        self.adf: float = 0.0
+
+        ttval = self.tt_shm.get_data()
+        self.tt_x = -ttval[0]
+        self.tt_y = ttval[1]
+        wttval = self.wtt_shm.get_data()
+        self.wtt_x = wttval[0]
+        self.wtt_y = wttval[0]
+
+        # Statisticfiers are needed.
+        self.howfs_ave: float = 0.0
+        self.howfs_rmag: float = -99.0
+
+        self.lowfs_ave: float = 0.0
+        self.lowfs_rmag: float = -99.0

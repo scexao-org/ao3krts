@@ -118,13 +118,17 @@ class CacaoLoopManager(CacaoConfigReader):
         it could
         take time
         '''
-        self.acquWFS.run_start()
-        time.sleep(1.0)
-        self.wfs2cmodeval.run_start()
-        time.sleep(1.0)
-        self.mfilt.run_start()
-        time.sleep(1.0)
-        self.mvalC2dm.run_start()
+        if not self.acquWFS.run_isrunning():
+            self.acquWFS.run_start()
+            time.sleep(2.0)
+        if not self.wfs2cmodeval.run_isrunning():
+            self.wfs2cmodeval.run_start()
+            time.sleep(2.0)
+        if not self.mfilt.run_isrunning():
+            self.mfilt.run_start()
+            time.sleep(2.0)
+        if not self.mvalC2dm.run_isrunning():
+            self.mvalC2dm.run_start()
 
     def runstop_aorun(self, stop_acqWFS: bool = False) -> None:
         self.mvalC2dm.run_stop()
@@ -146,7 +150,7 @@ class CacaoLoopManager(CacaoConfigReader):
         saved_mult = self.mfilt.get_mult()
         self.mfilt.set_gain(0.0)
         self.mfilt.set_mult(0.98)
-        time.sleep(5.0)
+        time.sleep(1.0)
 
         self.mfilt.loop_open()
         self.mfilt.set_gain(saved_gain)

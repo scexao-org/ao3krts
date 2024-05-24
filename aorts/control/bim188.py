@@ -8,7 +8,7 @@ logg = logging.getLogger(__name__)
 
 import numpy as np
 
-from .dispatcher import DocoptDispatchingObject, locking_func_decorator
+from ..server.dispatcher import DocoptDispatchingObject, locking_func_decorator
 
 from pyMilk.interfacing.shm import SHM
 
@@ -37,19 +37,35 @@ Options:
                 'zero': self.zero,
         }
 
-        self.dm_shm_0 = SHM(f'dm{config.DMNUM_BIM188}disp00')
-        self.dm_shm_out = SHM(f'dm{config.DMNUM_BIM188}disp')
+        try:
+            self.dm_shm_0 = SHM(f'dm{config.DMNUM_BIM188}disp00')
+        except FileNotFoundError:
+            self.dm_shm_0 = SHM(f'dm{config.DMNUM_BIM188}disp00',
+                                np.zeros(188, np.float32))
+        try:
+            self.dm_shm_out = SHM(f'dm{config.DMNUM_BIM188}disp')
+        except:
+            self.dm_shm_out = SHM(f'dm{config.DMNUM_BIM188}disp',
+                                  np.zeros(188, np.float32))
 
-        self.dm_shms = [
-                SHM(f'dm{config.DMNUM_BIM188}disp{ii:02d}') for ii in range(12)
+        self.dm_shms: list[SHM | None] = [
+                self._find_shm_or_None(ii) for ii in range(12)
         ]
+
+    def _find_shm_or_None(self, ii: int) -> SHM | None:
+        try:
+            return SHM(f'dm{config.DMNUM_BIM188}disp{ii:02d}')
+        except FileNotFoundError:
+            return None
 
     @locking_func_decorator
     def zero(self, zero_all: bool = False) -> None:
-        self.dm_shm_0.set_data(np.array([0, 0], np.float32),
+        self.dm_shm_0.set_data(np.zeros(188, np.float32),
                                autorelink_if_need=True)
 
         if zero_all:
             for ii in range(12):
-                self.dm_shms[ii].set_data(np.array([0, 0], np.float32),
-                                          autorelink_if_need=True)
+                s = self.dm_shms[ii]
+                if s is not None:
+                    s.set_data(np.zeros(188, np.float32),
+                               autorelink_if_need=True)
