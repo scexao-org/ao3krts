@@ -27,7 +27,9 @@ rts-modeselect = "aorts.toplevel.system_modes:main"
 
 
 [tool.pyright]
-extraPaths = ["/home/aorts/src/swmain", "/home/vdeo/src/swmain"] # Need to list scexao's pip install -e packages...
+# Need to list scexao's pip install -e packages...
+extraPaths = ["/home/aorts/src/swmain", "/home/vdeo/src/swmain",
+              "/home/aorts/src/camstack", "/home/vdeo/src/camstack"]
 typeCheckingMode = "basic" # off | basic | standard | strict # Look there https://github.com/microsoft/pyright/blob/main/docs/configuration.md
 include = ["aorts", "rtm4obcp"]
 exclude = ["build/",
