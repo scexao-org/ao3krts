@@ -11,6 +11,8 @@ from swmain.infra.rttools import milk_make_rt
 from . import common as cmn
 from .. import config
 
+from ..cacao_stuff.loop_manager import CacaoLoopManager
+
 from swmain.network.pyroclient import connect_aorts
 from scxconf import pyrokeys
 
@@ -141,9 +143,21 @@ def pt_apd_startup() -> cmn.T_RetCodeMessage:
 
 @cmn.RTS_MODULE.PT_DAC.register_startup_function
 def pt_dac_startup() -> cmn.T_RetCodeMessage:
+
+    loop9 = CacaoLoopManager(*config.LINFO_BIM3KTRANSLATION)
+    loop9.mvalC2dm.run_stop()
+    loop9.acquWFS.run_stop()
+
     tmux_dac = tmux.find_or_create('pt_dac')
     tmux.kill_running(tmux_dac)
-    tmux_dac.send_keys('hwint-fpdprelay -s dac40_raw -u 3 -t 1 -B 420')
+
+    try:
+        dac_raw_shm = SHM('dac40_raw')
+        tmux_dac.send_keys(
+                'hwint-fpdprelay -s dac40_raw -u 3 -t 1 -B 420 -T -R')
+    except FileNotFoundError:
+        # Create SHM
+        tmux_dac.send_keys('hwint-fpdprelay -s dac40_raw -u 3 -t 1 -B 420 -T')
 
     time.sleep(1)
 
@@ -151,6 +165,9 @@ def pt_dac_startup() -> cmn.T_RetCodeMessage:
     if pid is None:
         return (ERR,
                 "DAC40 passthrough relay did not start. Inspect tmux pt_dac.")
+
+    loop9.acquWFS.run_start()
+    loop9.mvalC2dm.run_start()
 
     milk_make_rt('dm188_drv', pid, 40)
 
@@ -185,6 +202,14 @@ def pt_dac_teardown() -> cmn.T_RetCodeMessage:
 
 @cmn.RTS_MODULE.DAC40.register_startup_function
 def dac40_startup() -> cmn.T_RetCodeMessage:
+
+    # If in DM3K mode, this SHM may not exist
+    # And we still need it for hwint-dac40 to start.
+    try:
+        dm00disp = SHM('dm00disp')
+    except FileNotFoundError:
+        dm00disp = SHM('dm00disp', np.zeros((188, 1), np.float32))
+
     tmux_sesh = tmux.find_or_create('fpdp_dm')
     tmux_sesh.send_keys('hwint-dac40 -s bim188_float -u 1')
 
@@ -196,12 +221,20 @@ def dac40_startup() -> cmn.T_RetCodeMessage:
 
     # Try to send data to dmXXdispXX and get return in bim188tele
     # TODO: just call dmzero from the control subpackage?
-    shm_dmsend = SHM(f'dm{config.DMNUM_BIM188}disp')
+    try:
+        shm_dmsend = SHM(f'dm{config.DMNUM_BIM188}disp')
+        shm_dmsend.set_data(np.zeros(188, np.float32))
+    except FileNotFoundError:
+        shm_dmsend = SHM(f'dm{config.DMNUM_BIM188}disp',
+                         np.zeros(188, np.float32))
+
     shm_dmtele = SHM(config.SHMNAME_BIM188)
     ctr_tele = shm_dmtele.get_counter()
 
     shm_dmsend.set_data(np.zeros(188, np.float32))
-    shm_dmtele.get_data(True, timeout=0.1)
+
+    shm_dmtele.get_data(True, timeout=0.5)
+
     if shm_dmtele.get_counter() <= ctr_tele:
         return (ERR, "DAC40 FPDP did not start. Inspect tmux fpdp_dm.")
 
@@ -213,12 +246,11 @@ def dac40_startup() -> cmn.T_RetCodeMessage:
 @cmn.RTS_MODULE.DAC40.register_stop_function
 def dac40_teardown() -> cmn.T_RetCodeMessage:
     # DM zero --all
-    from ..control.bim188 import Bim188Manager
-    from ..control.tt import TipTiltManager
-    from ..control.wtt import WTTManager
 
-    Bim188Manager().zero(zero_all=True)
-    TipTiltManager().zero(zero_all=True)
+    from ..control.dm import BIM188Manager, TTManager, WTTManager
+
+    BIM188Manager().zero(do_ch_zero=True, do_other_channels=True)
+    TTManager().zero(do_ch_zero=True, do_other_channels=True)
     WTTManager().zero()
 
     if not (np.all(
@@ -242,17 +274,19 @@ def dac40_teardown() -> cmn.T_RetCodeMessage:
 @cmn.RTS_MODULE.DM3K.register_startup_function
 def dm3k_startup():
     tmux_sesh = tmux.find_or_create('dm64_drv')
-    tmux_sesh.send_keys('hwint-alpao -L')
+    tmux_sesh.send_keys('hwint-alpao64 -L')
+
+    shm_dmtele = SHM(config.SHMNAME_ALPAO, np.zeros((64, 64), np.float32))
 
     time.sleep(1)
 
-    if tmux.find_pane_running_pid(tmux_sesh) is None:
+    pid = tmux.find_pane_running_pid(tmux_sesh)
+    if pid is None:
         return (ERR, "DM3k driver did not start. Inspect tmux dm64_drv.")
 
     # Try to send data to dmXXdispXX and get return in bim188tele
     # TODO: just call dmzero from the control subpackage?
     shm_dmsend = SHM(f'dm{config.DMNUM_ALPAO}disp')
-    shm_dmtele = SHM(config.SHMNAME_ALPAO)
     ctr_tele = shm_dmtele.get_counter()
 
     shm_dmsend.set_data(np.zeros((64, 64), np.float32))
@@ -260,13 +294,15 @@ def dm3k_startup():
     if shm_dmtele.get_counter() <= ctr_tele:
         return (ERR, "DM3k driver did not start. Inspect tmux dm64_drv.")
 
+    milk_make_rt('dm188_drv', pid, 40)
+
     return (OK, "DM3k driver startup complete.")
 
 
 @cmn.RTS_MODULE.DM3K.register_stop_function
 def dm3k_teardown():
     # DM zero --all
-    from ..control.dm3k import DM3kManager
+    from ..control.dm import DM3kManager
 
     DM3kManager().zero(zero_all=True)  # Eh.
 
@@ -277,7 +313,7 @@ def dm3k_teardown():
     if not tmux.expect_no_pid(tmux_sesh, timeout_sec=3):
         return (ERR, "DM3k halt error. Inspect tmux dm64_drv.")
 
-    tmux_sesh.send_keys('hwint_alpao -R')  # Fire a reset to the HSDL links.
+    tmux_sesh.send_keys('hwint_alpao64 -R')  # Fire a reset to the HSDL links.
     return (OK,
             "DM3k driver halted successfully. Does NOT comprise a HKL poweroff."
             )
