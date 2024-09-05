@@ -8,7 +8,7 @@ logg = logging.getLogger(__name__)
 
 import numpy as np
 
-from .dispatcher import DocoptDispatchingObject, locking_func_decorator
+from ..server.dispatcher import DocoptDispatchingObject, locking_func_decorator
 
 from pyMilk.interfacing.shm import SHM
 

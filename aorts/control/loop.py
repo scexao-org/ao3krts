@@ -32,6 +32,8 @@ class AO3kNIRLoopObject:
         self.nir_loop.mfilt.loop_open()
 
     def loop_close(self) -> None:
+        self.nir_loop.mfilt.loop_zero()
+        self.tt_loop.mfilt.loop_zero()
         self.nir_loop.mfilt.loop_close()
         self.tt_loop.mfilt.loop_close()
 
