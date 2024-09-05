@@ -76,11 +76,11 @@ rm -rf .nir3k.cacaotaskmanager-log/;   # Loop 7
 rm -rf .ttoff3k.cacaotaskmanager-log/; # Loop 8
 rm -rf .bimdm3kpt.cacaotaskmanager-log/; # Loop 9
 
-cacao-loop-deploy ao3k-nirpyr3k; # Loop 7 but also spins up D64 / DM65
-cacao-loop-deploy ao3k-ttoff3k;  # Loop 8 and spins up DM01 / DM11
-cacao-loop-deploy ao3k-apd3k;    # Loop 5
-cacao-loop-deploy ao3k-lowfs3k;  # Loop 6
-cacao-loop-deploy ao3k-bimdm3kpt; # Loop 9
+cacao-loop-deploy -r ao3k-nirpyr3k; # Loop 7 but also spins up D64 / DM65
+cacao-loop-deploy -r ao3k-ttoff3k;  # Loop 8 and spins up DM01 / DM11
+cacao-loop-deploy -r ao3k-apd3k;    # Loop 5
+cacao-loop-deploy -r ao3k-lowfs3k;  # Loop 6
+cacao-loop-deploy -r ao3k-bimdm3kpt; # Loop 9
 )
 
 echo -e "${RED}Done.${ECOL}\n"
@@ -179,6 +179,11 @@ sleep 3
 # START Loop process !
 #-----------------------------------------------------------
 
+(cd ${HOME}/AOloop/bimdm3kpt-rootdir;
+milk-FITS2shm conf/pt_matrix_bim2alpao.fits aol9_CMmodesDM;
+cacao-aorun-025-acqWFS start;
+cacao-aorun-070-cmval2dm start
+)
 
 #####################################################################
 #
