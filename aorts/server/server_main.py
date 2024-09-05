@@ -17,7 +17,7 @@ import time
 
 # Collection of control objects
 from .test_command import ActualInterestingTestObject
-from .commands import DM3k, TT, Loop, Gain, Status
+from .commands import DM3k, TT, Loop, Gain, Status, DM3kHKL
 
 
 def main_g2if():
@@ -40,6 +40,7 @@ def main_g2if():
     CMD_OBJS = {
             'x': ActualInterestingTestObject(),
             'dm': DM3k(),
+            'dmc': DM3kHKL(),
             'tt': TT(),
             'loop': Loop(),
             'gain': Gain(),
