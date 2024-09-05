@@ -38,34 +38,42 @@ class ClickDispatcher:
         self.click_invokator = global_click_invokator.group(
                 click_group.lower())(self._click_invokator)
 
-    def click_dispatch(self, _argstring: str) -> str:
-        logg.debug(
-                f'invoke_call @ {self.__repr__()} -- argstring: "{_argstring}"')
+    def click_dispatch(self, argstring: str) -> str:
+        logg.debug(f'invoke_call @ "{self.click_group} {argstring}"')
         '''
         --help causes click to print the help and raise Exit(0)
         Preventing me to return the help in a string!
         Thus, I'll forcefully insert a usageerror
         '''
-        argstring = _argstring.replace('--help', 'helphelpxxx')
-        try:
-            ret = self.click_invokator(argstring.split(), standalone_mode=False)
-            if ret is None or isinstance(ret, int):
-                logg.debug(
-                        f'{self.click_group.lower()} returned retcode {ret} -- run test help'
-                )
-                return ''
-            else:
-                return ret
-        except click.exceptions.UsageError as exc:
-            '''
-            TRY to return the help to the caller, which might very well be a TCP socket.
-            '''
-            ctx = self.click_invokator.make_context(info_name=None,
-                                                    args=argstring.split())
-            return f'UsageError: {exc} -- {self.click_invokator.get_help(ctx)}'
+        import io
+        from contextlib import redirect_stdout
 
-    def _click_invokator(self) -> str:
-        ...
+        with io.StringIO() as buf, redirect_stdout(buf):
+            print('redirected')
+            output = buf.getvalue()
+
+        with io.StringIO() as buf, redirect_stdout(buf):
+            ret = None
+            try:
+                ret = self.click_invokator(argstring.split(),
+                                           standalone_mode=False,
+                                           prog_name=self.click_group.lower())
+            except click.exceptions.UsageError as exc:
+                assert exc.ctx
+                return str(exc) + '\n' + exc.ctx.get_help() + '\n'
+            finally:
+                captured = buf.getvalue()
+
+        if ret is None or isinstance(ret, int):
+            logg.debug(
+                    f'{self.click_group.lower()} returned retcode {ret} -- run test help'
+            )
+            return captured
+        else:
+            return ret
+
+    def _click_invokator(self):
+        pass
 
 
 class ClickRemotelyInvokableObject(InvokableObjectForServer):
