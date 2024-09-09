@@ -249,7 +249,7 @@ def dac40_teardown() -> cmn.T_RetCodeMessage:
 
     from ..control.dm import BIM188Manager, TTManager, WTTManager
 
-    BIM188Manager().zero(do_ch_zero=True, do_other_channels=True)
+    # BIM188Manager().zero(do_ch_zero=True, do_other_channels=True)
     TTManager().zero(do_ch_zero=True, do_other_channels=True)
     WTTManager().zero()
 
@@ -304,7 +304,7 @@ def dm3k_teardown():
     # DM zero --all
     from ..control.dm import DM3kManager
 
-    DM3kManager().zero(zero_all=True)  # Eh.
+    DM3kManager().zero()  # Eh.
 
     # Teardown the tmux
     tmux_sesh = tmux.find_or_create('dm64_drv')
