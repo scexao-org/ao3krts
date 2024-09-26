@@ -94,8 +94,9 @@ class DM3kManager(DMCombManager):
 
     def flat(self) -> None:
         self.zero(do_ch_zero=False)
+        # FIXME CHANGE THAT TO A SYMLINK? A CONF?
         flat = fits.getdata(os.environ['HOME'] +
-                            '/conf/alpao_flats/alpao_flat_240510_2.fits')
+                            '/conf/alpao_flats/current_flat_symlink.fits')
         self.dm_shms[0].set_data(flat, check_dt=True)
 
 
