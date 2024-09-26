@@ -313,7 +313,7 @@ def dm3k_teardown():
     if not tmux.expect_no_pid(tmux_sesh, timeout_sec=3):
         return (ERR, "DM3k halt error. Inspect tmux dm64_drv.")
 
-    tmux_sesh.send_keys('hwint_alpao64 -R')  # Fire a reset to the HSDL links.
+    tmux_sesh.send_keys('hwint-alpao64 -R')  # Fire a reset to the HSDL links.
     return (OK,
             "DM3k driver halted successfully. Does NOT comprise a HKL poweroff."
             )
