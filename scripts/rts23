@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Assert we have a working .env / .profile with SCExAO variables
+# (see computer_config repository)
+
+if [ -z ${IP_AORTS_SUMMIT} ]; then
+	echo IP_AORTS_SUMMIT is unset
+	echo Aborting rts23.
+	exit 1
+fi
+
+echo "Echoing command:"
+echo "> $@"
+echo "----"
+echo $@ | nc $IP_AORTS_SUMMIT 18826
+# echo $@ | nc localhost 18826
