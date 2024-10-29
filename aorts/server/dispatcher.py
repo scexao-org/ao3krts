@@ -12,7 +12,6 @@ import abc
 import click
 
 import typing as typ
-
 import threading
 
 import logging

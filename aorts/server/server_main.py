@@ -17,7 +17,9 @@ import time
 
 # Collection of control objects
 from .test_command import ActualInterestingTestObject
-from .commands import DM3k, TT, Loop, Gain, Status, DM3kHKL
+from .device_commands import DM3k, TT, Status, DM3kHKL
+from .ao_commands import Loop, Gain
+from .system_commands import ModeSwitcher
 
 
 def main_g2if():
@@ -44,13 +46,15 @@ def main_g2if():
             'tt': TT(),
             'loop': Loop(),
             'gain': Gain(),
-            'status': Status()
+            'status': Status(),
+            'modes': ModeSwitcher(),
     }
 
     from scxconf import PYRONSAO_HOST, PYRONSAO_PORT, IP_AORTS_SUMMIT
     pyro_server = PyroServer(bindTo=('localhost', 0),
                              nsAddress=(PYRONSAO_HOST, PYRONSAO_PORT))
-    tcp_server = ObjectDispatchingServer(('133.40.163.187', 18826), objs=[])
+    # Fixme G2IF_SERVER_PORT
+    tcp_server = ObjectDispatchingServer((IP_AORTS_SUMMIT, 18826), objs=[])
     for cmd_obj in CMD_OBJS.values():
         pyro_server.add_device(device=cmd_obj, deviceName=cmd_obj.NAME)
         tcp_server.add_device(key=cmd_obj.NAME, obj=cmd_obj)
