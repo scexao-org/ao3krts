@@ -1,8 +1,7 @@
 from __future__ import annotations
+import typing as typ
 
 import os
-
-import typing as typ
 
 from enum import Enum, IntEnum
 
@@ -20,7 +19,7 @@ if typ.TYPE_CHECKING:
     T_StartStopPair: typ.TypeAlias = tuple[T_MacroFunction, T_MacroFunction]
 
 
-class RTS_MODULE(str, Enum):
+class RTS_MODULE_ENUM(str, Enum):
     # Note: for the click parser, left and right DO need to match
     IIWI = 'IIWI'
     DAC40 = 'DAC40'
@@ -29,33 +28,25 @@ class RTS_MODULE(str, Enum):
     PT_DAC = 'PT_DAC'
     DM3K = 'DM3K'
 
-    def register_startup_function(self,
-                                  func: T_MacroFunction) -> T_MacroFunction:
 
-        if not hasattr(RTS_MODULE, 'START_FUNC_DICT'):
-            RTS_MODULE.START_FUNC_DICT: dict[RTS_MODULE, T_MacroFunction] = {}
+class RTS_MODULE(typ.Protocol):
+    MODULE_NAMETAG: RTS_MODULE_ENUM
+    '''
+    MANDATORY BOILERPLATE FOR SUBCLASSES:
 
-        if self in RTS_MODULE.START_FUNC_DICT:
-            raise ValueError(
-                    f'Double register of RTS_MODULE startup function for {self}'
-            )
+    Import and register in dict_module_modes.py
+    '''
 
-        RTS_MODULE.START_FUNC_DICT[self] = func
+    def __init__(self):
+        raise ImportError('No should instantiate static namespaces.')
 
-        return func
+    @staticmethod
+    def start_function() -> T_RetCodeMessage:
+        ...
 
-    def register_stop_function(self, func: T_MacroFunction) -> T_MacroFunction:
-
-        if not hasattr(RTS_MODULE, 'STOP_FUNC_DICT'):
-            RTS_MODULE.STOP_FUNC_DICT: dict[RTS_MODULE, T_MacroFunction] = {}
-
-        if self in RTS_MODULE.STOP_FUNC_DICT:
-            raise ValueError(
-                    f'Double register of RTS_MODULE stop function for {self}')
-
-        RTS_MODULE.STOP_FUNC_DICT[self] = func
-
-        return func
+    @staticmethod
+    def stop_function() -> T_RetCodeMessage:
+        ...
 
 
 class RTS_MODE(str, Enum):

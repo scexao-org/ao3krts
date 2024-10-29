@@ -6,11 +6,12 @@ import click
 
 # We're gonna need a setup and a teardown for all the modes defined
 # in config.AORTS_MODES
-from .common import RTS_MODE, RTS_MODULE, MacroRetcode
+from .base_module_modes import RTS_MODE, RTS_MODULE, RTS_MODULE_ENUM, MacroRetcode
+from .dict_module_modes import MODULE_MAPPER
 if typ.TYPE_CHECKING:
-    from .common import T_RetCodeMessage, T_MacroFunction
+    from .base_module_modes import T_RetCodeMessage, T_MacroFunction
 
-from . import mode_macros, module_macros
+from . import modules
 
 DOC = '''
     System-wide AO mode manager
@@ -90,27 +91,38 @@ def current_mode_stop():
 @main.command('startmodule')
 @click.argument(
         '_module',
-        type=click.Choice(RTS_MODULE._member_names_, case_sensitive=False),
+        type=click.Choice(RTS_MODULE_ENUM._member_names_, case_sensitive=False),
 )
-def module_start_command(_module: RTS_MODULE):
-    module: RTS_MODULE = RTS_MODULE(_module.upper())
+def module_start_command(_module: str):
+    module_tag = RTS_MODULE_ENUM(_module.upper())
+    module_class = MODULE_MAPPER[module_tag]
 
-    print('rts-modeselect STARTMODULE:', _module, module, type(module))
+    print('rts-modeselect STARTMODULE:', _module, module_tag, module_class)
 
-    RTS_MODULE.START_FUNC_DICT[module]()
+    (c, s) = module_class.start_function()
+
+    if c == MacroRetcode.SUCCESS:
+        print(f'    YAY!    {s}')
+    else:
+        print(f'    OOPS!   {s}')
 
 
 @main.command('stopmodule')
 @click.argument(
         '_module',
-        type=click.Choice(RTS_MODULE._member_names_, case_sensitive=False),
+        type=click.Choice(RTS_MODULE_ENUM._member_names_, case_sensitive=False),
 )
-def module_stop_command(_module: RTS_MODULE):
-    module: RTS_MODULE = RTS_MODULE(_module.upper())
+def module_stop_command(_module: str):
+    module_tag = RTS_MODULE_ENUM(_module.upper())
+    module_class = MODULE_MAPPER[module_tag]
 
-    print('rts-modeselect STOPMODULE:', _module, module, type(module))
+    print('rts-modeselect STOPMODULE:', _module, module_tag, module_class)
 
-    RTS_MODULE.STOP_FUNC_DICT[module]()
+    (c, s) = module_class.start_function()
+    if c == MacroRetcode.SUCCESS:
+        print(f'    YAY!    {s}')
+    else:
+        print(f'    OOPS!   {s}')
 
 
 @main.group('switch')
@@ -120,24 +132,43 @@ def switch_command():
 
 @switch_command.command('nir')
 def switch_pt_to_nir():
-    invoke_sequence_pretty([
-            module_macros.pt_apd_teardown, module_macros.pt_dac_teardown,
-            module_macros.dac40_startup, module_macros.apd_startup
+    retcode = invoke_sequence_pretty([
+            modules.PTAPD_RTSModule.stop_function,
+            modules.PTDAC_RTSModule.stop_function,
+            modules.DAC40_RTSModule.start_function,
+            modules.APD_RTSModule.start_function,
     ])
 
 
 @switch_command.command('pt')
 def switch_nir_to_pt():
-    invoke_sequence_pretty([
-            module_macros.apd_teardown,
-            module_macros.dac40_teardown,
-            module_macros.pt_dac_startup,
-            module_macros.pt_apd_startup,
+    retcode = invoke_sequence_pretty([
+            modules.APD_RTSModule.stop_function,
+            modules.DAC40_RTSModule.stop_function,
+            modules.PTDAC_RTSModule.start_function,
+            modules.PTAPD_RTSModule.start_function,
     ])
 
 
-def invoke_sequence_pretty(seq: list[T_MacroFunction]):
+def invoke_sequence_pretty_noninteractive(seq: list[T_MacroFunction],
+                                          stdout: bool = True):
+    for func in seq:
+        if stdout:
+            print(f'invoking {func.__name__}')
+        retcode, message = func()
+
+        if retcode == MacroRetcode.SUCCESS:
+            print(f'    YAY!    {message}')
+        else:
+            print(f'    OOPS!   {message}')
+            RTS_MODE.write_rtsmode(RTS_MODE.UNKNOWN)
+            return
+
+
+def invoke_sequence_pretty(seq: list[T_MacroFunction]) -> MacroRetcode:
     import rich
+
+    any_fail = False
 
     for func in seq:
         print(f'invoking {func.__name__}')
@@ -146,13 +177,33 @@ def invoke_sequence_pretty(seq: list[T_MacroFunction]):
         if retcode == MacroRetcode.SUCCESS:
             print(f'    YAY!    {message}')
         else:
+            any_fail = True
             print(f'    OOPS!   {message}')
             print(f'Press Enter when ready to continue - Ctrl + C to abort.')
             try:
                 input('')
             except KeyboardInterrupt:
                 RTS_MODE.write_rtsmode(RTS_MODE.UNKNOWN)
-                return
+                return MacroRetcode.FAILURE
+
+    return MacroRetcode.FAILURE if any_fail else MacroRetcode.SUCCESS
+
+
+def set_mode_in_obcp(mode: str) -> None:
+    OBCP_CONF_FILE = "/home/ao/ao188/conf/rts_mode.conf"
+
+    from swmain.network.ssh import single_use_paramiko_call
+
+    single_use_paramiko_call('ao188-2', username='ao',
+                             command=f'echo {mode} > {OBCP_CONF_FILE}')
+
+
+def get_mode_from_obcp() -> str:
+    OBCP_CONF_FILE = "/home/ao/ao188/conf/rts_mode.conf"
+    from swmain.network.ssh import single_use_paramiko_call
+    (stdout, stderr) = single_use_paramiko_call('ao188-2', username='ao',
+                                                command=f'cat {OBCP_CONF_FILE}')
+    return stdout.strip()
 
 
 if __name__ == '__main__':

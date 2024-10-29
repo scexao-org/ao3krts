@@ -17,18 +17,20 @@ version = "1.0"
 [tool.setuptools]
 packages = ["aorts", "rtm4obcp"]
 script-files = [
-  './scripts/rts_start.sh'
+  './scripts/rts_start.sh', # The startup
+  './scripts/rts23' # net client
 ]
 
 [project.scripts]
 g2if-pyserver = "aorts.server.server_main:main_g2if"
 ao-testobj = "aorts.control.test_obj:TestControl.main"
-rts-modeselect = "aorts.toplevel.system_modes:main"
+rts-modeselect = "aorts.toplevel.rts_modeselect:main"
 
 
 [tool.pyright]
 # Need to list scexao's pip install -e packages...
 extraPaths = ["/home/aorts/src/swmain", "/home/vdeo/src/swmain",
+              "/home/aorts/src/hardwaresecrets", "/home/vdeo/src/hardwaresecrets",
               "/home/aorts/src/camstack", "/home/vdeo/src/camstack"]
 typeCheckingMode = "basic" # off | basic | standard | strict # Look there https://github.com/microsoft/pyright/blob/main/docs/configuration.md
 include = ["aorts", "rtm4obcp"]
