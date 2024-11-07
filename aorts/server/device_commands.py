@@ -20,7 +20,7 @@ from ..control.status import StatusObj
 from hwmain.alpao64.alpao_hkl import AlpaoHKL
 
 
-class DM3k(ClickRemotelyInvokableObject, DM3kManager):
+class DM3kCommand(ClickRemotelyInvokableObject, DM3kManager):
     NAME = 'DM'
     DESCR = 'DM3k Control'
 
@@ -36,18 +36,18 @@ class DM3k(ClickRemotelyInvokableObject, DM3kManager):
 
         # super().zero() # <-- doesn't work for a lack of self
         # DM3kManager.zero(self) # <-- doesn't work for a lack of self
-        DM3k.CALLEE.zero()
+        DM3kCommand.CALLEE.zero()
         return f''
 
     # TODO: optional args not click'd yet
     @DISPATCHER.click_invokator.command('flat')
     @click.pass_obj
     def flat(self) -> str:
-        DM3k.CALLEE.flat()
+        DM3kCommand.CALLEE.flat()
         return f''
 
 
-class DM3kHKL(ClickRemotelyInvokableObject, AlpaoHKL):
+class DM3kHKLCommand(ClickRemotelyInvokableObject, AlpaoHKL):
     NAME = 'DMC'
     DESCR = 'DM3k HKL'
 
@@ -60,37 +60,37 @@ class DM3kHKL(ClickRemotelyInvokableObject, AlpaoHKL):
     def power(self, on_or_off: str) -> str:
 
         if on_or_off.upper() == 'ON':
-            DM3kHKL.CALLEE.poweron()
+            DM3kHKLCommand.CALLEE.poweron()
         else:
-            DM3kHKL.CALLEE.poweroff()
+            DM3kHKLCommand.CALLEE.poweroff()
 
         return f''
 
     @DISPATCHER.click_invokator.command('ack')
     @click.pass_obj
     def error_ack(self, ) -> str:
-        DM3kHKL.CALLEE.error_ack()
+        DM3kHKLCommand.CALLEE.error_ack()
         return f''
 
     @DISPATCHER.click_invokator.command('st')
     @click.pass_obj
     def status(self, ) -> str:
-        return ','.join(DM3kHKL.CALLEE.state())
+        return ','.join(DM3kHKLCommand.CALLEE.state())
 
     @DISPATCHER.click_invokator.command('rtemp')
     @click.pass_obj
     def rack_temp(self, ) -> str:
-        return ','.join([f'{x:.1f}' for x in DM3kHKL.CALLEE.de_temp()])
+        return ','.join([f'{x:.1f}' for x in DM3kHKLCommand.CALLEE.de_temp()])
 
     @DISPATCHER.click_invokator.command('dmtemp')
     @click.pass_obj
     def dm_temp(self, ) -> str:
         # dm temp
         return '[Probably wrong values]' + ','.join(
-                [f'{x:.1f}' for x in DM3kHKL.CALLEE.dm_temp()])
+                [f'{x:.1f}' for x in DM3kHKLCommand.CALLEE.dm_temp()])
 
 
-class TT(ClickRemotelyInvokableObject):
+class TTCommand(ClickRemotelyInvokableObject):
     NAME = 'TT'
     DESCR = 'TT Control'
 
@@ -101,11 +101,11 @@ class TT(ClickRemotelyInvokableObject):
     @DISPATCHER.click_invokator.command('zero')
     @click.pass_obj
     def zero(self) -> str:
-        TT.CALLEE.zero()
+        TTCommand.CALLEE.zero()
         return f''
 
 
-class Status(ClickRemotelyInvokableObject):
+class StatusCommand(ClickRemotelyInvokableObject):
     NAME = 'STATUS'
     DESCR = 'RTS status report'
 
@@ -115,4 +115,4 @@ class Status(ClickRemotelyInvokableObject):
     @DISPATCHER.click_invokator.command('gen2')
     @click.pass_obj
     def report(self) -> str:
-        return Status.CALLEE.status_report()
+        return StatusCommand.CALLEE.status_report()

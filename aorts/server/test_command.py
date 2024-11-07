@@ -20,8 +20,8 @@ class ActualInterestingTestObject(ClickRemotelyInvokableObject):
 
     @DISPATCHER.click_invokator.command('efgh')
     @click.argument('x', type=int)
-    @click.pass_obj
-    def efgh(self, x: int) -> str:
+    @staticmethod
+    def efgh(x: int) -> str:
         return f'efgh: {x} -> {x+1}'
 
 
@@ -34,7 +34,8 @@ if __name__ == "__main__":
         h.setLevel(logging.INFO)
     x = ActualInterestingTestObject()
 
-    print('--------------\n', x.DISPATCHER.click_dispatch('--help'),
+    print('--------------\n',
+          x.DISPATCHER.click_dispatch_remote_calls('--help'),
           '\n--------------')
     '''
  Usage: test [OPTIONS] COMMAND [ARGS]...
@@ -45,7 +46,8 @@ Options:
 Commands:
   efgh
     '''
-    print('--------------\n', x.DISPATCHER.click_dispatch('efgh --help'),
+    print('--------------\n',
+          x.DISPATCHER.click_dispatch_remote_calls('efgh --help'),
           '\n--------------')
     '''
  Usage: test efgh [OPTIONS] X
@@ -54,7 +56,7 @@ Options:
   --help  Show this message and exit.
 
     '''
-    print('--------------\n', x.DISPATCHER.click_dispatch('xsw'),
+    print('--------------\n', x.DISPATCHER.click_dispatch_remote_calls('xsw'),
           '\n--------------')
     '''
  No such command 'xsw'.
@@ -66,7 +68,8 @@ Options:
 Commands:
   efgh
     '''
-    print('--------------\n', x.DISPATCHER.click_dispatch('efgh safd'),
+    print('--------------\n',
+          x.DISPATCHER.click_dispatch_remote_calls('efgh safd'),
           '\n--------------')
     '''
  'safd' is not a valid integer.
@@ -76,7 +79,8 @@ Options:
   --help  Show this message and exit.
 
     '''
-    print('--------------\n', x.DISPATCHER.click_dispatch('efgh 33'),
+    print('--------------\n',
+          x.DISPATCHER.click_dispatch_remote_calls('efgh 33'),
           '\n--------------')
     '''
 efgh: 33 -> 34
