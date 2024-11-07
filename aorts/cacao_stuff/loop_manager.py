@@ -165,7 +165,7 @@ def cacao_locate_all_mfilts() -> dict[int, MFilt]:
             'mfilt-*'
     )  # We should DISCARD any DM we'd get in here, but there should be any.
     return {
-            fps.get_param('AOloopindex'): MFilt.cast_from_FPS(fps)
+            int(fps.get_param('AOloopindex')): MFilt.cast_from_FPS(fps)
             for fps in fps_ctrl.fps_cache.values()
     }
 
@@ -188,7 +188,9 @@ def guess_loops() -> list[CacaoLoopManager]:
     regex_conf = '(.*)-conf'
     for pathstr in conf_folders:
         fold_name = str(pathlib.Path(pathstr).name)
-        loop_full_name = re.match(regex_conf, fold_name).groups()[0]
+        match = re.match(regex_conf, fold_name)
+        assert match is not None
+        loop_full_name = match.groups()[0]
         loop_managers.append(CacaoLoopManager(loop_full_name, None))
 
     return loop_managers
