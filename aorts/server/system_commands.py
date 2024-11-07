@@ -14,8 +14,8 @@ from .dispatcher import ClickDispatcher, ClickRemotelyInvokableObject
 
 import click
 
-from ..toplevel import modules
-from ..toplevel.rts_modeselect import invoke_sequence_pretty_noninteractive, set_mode_in_obcp, get_mode_from_obcp
+from ..toplevel.base_module_modes import RTS_MODULE_ENUM
+from ..toplevel.rts_modeselect_obj import RTSModeSwitcher
 
 # TODO move to a ssh util file in swmain.
 'rts23-nirwfs'
@@ -23,46 +23,62 @@ from ..toplevel.rts_modeselect import invoke_sequence_pretty_noninteractive, set
 
 
 class ModeSwitcher(ClickRemotelyInvokableObject):
-    NAME = 'MODESWITCH'
+    NAME = 'MODES'
     DESCR = 'Switch RTS configurations'
     # If we ever want that as a "main", will that work?
     # But then again, we'll favor Pyro, and not care.
     DISPATCHER = ClickDispatcher(click_group=NAME)
+    INVOKATOR = DISPATCHER.click_invokator
     # CALLEE... there's no callee cuz there's no parent object with the same features?
     # Here I'm just copy-pasting code like a moron. Could do better.
 
-    @DISPATCHER.click_invokator.command('nir')
-    @click.pass_obj
-    def nir(self) -> str:
-        invoke_sequence_pretty_noninteractive([
-                modules.PTAPD_RTSModule.stop_function,
-                modules.PTDAC_RTSModule.stop_function,
-                modules.DAC40_RTSModule.start_function,
-                modules.APD_RTSModule.start_function,
-        ])
-        set_mode_in_obcp(
-                'rts23-nirwfs'
-        )  # This is terrible cuz we set the mode in OBCP and RTS at completely different moments.
-        return 'nir'
-        return STDOUT_SHOULD_BE_CAPTURED  # Maybe as a decorator? capture and return stdout?
+    CALLEE = RTSModeSwitcher()
 
-    @DISPATCHER.click_invokator.command('pt')
-    @click.pass_obj
-    def pt(self) -> str:
-        invoke_sequence_pretty_noninteractive([
-                modules.APD_RTSModule.stop_function,
-                modules.DAC40_RTSModule.stop_function,
-                modules.PTDAC_RTSModule.start_function,
-                modules.PTAPD_RTSModule.start_function,
-        ])
-        set_mode_in_obcp('pass-through')  # On valide?
-        return 'pt'
-        return STDOUT_SHOULD_BE_CAPTURED
+    @INVOKATOR.command('test')
+    @staticmethod
+    def test() -> str:
+        print('YO DAT TEST WUT.')
+        ModeSwitcher.CALLEE.some_method()
+        return f'asdfasdf'
 
-    @DISPATCHER.click_invokator.command('query')
-    @click.pass_obj
-    def query(self) -> str:
-        obcp_thinks = get_mode_from_obcp()
-        from ..toplevel.base_module_modes import RTS_MODE
-        rts_thinks = RTS_MODE.read_rtsmode()
-        return f'[RTS23 mode] OBCP: {obcp_thinks} - RTS: {rts_thinks}'
+    @INVOKATOR.command('startmodule')
+    @click.argument(
+            '_module', type=click.Choice(RTS_MODULE_ENUM._member_names_,
+                                         case_sensitive=False))
+    @staticmethod
+    def module_start_command(_module: str):
+        module_tag = RTS_MODULE_ENUM(_module.upper())
+        print(f'WTF WTF are we calling module start command for {module_tag}??')
+        ModeSwitcher.CALLEE.module_start_command(module_tag)
+
+    @INVOKATOR.command('stopmodule')
+    @click.argument(
+            '_module', type=click.Choice(RTS_MODULE_ENUM._member_names_,
+                                         case_sensitive=False))
+    @staticmethod
+    def module_stop_command(_module: str):
+        module_tag = RTS_MODULE_ENUM(_module.upper())
+        ModeSwitcher.CALLEE.module_stop_command(module_tag)
+
+    @INVOKATOR.group('switch')
+    @staticmethod
+    def group_switch() -> None:
+        pass
+
+    @group_switch.command('nir')
+    @staticmethod
+    def nir() -> int:
+        ModeSwitcher.CALLEE.switch_pt_to_nir()
+        return 0  # Returning an int will cause the dispatcher to capture stdout
+
+    @group_switch.command('pt')
+    @staticmethod
+    def pt() -> int:
+        ModeSwitcher.CALLEE.switch_nir_to_pt()
+        return 0  # Returning an int will cause the dispatcher to capture stdout
+
+    @INVOKATOR.command('query')
+    @staticmethod
+    def query() -> int:
+        ModeSwitcher.CALLEE.query()
+        return 0  # Returning an int will cause the dispatcher to capture stdout

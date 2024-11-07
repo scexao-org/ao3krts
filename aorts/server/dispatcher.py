@@ -37,13 +37,20 @@ class ClickDispatcher:
         self.click_invokator = global_click_invokator.group(
                 click_group.lower())(self._click_invokator)
 
-    def click_dispatch(self, argstring: str) -> str:
-        logg.debug(f'invoke_call @ "{self.click_group} {argstring}"')
+    def _click_invokator(self):
+        # Just a placeholder instance method.
+        pass
+
+    def click_dispatch_remote_calls(self, arg_list: str | list[str]) -> str:
+        logg.debug(f'invoke_remote_call @ "{self.click_group} {arg_list}"')
         '''
         --help causes click to print the help and raise Exit(0)
         Preventing me to return the help in a string!
         Thus, I'll forcefully insert a usageerror
         '''
+        if isinstance(arg_list, str):
+            arg_list = arg_list.split()
+
         import io
         from contextlib import redirect_stdout
 
@@ -54,8 +61,7 @@ class ClickDispatcher:
         with io.StringIO() as buf, redirect_stdout(buf):
             ret = None
             try:
-                ret = self.click_invokator(argstring.split(),
-                                           standalone_mode=False,
+                ret = self.click_invokator(arg_list, standalone_mode=False,
                                            prog_name=self.click_group.lower())
             except click.exceptions.UsageError as exc:
                 assert exc.ctx
@@ -71,8 +77,14 @@ class ClickDispatcher:
         else:
             return ret
 
-    def _click_invokator(self):
-        pass
+    def click_dispatch_cli_calls(self, arg_list: str | list[str]) -> typ.Any:
+        logg.debug(f'invoke_cli_call @ "{self.click_group} {arg_list}"')
+
+        if isinstance(arg_list, str):
+            arg_list = arg_list.split()
+
+        return self.click_invokator(arg_list, standalone_mode=False,
+                                    prog_name=self.click_group.lower())
 
 
 class ClickRemotelyInvokableObject(InvokableObjectForServer):
@@ -83,4 +95,4 @@ class ClickRemotelyInvokableObject(InvokableObjectForServer):
     DISPATCHER = ClickDispatcher(click_group=NAME)
 
     def invoke_call(self, argstring: str) -> str:
-        return self.DISPATCHER.click_dispatch(argstring)
+        return self.DISPATCHER.click_dispatch_remote_calls(argstring)

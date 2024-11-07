@@ -24,7 +24,7 @@ script-files = [
 [project.scripts]
 g2if-pyserver = "aorts.server.server_main:main_g2if"
 ao-testobj = "aorts.control.test_obj:TestControl.main"
-rts-modeselect = "aorts.toplevel.rts_modeselect:main"
+rts-modeselect = "aorts.toplevel.rts_modeselect_main:modeselect"
 
 
 [tool.pyright]

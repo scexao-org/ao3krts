@@ -17,7 +17,7 @@ import click
 from ..control.loop import AO3kNIRLoopObject
 
 
-class Loop(ClickRemotelyInvokableObject):
+class LoopCommand(ClickRemotelyInvokableObject):
     NAME = 'LOOP'
     DESCR = 'Loop on/off'
     # If we ever want that as a "main", will that work?
@@ -28,28 +28,28 @@ class Loop(ClickRemotelyInvokableObject):
     @DISPATCHER.click_invokator.command('on')
     @click.pass_obj
     def on(self):
-        Loop.CALLEE.loop_close()
+        LoopCommand.CALLEE.loop_close()
 
     @DISPATCHER.click_invokator.command('off')
     @click.pass_obj
     def off(self):
-        Loop.CALLEE.loop_open()
+        LoopCommand.CALLEE.loop_open()
 
 
-class Gain(ClickRemotelyInvokableObject):
+class GainCommand(ClickRemotelyInvokableObject):
     NAME = 'GAIN'
     DESCR = 'Gain set: dmg, ttg'
     DISPATCHER = ClickDispatcher(click_group=NAME)
-    CALLEE = Loop.CALLEE
+    CALLEE = LoopCommand.CALLEE
 
     @DISPATCHER.click_invokator.command('dmg')
     @click.argument('gain', type=float)
     @click.pass_obj
     def dm_gain(self, gain: float):
-        Loop.CALLEE.set_dmgain(gain)
+        LoopCommand.CALLEE.set_dmgain(gain)
 
     @DISPATCHER.click_invokator.command('ttg')
     @click.argument('gain', type=float)
     @click.pass_obj
     def tt_gain(self, gain: float):
-        Loop.CALLEE.set_ttgain(gain)
+        LoopCommand.CALLEE.set_ttgain(gain)

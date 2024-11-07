@@ -17,8 +17,8 @@ import time
 
 # Collection of control objects
 from .test_command import ActualInterestingTestObject
-from .device_commands import DM3k, TT, Status, DM3kHKL
-from .ao_commands import Loop, Gain
+from .device_commands import DM3kCommand, TTCommand, StatusCommand, DM3kHKLCommand
+from .ao_commands import LoopCommand, GainCommand
 from .system_commands import ModeSwitcher
 
 
@@ -30,23 +30,16 @@ def main_g2if():
         h.setLevel(logging.DEBUG)
 
     # Define command objects
-    '''
-    CMD_OBJS = {
-            'AOCMD_TT': cmd.TTCmd(),
-            'AOCMD_LOOP': cmd.LoopCmd(),
-            'AOCMD_BIM188': cmd.Bim188Cmd(),
-    }
-    '''
 
     # Create singleton control objects -- actually should check of a running instance to avoid dupletons
     CMD_OBJS = {
             'x': ActualInterestingTestObject(),
-            'dm': DM3k(),
-            'dmc': DM3kHKL(),
-            'tt': TT(),
-            'loop': Loop(),
-            'gain': Gain(),
-            'status': Status(),
+            'dm': DM3kCommand(),
+            'dmc': DM3kHKLCommand(),
+            'tt': TTCommand(),
+            'loop': LoopCommand(),
+            'gain': GainCommand(),
+            'status': StatusCommand(),
             'modes': ModeSwitcher(),
     }
 

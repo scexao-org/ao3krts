@@ -16,8 +16,8 @@ from ..cacao_stuff.loop_manager import CacaoLoopManager
 from swmain.network.pyroclient import connect_aorts
 from scxconf import pyrokeys
 
-OK = base.MacroRetcode.SUCCESS
-ERR = base.MacroRetcode.FAILURE
+OK = base.MacroRetcode.OK
+ERR = base.MacroRetcode.ERR
 
 
 def general_startup():
