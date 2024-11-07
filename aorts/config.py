@@ -31,6 +31,10 @@ LINFO_3KTTOFFLOAD = LOOP_INFO('ao3k-ttoff3k', 8)
 
 LINFO_BIM3KTRANSLATION = LOOP_INFO('ao3k-bimdm3kpt', 9)
 
+LINFO_NLCWFS_3K = LOOP_INFO(
+        'ao3k-nlcwfs3k', 4
+)  # Reused number but kyohoon picked and BIM188 loops are deprecated anyway.
+
 # Loops to BIM188
 LOOPNUM_HOAPD_BIM188 = 1
 LOOPNUM_LOAPD_BIM188 = 2
