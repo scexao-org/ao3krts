@@ -30,6 +30,7 @@ class DMCombManager:
             self.fps = FPS(f'DMch2disp-{dm_number}')
         except RuntimeError:
             pass
+
         if self.fps:
             self.ensure_running()
 
@@ -46,10 +47,10 @@ class DMCombManager:
             return None
 
     def ensure_running(self) -> None:
+        assert self.fps
         if not self.fps.conf_isrunning():
             self.fps.conf_start()
             time.sleep(2.0)
-
         if not self.fps.run_isrunning():
             self.fps.run_start()
             time.sleep(5.0)
@@ -63,10 +64,10 @@ class DMCombManager:
                                      autorelink_if_need=True)
 
         if do_ch_zero and do_other_channels:
-            for ii in range(12):
-                if self.dm_shms[ii] is not None:
-                    self.dm_shms[ii].set_data(np.zeros(self.SHAPE, np.float32),
-                                              autorelink_if_need=True)
+            for dm_shm_chan in self.dm_shms:
+                if dm_shm_chan is not None:
+                    dm_shm_chan.set_data(np.zeros(self.SHAPE, np.float32),
+                                         autorelink_if_need=True)
 
 
 class BIM188Manager(DMCombManager):
