@@ -19,15 +19,15 @@ from ..cacao_stuff.loop_manager import CacaoLoopManager
 from swmain.network.pyroclient import connect_aorts
 from scxconf import pyrokeys
 
-OK = base.MacroRetcode.OK
-ERR = base.MacroRetcode.ERR
+OK = base.OkErrEnum.OK
+ERR = base.OkErrEnum.ERR
 
 
 class Iiwi_RTSModule:  # implements RTS_MODULE Protocol
     MODULE_NAMETAG: RME = RME.IIWI
 
     @classmethod
-    def start_function(cls) -> base.T_RetCodeMessage:
+    def start_function(cls) -> base.T_Result:
         '''
         This shouldn't happen much either.
         '''
@@ -54,7 +54,7 @@ class Iiwi_RTSModule:  # implements RTS_MODULE Protocol
         return (ERR, "Iiwi startup failure (no pyro proxy after 20 seconds).")
 
     @classmethod
-    def stop_function(cls) -> base.T_RetCodeMessage:
+    def stop_function(cls) -> base.T_Result:
         '''
         This really should not be needed at all.
         '''
@@ -72,7 +72,7 @@ class DAC40_RTSModule:  # implements RTS_MODULE Protocol
     MODULE_NAMETAG: RME = RME.DAC40
 
     @classmethod
-    def start_function(cls) -> base.T_RetCodeMessage:
+    def start_function(cls) -> base.T_Result:
 
         # If in DM3K mode, this SHM may not exist
         # And we still need it for hwint-dac40 to start.
@@ -114,7 +114,7 @@ class DAC40_RTSModule:  # implements RTS_MODULE Protocol
         return (OK, "DAC40 FPDP startup complete.")
 
     @classmethod
-    def stop_function(cls) -> base.T_RetCodeMessage:
+    def stop_function(cls) -> base.T_Result:
         # DM zero --all
 
         from ..control.dm import BIM188Manager, TTManager, WTTManager
@@ -152,7 +152,7 @@ class APD_RTSModule:  # implements RTS_MODULE Protocol
     MODULE_NAMETAG: RME = RME.APD
 
     @classmethod
-    def start_function(cls) -> base.T_RetCodeMessage:
+    def start_function(cls) -> base.T_Result:
         from camstack.cam_mains.main import main
         main(cam_name_arg='APD')
         time.sleep(1)
@@ -176,7 +176,7 @@ class APD_RTSModule:  # implements RTS_MODULE Protocol
         return (ERR, "APD startup failure (no pyro proxy after 20 seconds).")
 
     @classmethod
-    def stop_function(cls) -> base.T_RetCodeMessage:
+    def stop_function(cls) -> base.T_Result:
         '''
         Should only be needed when switching to passthrough.
         '''
@@ -194,7 +194,7 @@ class KWFS_RTSModule:  # implements RTS_MODULE Protocol
     MODULE_NAMETAG: RME = RME.KWFS
 
     @classmethod
-    def start_function(cls) -> base.T_RetCodeMessage:
+    def start_function(cls) -> base.T_Result:
         from camstack.cam_mains.main import main
         main(cam_name_arg='ALALA')  # Makes no sense but that's what we got...
         time.sleep(1)
@@ -218,7 +218,7 @@ class KWFS_RTSModule:  # implements RTS_MODULE Protocol
         return (ERR, "KWFS startup failure (no pyro proxy after 20 seconds).")
 
     @classmethod
-    def stop_function(cls) -> base.T_RetCodeMessage:
+    def stop_function(cls) -> base.T_Result:
         '''
         Should only be needed when switching to passthrough.
         '''
@@ -236,7 +236,7 @@ class PTAPD_RTSModule:  # implements RTS_MODULE Protocol
     MODULE_NAMETAG: RME = RME.PT_APD
 
     @classmethod
-    def start_function(cls) -> base.T_RetCodeMessage:
+    def start_function(cls) -> base.T_Result:
         '''
         Starter for passthrough (no conversion) mode.
         '''
@@ -256,7 +256,7 @@ class PTAPD_RTSModule:  # implements RTS_MODULE Protocol
         return (OK, "FPDP passthrough startup complete.")
 
     @classmethod
-    def stop_function(cls) -> base.T_RetCodeMessage:
+    def stop_function(cls) -> base.T_Result:
         '''
         Teardown for passthrough (no conversion) mode.
         '''
@@ -274,7 +274,7 @@ class PTDAC_RTSModule:  # implements RTS_MODULE Protocol
     MODULE_NAMETAG: RME = RME.PT_DAC
 
     @classmethod
-    def start_function(cls) -> base.T_RetCodeMessage:
+    def start_function(cls) -> base.T_Result:
         loop9 = CacaoLoopManager(*config.LINFO_BIM3KTRANSLATION)
         loop9.mvalC2dm.run_stop()
         loop9.acquWFS.run_stop()
@@ -307,7 +307,7 @@ class PTDAC_RTSModule:  # implements RTS_MODULE Protocol
         return (OK, "FPDP passthrough startup complete.")
 
     @classmethod
-    def stop_function(cls) -> base.T_RetCodeMessage:
+    def stop_function(cls) -> base.T_Result:
         tmux_dac = tmux.find_or_create('pt_dac')
         tmux.kill_running(tmux_dac)
 
@@ -321,7 +321,7 @@ class DM3K_RTSModule:  # implements RTS_MODULE Protocol
     MODULE_NAMETAG: RME = RME.DM3K
 
     @classmethod
-    def start_function(cls) -> base.T_RetCodeMessage:
+    def start_function(cls) -> base.T_Result:
         tmux_sesh = tmux.find_or_create('dm64_drv')
         tmux_sesh.send_keys('hwint-alpao64 -L')
 
@@ -348,7 +348,7 @@ class DM3K_RTSModule:  # implements RTS_MODULE Protocol
         return (OK, "DM3k driver startup complete.")
 
     @classmethod
-    def stop_function(cls) -> base.T_RetCodeMessage:
+    def stop_function(cls) -> base.T_Result:
         # DM zero --all
         from ..control.dm import DM3kManager
 
@@ -367,97 +367,3 @@ class DM3K_RTSModule:  # implements RTS_MODULE Protocol
                 "DM3k driver halted successfully. Does NOT comprise a HKL poweroff."
                 # But actually it should.
                 )
-
-
-#class CACAOLOOP_RTSModule(abc.ABC): # implements RTS_MODULE Protocol
-
-from ..cacao_stuff.loop_manager import CacaoLoopManager
-
-
-class CACAOLOOP_RTSModule:  # implements RTS_MODULE Protocol
-    MODULE_NAMETAG: RME
-    LOOP_FULL_NAME: str
-
-    @classmethod
-    def start_function(cls, loop_mode: str = None) -> base.T_RetCodeMessage:
-
-        loop_mgr = CacaoLoopManager(cls.LOOP_FULL_NAME, None)
-
-        # Just in case?
-        #loop_mgr.runstop_aorun()
-        loop_mgr.mfilt.loop_open()
-
-        loop_mgr.pre_run_reconfigure_loop_matrices(
-                loop_mode
-        )  # Should this toggle symlinks? call cacao-aorun-042 ? Load the default one and then algebraically manipulate it to adapt to OLGS/NLGS modes?
-        loop_mgr.pre_run_reload_cms_to_shm(
-        )  # I suppose this should just call cacao-aorun-042 (which)
-
-        # Can probably do better? By checking that e.g. tmuxes, confs, etc are live.
-        loop_mgr.runstart_aorun()
-
-        loop_mgr.post_startup_config_change_given_mode_reconfigure(loop_mode)
-
-        time.sleep(1.0)
-
-        if not (loop_mgr.acquWFS.run_isrunning() and
-                loop_mgr.wfs2cmodeval.run_isrunning() and
-                loop_mgr.mfilt.run_isrunning() and
-                loop_mgr.mvalC2dm.run_isrunning()):
-            return (ERR,
-                    f'Error starting loop {cls.LOOP_FULL_NAME} from rootdir {loop_mgr.rootdir}'
-                    )
-
-        return (OK, f'Started processes for loop {cls.LOOP_FULL_NAME}')
-
-    @classmethod
-    def stop_function(cls) -> base.T_RetCodeMessage:
-
-        loop_mgr = CacaoLoopManager(cls.LOOP_FULL_NAME, None)
-
-        loop_mgr.mfilt.loop_open()
-        loop_mgr.runstop_aorun(stop_acqWFS=True)
-
-        time.sleep(1.0)
-
-        if (loop_mgr.acquWFS.run_isrunning() or
-                    loop_mgr.wfs2cmodeval.run_isrunning() or
-                    loop_mgr.mfilt.run_isrunning() or
-                    loop_mgr.mvalC2dm.run_isrunning()):
-            return (ERR,
-                    f'Error stopping loop {cls.LOOP_FULL_NAME} from rootdir {loop_mgr.rootdir}'
-                    )
-
-        return (OK, f'Stopped processes for loop {cls.LOOP_FULL_NAME}')
-
-
-class NIRLOOP_RTSModule(CACAOLOOP_RTSModule):
-    MODULE_NAMETAG: RME = RME.NIRLOOP
-    LOOP_FULL_NAME: str = config.LINFO_IRPYR_3K.full_name
-
-
-class HOWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
-    MODULE_NAMETAG: RME = RME.HOLOOP
-    LOOP_FULL_NAME: str = config.LINFO_HOAPD_3K.full_name
-
-
-class LOWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
-    MODULE_NAMETAG: RME = RME.LOLOOP
-    LOOP_FULL_NAME: str = config.LINFO_LOAPD_3K.full_name
-
-
-class PTLOOP_RTSModule(CACAOLOOP_RTSModule):
-    # WARNING THIS IS AN INCOMPLETE LOOP!!!!!
-    # IT DOESN'T HAVE THE 4 AO MAIN MEMBERS
-    MODULE_NAMETAG: RME = RME.PTLOOP
-    LOOP_FULL_NAME: str = config.LINFO_BIM3KTRANSLATION.full_name
-
-
-class KWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
-    MODULE_NAMETAG: RME = RME.KWFSLOOP
-    LOOP_FULL_NAME: str = config.LINFO_NLCWFS_3K.full_name
-
-
-class TTOFFLOOP_RTSModule(CACAOLOOP_RTSModule):
-    MODULE_NAMETAG: RME = RME.TTOFFL
-    LOOP_FULL_NAME: str = config.LINFO_NLCWFS_3K.full_name

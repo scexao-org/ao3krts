@@ -2,22 +2,22 @@ from __future__ import annotations
 
 import typing as typ
 
-from .base_module_modes import RTS_MODE_ENUM, RTS_MODULE_ENUM, MacroRetcode
+from .base_module_modes import RTS_MODE_ENUM, RTS_MODULE_ENUM, OkErrEnum
 from .dict_module_modes import MODULE_MAPPER
-from . import modules as m
+from . import modules_hw as mh
 
 if typ.TYPE_CHECKING:
-    from .base_module_modes import T_RetCodeMessage, T_MacroFunction
+    from .base_module_modes import T_Result, T_ResFunction
 
 
-def invoke_sequence_pretty_noninteractive(seq: list[T_MacroFunction],
+def invoke_sequence_pretty_noninteractive(seq: list[T_ResFunction],
                                           stdout: bool = True) -> None:
     for func in seq:
         if stdout:
             print(f'invoking {func.__name__}')
         retcode, message = func()
 
-        if retcode == MacroRetcode.OK:
+        if retcode == OkErrEnum.OK:
             print(f'    YAY!    {message}')
         else:
             print(f'    OOPS!   {message}')
@@ -25,7 +25,7 @@ def invoke_sequence_pretty_noninteractive(seq: list[T_MacroFunction],
             return  # ???
 
 
-def invoke_sequence_pretty(seq: list[T_MacroFunction]) -> MacroRetcode:
+def invoke_sequence_pretty(seq: list[T_ResFunction]) -> OkErrEnum:
     import rich
 
     any_fail = False
@@ -34,7 +34,7 @@ def invoke_sequence_pretty(seq: list[T_MacroFunction]) -> MacroRetcode:
         print(f'invoking {func.__name__}')
         retcode, message = func()
 
-        if retcode == MacroRetcode.OK:
+        if retcode == OkErrEnum.OK:
             print(f'    YAY!    {message}')
         else:
             any_fail = True
@@ -44,9 +44,9 @@ def invoke_sequence_pretty(seq: list[T_MacroFunction]) -> MacroRetcode:
                 input('')
             except KeyboardInterrupt:
                 RTS_MODE_ENUM.write_rtsmode(RTS_MODE_ENUM.UNKNOWN)
-                return MacroRetcode.ERR
+                return OkErrEnum.ERR
 
-    return MacroRetcode.ERR if any_fail else MacroRetcode.OK
+    return OkErrEnum.ERR if any_fail else OkErrEnum.OK
 
 
 def set_mode_in_obcp(mode: str) -> None:
@@ -76,7 +76,7 @@ class RTSModeSwitcher:
 
         (c, s) = module_class.start_function()
 
-        if c == MacroRetcode.OK:
+        if c == OkErrEnum.OK:
             print(f'    YAY!    {s}')
         else:
             print(f'    OOPS!   {s}')
@@ -88,7 +88,7 @@ class RTSModeSwitcher:
         print('rts-modeselect STOPMODULE:', _module, module_tag, module_class)
 
         (c, s) = module_class.stop_function()
-        if c == MacroRetcode.OK:
+        if c == OkErrEnum.OK:
             print(f'    YAY!    {s}')
         else:
             print(f'    OOPS!   {s}')
@@ -98,10 +98,10 @@ class RTSModeSwitcher:
 
     def switch_pt_to_nir(self):
         retcode = invoke_sequence_pretty([
-                m.PTAPD_RTSModule.stop_function,
-                m.PTDAC_RTSModule.stop_function,
-                m.DAC40_RTSModule.start_function,
-                m.APD_RTSModule.start_function,
+                mh.PTAPD_RTSModule.stop_function,
+                mh.PTDAC_RTSModule.stop_function,
+                mh.DAC40_RTSModule.start_function,
+                mh.APD_RTSModule.start_function,
         ])
         RTS_MODE_ENUM.write_rtsmode(RTS_MODE_ENUM.NIR3K)
         set_mode_in_obcp('rts23-nirwfs')
@@ -109,10 +109,10 @@ class RTSModeSwitcher:
 
     def switch_nir_to_pt(self):
         retcode = invoke_sequence_pretty([
-                m.APD_RTSModule.stop_function,
-                m.DAC40_RTSModule.stop_function,
-                m.PTDAC_RTSModule.start_function,
-                m.PTAPD_RTSModule.start_function,
+                mh.APD_RTSModule.stop_function,
+                mh.DAC40_RTSModule.stop_function,
+                mh.PTDAC_RTSModule.start_function,
+                mh.PTAPD_RTSModule.start_function,
         ])
         set_mode_in_obcp('pass-through')
         RTS_MODE_ENUM.write_rtsmode(RTS_MODE_ENUM.PT3K)
