@@ -34,20 +34,35 @@ def test_test_passes():
     assert True
 
 
-def test_test_fails():
-    assert False
-
-
 def test_test_raises_w_success():
     with pytest.raises(Exception) as e_info:
         s = 1 / 0
 
 
-def test_test_raises_something_else():
+def _test_test_fails():
+    assert False
+
+
+def test_wraps_test_fails():
+    with pytest.raises(AssertionError) as e_info:
+        _test_test_fails()
+
+
+def _test_test_raises_something_else():
     with pytest.raises(OSError) as e_info:
         x = 1 / 0
 
 
-def test_test_fails_to_raise():
+def test_wraps_test_raises_something_else():
+    with pytest.raises(ZeroDivisionError) as e_info:
+        _test_test_raises_something_else()
+
+
+def _test_test_fails_to_raise():
     with pytest.raises(OSError) as e_info:
         x = 1 / 1
+
+
+def test_wraps_test_fails_to_raise():
+    with pytest.raises(pytest.fail.Exception) as e_info:
+        _test_test_fails_to_raise()
