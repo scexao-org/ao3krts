@@ -14,8 +14,8 @@ from .dispatcher import ClickDispatcher, ClickRemotelyInvokableObject
 
 import click
 
-from ..toplevel.base_module_modes import RTS_MODULE_ENUM
-from ..toplevel.rts_modeselect_obj import RTSModeSwitcher
+from ..modules.base_module_modes import RTS_MODULE_ENUM
+from ..modules.rts_modeselect_obj import RTSModeSwitcher
 
 # TODO move to a ssh util file in swmain.
 'rts23-nirwfs'

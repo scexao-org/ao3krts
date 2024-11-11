@@ -120,6 +120,6 @@ class RTSModeSwitcher:
 
     def query(self) -> None:
         obcp_thinks = get_mode_from_obcp()
-        from ..toplevel.base_module_modes import RTS_MODE_ENUM
+        from ..modules.base_module_modes import RTS_MODE_ENUM
         rts_thinks = RTS_MODE_ENUM.read_rtsmode()
         print(f'[RTS23 mode] OBCP: {obcp_thinks} - RTS: {rts_thinks}')

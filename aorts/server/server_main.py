@@ -5,6 +5,7 @@ import typing as typ
 import os, sys, atexit
 import logging
 from swmain.infra.logger import init_logger_autoname
+from swmain.infra.badsystemd.aux import auto_register_to_watchers
 
 from swmain.network.pyroserver_registerable import PyroServer
 from swmain.network.tcpserver import ObjectDispatchingServer
@@ -25,9 +26,8 @@ from .system_commands import ModeSwitcher
 def main_g2if():
     init_logger_autoname()
     logg = logging.getLogger()
-    logg.setLevel(logging.DEBUG)
-    for h in logg.handlers:
-        h.setLevel(logging.DEBUG)
+
+    auto_register_to_watchers('SRVS', 'RTS23 TCP/Pyro')
 
     # Define command objects
 
