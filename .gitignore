@@ -13,3 +13,6 @@ __pycache__
 IDlog.txt
 g2if_server/g2if/g2if_server
 g2if_server/g2if/g2if_client
+
+# coverage report bin
+.coverage

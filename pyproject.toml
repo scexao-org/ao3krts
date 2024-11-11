@@ -31,6 +31,11 @@ addopts = [
     "--import-mode=importlib",
 ]
 
+[tool.coverage.run]
+command_line = "-m pytest"
+branch = true
+source = ["./aorts"]
+
 [tool.pyright]
 # Need to list scexao's pip install -e packages...
 extraPaths = ["/home/aorts/src/swmain", "/home/vdeo/src/swmain",
