@@ -14,7 +14,7 @@ from .dispatcher import ClickDispatcher, ClickRemotelyInvokableObject
 
 import click
 
-from ..modules.base_module_modes import RTS_MODULE_ENUM
+from ..modules.base_module_modes import RTS_MODULE_ENUM, CONFIG_SUBMODES_ENUM
 from ..modules.rts_modeselect_obj import RTSModeSwitcher
 
 # TODO move to a ssh util file in swmain.
@@ -38,8 +38,7 @@ class ModeSwitcher(ClickRemotelyInvokableObject):
     @staticmethod
     def test() -> str:
         print('YO DAT TEST WUT.')
-        ModeSwitcher.CALLEE.some_method()
-        return f'asdfasdf'
+        return ModeSwitcher.CALLEE.__str__()
 
     @INVOKATOR.command('startmodule')
     @click.argument(
@@ -59,6 +58,32 @@ class ModeSwitcher(ClickRemotelyInvokableObject):
     def module_stop_command(_module: str):
         module_tag = RTS_MODULE_ENUM(_module.upper())
         ModeSwitcher.CALLEE.module_stop_command(module_tag)
+
+    @INVOKATOR.command('confmodule')
+    @click.argument(
+            '_module', type=click.Choice(RTS_MODULE_ENUM._member_names_,
+                                         case_sensitive=False))
+    @click.argument(
+            '_cfg', type=click.Choice(CONFIG_SUBMODES_ENUM._member_names_,
+                                      case_sensitive=False))
+    @staticmethod
+    def module_configure_command(_module: str, _cfg: str):
+        module_tag = RTS_MODULE_ENUM(_module.upper())
+        submode_tag = CONFIG_SUBMODES_ENUM(_cfg.upper())
+        ModeSwitcher.CALLEE.module_configure_command(module_tag, submode_tag)
+
+    @INVOKATOR.command('confstartmodule')
+    @click.argument(
+            '_module', type=click.Choice(RTS_MODULE_ENUM._member_names_,
+                                         case_sensitive=False))
+    @click.argument(
+            '_cfg', type=click.Choice(CONFIG_SUBMODES_ENUM._member_names_,
+                                      case_sensitive=False))
+    @staticmethod
+    def module_confstart_command(_module: str, _cfg: str):
+        module_tag = RTS_MODULE_ENUM(_module.upper())
+        submode_tag = CONFIG_SUBMODES_ENUM(_cfg.upper())
+        ModeSwitcher.CALLEE.module_confstart_command(module_tag, submode_tag)
 
     @INVOKATOR.group('switch')
     @staticmethod

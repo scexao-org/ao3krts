@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import typing as typ
 
-from .base_module_modes import RTS_MODE_ENUM, RTS_MODULE_ENUM, OkErrEnum
+from .base_module_modes import (RTS_MODE_ENUM, RTS_MODULE_ENUM, OkErrEnum,
+                                CONFIG_SUBMODES_ENUM, RTS_MODULE_RECONFIGURABLE)
 from .dict_module_modes import MODULE_MAPPER
 from . import modules_hw as mh
 
@@ -74,12 +75,10 @@ class RTSModeSwitcher:
 
         print('rts-modeselect STARTMODULE:', _module, module_tag, module_class)
 
-        (c, s) = module_class.start_function()
-
-        if c == OkErrEnum.OK:
-            print(f'    YAY!    {s}')
+        if (ret := module_class.start_function())[0] == OkErrEnum.OK:
+            print(f'    YAY!    {ret[1]}')
         else:
-            print(f'    OOPS!   {s}')
+            print(f'    OOPS!   {ret[1]}')
 
     def module_stop_command(self, _module: RTS_MODULE_ENUM):
         module_tag = RTS_MODULE_ENUM(_module.upper())
@@ -87,14 +86,42 @@ class RTSModeSwitcher:
 
         print('rts-modeselect STOPMODULE:', _module, module_tag, module_class)
 
-        (c, s) = module_class.stop_function()
-        if c == OkErrEnum.OK:
-            print(f'    YAY!    {s}')
+        if (ret := module_class.stop_function())[0] == OkErrEnum.OK:
+            print(f'    YAY!    {ret[1]}')
         else:
-            print(f'    OOPS!   {s}')
+            print(f'    OOPS!   {ret[1]}')
 
-    def some_method(self) -> None:
-        print('HA THIS IS SOME_METHOD!')
+    def module_configure_command(self, _module: RTS_MODULE_ENUM,
+                                 _cfg: CONFIG_SUBMODES_ENUM):
+        module_tag = RTS_MODULE_ENUM(_module.upper())
+        module_class: type[RTS_MODULE_RECONFIGURABLE] = MODULE_MAPPER[
+                module_tag]  # type: ignore
+        cfg_tag = CONFIG_SUBMODES_ENUM(_cfg.upper())
+
+        print('rts-modeselect CONFMODULE:', _module, module_tag, module_class,
+              cfg_tag)
+
+        if (ret := module_class.reconfigure(cfg_tag))[0] == OkErrEnum.OK:
+            print(f'    YAY!    {ret[1]}')
+        else:
+            print(f'    OOPS!   {ret[1]}')
+
+    def module_confstart_command(self, _module: RTS_MODULE_ENUM,
+                                 _cfg: CONFIG_SUBMODES_ENUM):
+        module_tag = RTS_MODULE_ENUM(_module.upper())
+        module_class: type[RTS_MODULE_RECONFIGURABLE] = MODULE_MAPPER[
+                module_tag]  # type: ignore
+        cfg_tag = CONFIG_SUBMODES_ENUM(_cfg.upper())
+
+        print('rts-modeselect CONFMODULE:', _module, module_tag, module_class,
+              cfg_tag)
+
+        if (
+                ret :=
+                module_class.configure_and_start(cfg_tag))[0] == OkErrEnum.OK:
+            print(f'    YAY!    {ret[1]}')
+        else:
+            print(f'    OOPS!   {ret[1]}')
 
     def switch_pt_to_nir(self):
         retcode = invoke_sequence_pretty([

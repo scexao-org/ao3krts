@@ -65,7 +65,7 @@ class CONFIG_SUBMODES_ENUM(str, Enum):
 
 
 class RTS_MODULE(typ.Protocol):
-    MODULE_NAMETAG: typ.ClassVar[RTS_MODULE_ENUM]
+    MODULE_NAMETAG: RTS_MODULE_ENUM
     '''
     MANDATORY BOILERPLATE FOR SUBCLASSES:
 
@@ -83,7 +83,7 @@ class RTS_MODULE(typ.Protocol):
 
 class RTS_MODULE_RECONFIGURABLE(RTS_MODULE, typ.Protocol):
 
-    CFG_NAMES: typ.ClassVar[typ.Iterable[CONFIG_SUBMODES_ENUM]]
+    CFG_NAMES: list[CONFIG_SUBMODES_ENUM]
 
     @classmethod
     def reconfigure(cls, mode: CONFIG_SUBMODES_ENUM) -> T_Result:
@@ -97,7 +97,7 @@ class RTS_MODULE_RECONFIGURABLE(RTS_MODULE, typ.Protocol):
         ...
 
     @classmethod
-    def start_and_configure(cls, mode: CONFIG_SUBMODES_ENUM | None = None
+    def configure_and_start(cls, mode: CONFIG_SUBMODES_ENUM | None = None
                             ) -> T_Result:
         ...
 
@@ -130,7 +130,7 @@ class ThisClass:
         return OkErrEnum.OK, ''
 
     @classmethod
-    def start_and_configure(cls, mode: CONFIG_SUBMODES_ENUM | None = None
+    def configure_and_start(cls, mode: CONFIG_SUBMODES_ENUM | None = None
                             ) -> T_Result:
         if mode is None:
             mode = CONFIG_SUBMODES_ENUM(cls.CFG_NAMES[0])
