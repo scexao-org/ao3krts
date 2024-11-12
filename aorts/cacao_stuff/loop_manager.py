@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import typing as typ
+
 import os
 import time
 import re
@@ -12,12 +14,12 @@ logg = logging.getLogger(__name__)
 
 # Check bindings to swmain for logging. Duh.
 
-import typing as typ
-
 from pyMilk.interfacing.fps import FPS, FPSManager
 
 from .mfilt import MFilt
 from .cacaovars_reader import load_cacao_environment
+
+# TODO I can actually make a big fat test fixture with an entire CACAO loop deployment???
 
 
 class CacaoConfigReader:
@@ -81,7 +83,7 @@ class CacaoLoopManager(CacaoConfigReader):
 
     @property
     def mfilt(self) -> MFilt:
-        return MFilt.cast_from_FPS(
+        return MFilt.smartfps_downcast(
                 self.fps_ctrl.find_fps(f'mfilt-{self.loop_number}'))
 
     @property
@@ -146,15 +148,15 @@ class CacaoLoopManager(CacaoConfigReader):
         # perform a graceful fade-out of the mfilt
         # the open the loop, then stop the processes
 
-        saved_gain = self.mfilt.get_gain()
-        saved_mult = self.mfilt.get_mult()
-        self.mfilt.set_gain(0.0)
-        self.mfilt.set_mult(0.98)
+        saved_gain = self.mfilt.loopgain
+        saved_mult = self.mfilt.loopmult
+        self.mfilt.loopgain = 0.0
+        self.mfilt.loopmult = 0.98
         time.sleep(1.0)
 
-        self.mfilt.loop_open()
-        self.mfilt.set_gain(saved_gain)
-        self.mfilt.set_mult(saved_mult)
+        self.mfilt.loopON = False
+        self.mfilt.loopgain = saved_gain
+        self.mfilt.loopmult = saved_mult
 
         if do_runstop:
             self.runstop_aorun()
@@ -165,12 +167,12 @@ def cacao_locate_all_mfilts() -> dict[int, MFilt]:
             'mfilt-*'
     )  # We should DISCARD any DM we'd get in here, but there should be any.
     return {
-            int(fps.get_param('AOloopindex')): MFilt.cast_from_FPS(fps)
+            int(fps.get_param('AOloopindex')): MFilt.smartfps_downcast(fps)
             for fps in fps_ctrl.fps_cache.values()
     }
 
 
-def cacao_locate_mfilt(loop_index: int) -> FPS:
+def cacao_locate_mfilt(loop_index: int) -> MFilt:
     return MFilt(f'mfilt-{loop_index}')
 
 

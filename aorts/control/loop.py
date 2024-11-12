@@ -28,17 +28,17 @@ class AO3kNIRLoopObject:
         self.tt_loop.runstart_aorun()  # Start the AO 4 processes
 
     def loop_open(self) -> None:
-        self.tt_loop.mfilt.loop_open()
-        self.nir_loop.mfilt.loop_open()
+        self.tt_loop.mfilt.loopON = False
+        self.nir_loop.mfilt.loopON = False
 
     def loop_close(self) -> None:
-        self.nir_loop.mfilt.loop_zero()
-        self.tt_loop.mfilt.loop_zero()
-        self.nir_loop.mfilt.loop_close()
-        self.tt_loop.mfilt.loop_close()
+        self.nir_loop.mfilt.loopZERO = True
+        self.tt_loop.mfilt.loopZERO = True
+        self.nir_loop.mfilt.loopON = True
+        self.tt_loop.mfilt.loopON = True
 
     def set_dmgain(self, gain: float) -> None:
-        self.nir_loop.mfilt.set_gain(gain)
+        self.nir_loop.mfilt.loopgain = gain
 
     def set_ttgain(self, gain: float) -> None:
-        self.tt_loop.mfilt.set_gain(gain)
+        self.tt_loop.mfilt.loopgain = gain

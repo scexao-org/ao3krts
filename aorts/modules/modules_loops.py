@@ -27,17 +27,20 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE Protocol
 
         # Just in case?
         #loop_mgr.runstop_aorun()
-        loop_mgr.mfilt.loop_open()
+        loop_mgr.mfilt.loopON = False
 
+        # TODO TODO TODO
         loop_mgr.pre_run_reconfigure_loop_matrices(
-        )  # Should this toggle symlinks? call cacao-aorun-042 ? Load the default one and then algebraically manipulate it to adapt to OLGS/NLGS modes?
+        )  # Should this toggle symlinks? call cacao-aorun-042 ? Load the default one and then algebraically manipulate it to adapt to OLGS/NLGS modes? # type: ignore
         loop_mgr.pre_run_reload_cms_to_shm(
-        )  # I suppose this should just call cacao-aorun-042 (which)
+        )  # I suppose this should just call cacao-aorun-042 (which) # type: ignore # FIXME TEMP
 
         # Can probably do better? By checking that e.g. tmuxes, confs, etc are live.
         loop_mgr.runstart_aorun()
 
-        loop_mgr.post_startup_config_change_given_mode_reconfigure(loop_mode)
+        # TODO TODO TODO
+        loop_mgr.post_startup_config_change_given_mode_reconfigure(
+                loop_mode)  # type: ignore
 
         time.sleep(1.0)
 
@@ -56,7 +59,7 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE Protocol
 
         loop_mgr = CacaoLoopManager(cls.LOOP_FULL_NAME, None)
 
-        loop_mgr.mfilt.loop_open()
+        loop_mgr.mfilt.loopON = False
         loop_mgr.runstop_aorun(stop_acqWFS=True)
 
         time.sleep(1.0)
