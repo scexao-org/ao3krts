@@ -77,6 +77,16 @@ class BIM188Manager(DMCombManager):
     def __init__(self) -> None:
         super().__init__(config.DMNUM_BIM188)
 
+    def flat(self) -> None:
+        self.zero(do_ch_zero=False)
+        # FIXME CHANGE THAT TO A SYMLINK? A CONF?
+        flat: np.ndarray = fits.getdata(
+                os.environ['HOME'] +
+                '/conf/bim188_flats/current_flat_symlink.fits')  # type: ignore
+        assert flat.shape == (self.SHAPE, )
+        assert self.dm_shms[0] is not None
+        self.dm_shms[0].set_data(flat, check_dt=True)
+
 
 class TTManager(DMCombManager):
 
@@ -84,6 +94,24 @@ class TTManager(DMCombManager):
 
     def __init__(self) -> None:
         super().__init__(config.DMNUM_TT)
+
+    '''
+    THOSE WERE NICE WE PROBABLY WANT TO KEEP THEM
+
+    def xset(self, val_x: float) -> None:
+        vals = self.tt_shm_0.get_data()
+        vals[0] = val_x
+        self.tt_shm_0.set_data(vals)
+
+    def yset(self, val_x: float) -> None:
+        vals = self.tt_shm_0.get_data()
+        vals[1] = val_x
+        self.tt_shm_0.set_data(vals)
+
+    def set(self, val_x: float, val_y: float) -> None:
+        self.tt_shm_0.set_data(np.array([val_x, val_y], np.float32),
+                               autorelink_if_need=True)
+    '''
 
 
 class DM3kManager(DMCombManager):
@@ -96,8 +124,11 @@ class DM3kManager(DMCombManager):
     def flat(self) -> None:
         self.zero(do_ch_zero=False)
         # FIXME CHANGE THAT TO A SYMLINK? A CONF?
-        flat = fits.getdata(os.environ['HOME'] +
-                            '/conf/alpao_flats/current_flat_symlink.fits')
+        flat: np.ndarray = fits.getdata(
+                os.environ['HOME'] +
+                '/conf/alpao_flats/current_flat_symlink.fits')  # type: ignore
+        assert flat.shape == self.SHAPE
+        assert self.dm_shms[0] is not None
         self.dm_shms[0].set_data(flat, check_dt=True)
 
 
