@@ -59,3 +59,24 @@ def ctfixt_server_w_status_command(ctfixt_server_pair):
 
     pyro_server.remove_device_by_name(s.NAME)
     tcp_server.remove_device_by_name(s.NAME)
+
+
+# Pretty sure fixture actually lets us avoid server/client deadlock!
+@pytest.fixture
+def ctfixt_server_w_smartfps(ctfixt_server_pair):
+    pyro_server: PyroServer = ctfixt_server_pair[0]
+    tcp_server: ObjectDispatchingServer = ctfixt_server_pair[1]
+
+    from aorts.cacao_stuff.mfilt import MFilt
+
+    fps = MFilt.create('pytest_mfilt', force_recreate=True)
+    MFilt.NAME = 'FPS'
+    fps.NAME = 'FPS'
+
+    pyro_server.add_device(fps, 'FPS')
+    tcp_server.add_device(key='fps', obj=fps)
+
+    yield pyro_server, tcp_server
+
+    pyro_server.remove_device_by_name('FPS')
+    tcp_server.remove_device_by_name('fps')

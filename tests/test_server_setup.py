@@ -18,6 +18,16 @@ def test_rts_server_pair_works(ctfixt_server_pair):
     assert isinstance(tcp_server, ObjectDispatchingServer)
 
 
-#def test_make_servers_hang_about(rts_server_pair):
-#    # This test can only be run with "-s" since it requires stdin
-#    input('THIS IS BLOCKING THE SERVERS')
+def test_smartfps_in_pyroserver(ctfixt_server_w_smartfps):
+    pyro_server, tcp_server = ctfixt_server_w_smartfps
+
+    ps, ts = ctfixt_server_w_smartfps
+    assert 'FPS' in ps.currentNames
+    assert 'fps' in ts.registered_objects
+
+    from swmain.network.pyroclient import connect_generic
+
+    # No errors
+    fps_proxy = connect_generic('FPS', *pyro_server.nsAddress)
+
+    #assert fps_proxy.looplimit == 0.0
