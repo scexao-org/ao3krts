@@ -63,11 +63,11 @@ class RTMDataSupervisor:
 
         # TODO: have a pointer to the correct curvature.
         self.curv_shm = SHM(config.HOWFS_SHM)
-        self.lowfs_tilts_shm = SHM(config.SHMNAME_LOWFSTILTS)
+        self.lowfs_tilts_shm = SHM(config.SHMNAME_LOWFS)
 
         self.apd_shm = SHM(config.SHMNAME_APD)
 
-        self.bim188_shm = SHM(config.SHMNAME_DM)
+        self.bim188_shm = SHM(config.SHMNAME_BIM188)
 
         self.tt_shm = SHM(config.SHMNAME_TT)
         self.wtt_shm = SHM(config.SHMNAME_WTT)
