@@ -34,9 +34,7 @@ class Iiwi_RTSModule:  # implements RTS_MODULE Protocol
         from camstack.cam_mains.main import main
         main(cam_name_arg='IIWI')  # TODO this can change
         time.sleep(1)
-        tmux_iiwi = tmux.find('iiwi_ctrl')  # Hope it's not None
-        if tmux_iiwi is None:
-            return (ERR, "Iiwi startup failure (no tmux)")
+        tmux_iiwi = tmux.find_or_create('iiwi_ctrl')  # Hope it's not None
 
         # Wait for the pyro proxy to go live
         now = time.time()
@@ -59,7 +57,9 @@ class Iiwi_RTSModule:  # implements RTS_MODULE Protocol
         This really should not be needed at all.
         '''
         # Teardown the tmux
-        tmux_iiwi = tmux.find_or_create('iiwi_ctrl')
+        tmux_iiwi = tmux.find('iiwi_ctrl')
+        if tmux_iiwi is None:
+            return (ERR, "Iiwi startup failure (no tmux)")
         tmux.send_keys(tmux_iiwi, 'release(); quit()')
 
         if not (tmux.expect_no_pid(tmux_iiwi, timeout_sec=15)):
