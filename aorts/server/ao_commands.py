@@ -15,6 +15,7 @@ from .dispatcher import ClickDispatcher, ClickRemotelyInvokableObject
 import click
 
 from ..control.loop import AO3kNIRLoopObject
+from ..control.foc_offloader import FocusLGSOffloader
 
 
 class LoopCommand(ClickRemotelyInvokableObject):
@@ -53,3 +54,21 @@ class GainCommand(ClickRemotelyInvokableObject):
     @click.pass_obj
     def tt_gain(self, gain: float):
         LoopCommand.CALLEE.set_ttgain(gain)
+
+
+class FocusOffloaderCommand(ClickRemotelyInvokableObject):
+    NAME = 'FOCOFFL'
+    DESCR = 'Focus offloader av. gain'
+    DISPATCHER = ClickDispatcher(click_group=NAME)
+    CALLEE = FocusLGSOffloader()
+
+    @DISPATCHER.click_invokator.command('ttg')
+    @click.argument('avg_gain', type=float)
+    @staticmethod
+    def set_av_gain(avg_gain: float):
+        FocusOffloaderCommand.CALLEE.set_ave_gain(avg_gain)
+
+    @DISPATCHER.click_invokator.command('reset')
+    @staticmethod
+    def reset():
+        FocusOffloaderCommand.CALLEE.reset()

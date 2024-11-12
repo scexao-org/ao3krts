@@ -19,7 +19,7 @@ import time
 # Collection of control objects
 from .test_command import ActualInterestingTestObject
 from .device_commands import DM3kCommand, TTCommand, StatusCommand, DM3kHKLCommand
-from .ao_commands import LoopCommand, GainCommand
+from .ao_commands import LoopCommand, GainCommand, FocusOffloaderCommand
 from .system_commands import ModeSwitcher
 
 
@@ -41,6 +41,7 @@ def main_g2if():
             'gain': GainCommand(),
             'status': StatusCommand(),
             'modes': ModeSwitcher(),
+            'foc': FocusOffloaderCommand(),
     }
 
     from scxconf import PYRONSAO_HOST, PYRONSAO_PORT, IP_AORTS_SUMMIT
