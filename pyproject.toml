@@ -9,7 +9,7 @@ authors = [
 dependencies = [
 ]
 
-description = "AO188 upgraded RTS codebase"
+description = "AO RTS23 codebase"
 name = "aorts"
 readme = "README.md"
 version = "1.0"
@@ -24,7 +24,7 @@ script-files = [
 [project.scripts]
 g2if-pyserver = "aorts.server.server_main:main_g2if"
 ao-testobj = "aorts.control.test_obj:TestControl.main"
-rts-modeselect = "aorts.toplevel.rts_modeselect_main:modeselect"
+rts-modeselect = "aorts.modules.rts_modeselect_main:modeselect"
 
 [tool.pytest.ini_options]
 addopts = [
@@ -46,7 +46,8 @@ include = ["aorts", "rtm4obcp"]
 exclude = ["build/",
            "**/__pycache",
            "**/.mypy_cache",
-           "rtm4obcp/old_rtm-V1.3"
+           "rtm4obcp/old_rtm-V1.3",
+           "aorts/datafetch" # One day if we re-up the legacy interface requirements...
            ]
 reportMissingImports = true
 reportMissingTypeStubs = false
