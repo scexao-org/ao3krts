@@ -8,53 +8,44 @@ logg = logging.getLogger(__name__)
 
 import numpy as np
 
-from ..server.dispatcher import DocoptDispatchingObject, locking_func_decorator
-
 from pyMilk.interfacing.shm import SHM
 
 from .. import config
 
 
-class WTTManager(DocoptDispatchingObject):
-    NAME = 'WTT'
-
-    DESCR = 'WTT control'
-
-    DOCOPTSTR = '''WTT control
-Usage:
-    wtt x (set|incr) <x>
-    wtt y (set|incr) <y>
-    wtt center [-a]
-    wtt zero [-a]
-    wtt (set|incr) <x> <y>
-
-Options:
-    -a      zero all channels (instead of only chan 0)
-    <x>     Value for 1st axis (volts) [default: 5]
-    <y>     Value for 2nd axis (volts) [default: 5]
-'''
-
-    DOCOPTCASTER = {
-            '<x>': float,
-            '<y>': float,
-    }
+class GenericTTControl:
+    NAME: str
 
     def __init__(self):
-        ...
+        self.shm = SHM(self.NAME)
 
-    @locking_func_decorator
     def zero(self, zero_all: bool = False) -> None:
         self.set(5, 5)
-        ...
 
-    @locking_func_decorator
+    def x(self) -> float:
+        return self.shm.get_data()[0]
+
+    def y(self) -> float:
+        return self.shm.get_data()[1]
+
     def xset(self, val_x: float) -> None:
-        ...
+        self.set(val_x, None)
 
-    @locking_func_decorator
-    def yset(self, val_x: float) -> None:
-        ...
+    def yset(self, val_y: float) -> None:
+        self.set(None, val_y)
 
-    @locking_func_decorator
-    def set(self, val_x: float, val_y: float) -> None:
-        ...
+    def set(self, val_x: float | None, val_y: float | None) -> None:
+        buff = self.shm.get_data(copy=True)
+        if val_x is not None:
+            buff[0] = val_x
+        if val_y is not None:
+            buff[1] = val_y
+        self.shm.set_data(buff)
+
+
+class WTTControl(GenericTTControl):
+    SHM_NAME = 'wtt_value_float'
+
+
+class CTTControl(GenericTTControl):
+    SHM_NAME = 'ctt_value_float'
