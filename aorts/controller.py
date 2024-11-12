@@ -10,8 +10,7 @@ import enum
 from .cacao_stuff.loop_manager import CacaoLoopManager
 
 from . import config
-
-
+"""
 
 class TOPLEVEL_MODE(enum.Enum):
     UNKNOWN = 'UNKNOWN'
@@ -21,14 +20,14 @@ class TOPLEVEL_MODE(enum.Enum):
     LGS_LOWFS_TO_AU1 = 'OLD_LGS'
     LGS_HOWFS_TO_AU1 = 'NEW_LGS'
     TT_ONLY_LOWFS = 'TT_ONLY'
-    
+
 class LOOP_TAG(enum.Enum):
     HOWFS = 'HOWFS'
     LOWFS = 'LOWFS'
     IRPYR = 'IRPYR'
     NLCWFS = 'NLCWFS'
     TTOFFL = 'TTOFFLOAD'
-    
+
 
 
 class RtmControlSupervisorBIM188:
@@ -68,7 +67,7 @@ class RtmControlSupervisorBIM188:
 
         # Kill gain, let decay, loopON = OFF, restore gain
         self.howfs_loop.graceful_stop()
-        
+
         self.lowfs_loop.graceful_stop()  # ?
 
     def reconfigure_some_mode(self, mode: TOPLEVEL_MODE) -> None:
@@ -111,11 +110,12 @@ class RtmControlSupervisorBIM188:
 
     def reconfigure_ttonly(self):
         ...
-    
-    
+
+
     # Mark ready to close LGS loop. Perform LOWFS NGS acquisition and mark ready for offload.
     def handover_tt():
         lower_mgain_howfs_tt_incrementally
         increase_gain_lowfs_loop_incrementally
         increase_gain_tt_offloader_incrementally
 
+"""

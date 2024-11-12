@@ -3,9 +3,7 @@ from __future__ import annotations
 # Typing
 import typing as typ
 
-from aorts.datafinder import RtmDataSupervisor
-if typ.TYPE_CHECKING:
-    from ..datafinder import RtmDataSupervisor
+from ..datafinder import RTMDataSupervisor
 
 # Stock external
 import abc
@@ -21,7 +19,7 @@ from pyMilk.interfacing.fps import FPS
 class TopicFetcher(typ.Protocol):
 
     @abc.abstractmethod
-    def __init__(self, data_vault: RtmDataSupervisor, *args, **kwargs) -> None:
+    def __init__(self, data_vault: RTMDataSupervisor, *args, **kwargs) -> None:
         pass
 
     @abc.abstractmethod
@@ -31,7 +29,7 @@ class TopicFetcher(typ.Protocol):
 
 class FPSFetcher(TopicFetcher):
 
-    def __init__(self, data_vault: RtmDataSupervisor, fps_name: str,
+    def __init__(self, data_vault: RTMDataSupervisor, fps_name: str,
                  topics: typ.Dict[str, typ.Any]) -> None:
         self.fps = FPS(fps_name)
         # TODO? some internal statuses to fetch if exists, autorelink, tmux alive, conf alive,
@@ -49,7 +47,7 @@ class SHMFetcher(TopicFetcher):
 
     def __init__(
             self,
-            data_vault: RtmDataSupervisor,
+            data_vault: RTMDataSupervisor,
             data_name: str,
             shm_name: str,
             shm_callables: typ.Dict[str, typ.Callable[[SHM], typ.Any]] = {},
