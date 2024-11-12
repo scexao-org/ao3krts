@@ -70,8 +70,8 @@ SHMNAME_CURV2KD = 'curv_2ksingle'
 
 SHMNAME_BIM188 = 'bim188_tele'
 SHMNAME_TT = 'tt_telemetry'
-SHMNAME_CTT = 'wtt_telemetry'
-SHMNAME_WTT = 'ctt_telemetry'
+SHMNAME_WTT = 'wtt_telemetry'
+SHMNAME_CTT = 'ctt_telemetry'
 SHMNAME_ALPAO = 'dm64out'
 
 HOWFS_SHM = f'aol{LOOPNUM_HOAPD_BIM188}_wfsim'
