@@ -2,42 +2,24 @@ from __future__ import annotations
 
 import typing as typ
 
-from pyMilk.interfacing.fps import FPS
+from pyMilk.interfacing.fps import SmartAttributesFPS, FPS_type, FPS_flags
 
 
-class MFilt(FPS):
+class MFilt(SmartAttributesFPS):
+    loopON: bool
+    loopZERO: bool
+    loopgain: float
+    loopmult: float
+    looplimit: float
 
-    def __init__(self, name: str) -> None:
-        super().__init__(name)
-
-    @classmethod
-    def cast_from_FPS(cls, fps: FPS) -> MFilt:
-        fps.__class__ = MFilt  # yes, that's a cast ;)
-        return fps  # type: ignore
-
-    def loop_open(self) -> None:
-        self.set_param('loopON', False)
-
-    def loop_close(self) -> None:
-        self.set_param('loopON', True)
-
-    def loop_zero(self) -> None:
-        self.set_param('loopZERO', True)
-
-    def get_loop_status(self) -> bool:
-        return self.get_param('loopON')
-
-    def get_gain(self) -> float:
-        return self.get_param('loopgain')  # type: ignore
-
-    def set_gain(self, gain: float) -> None:
-        self.set_param('loopgain', gain)
-
-    def set_mult(self, mult: float) -> None:
-        self.set_param('loopmult', mult)
-
-    def get_mult(self) -> float:
-        return self.get_param('loopmult')  # type: ignore
-
-    def set_modlimit(self, limit: float) -> None:
-        self.set_param('looplimit', limit)
+    _DICT_METADATA = {
+            'loopON': ('loop on/off (off=freeze)', FPS_type.ONOFF,
+                       FPS_flags.DEFAULT_INPUT),
+            'loopZERO': ('loop zero', FPS_type.ONOFF, FPS_flags.DEFAULT_INPUT),
+            'loopgain':
+                    ('loop gain', FPS_type.FLOAT32, FPS_flags.DEFAULT_INPUT),
+            'loopmult':
+                    ('loop mult', FPS_type.FLOAT32, FPS_flags.DEFAULT_INPUT),
+            'looplimit':
+                    ('loop limit', FPS_type.FLOAT32, FPS_flags.DEFAULT_INPUT),
+    }

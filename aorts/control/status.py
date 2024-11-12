@@ -74,10 +74,10 @@ class StatusObj:
         '''
             This function performs the internal polling necessary to have an up-to-date status
         '''
-        self.loop_state = self.mfilt_nir3kloop.get_loop_status()
+        self.loop_state = self.mfilt_nir3kloop.loopON
 
-        self.dmg = self.mfilt_nir3kloop.get_gain()
-        self.ttg = self.mfilt_ttoffload.get_gain()
+        self.dmg = self.mfilt_nir3kloop.loopgain
+        self.ttg = self.mfilt_ttoffload.loopgain
         self.htt: float = 0.0
         self.hdf: float = 0.0
         self.ltt: float = 0.0
