@@ -10,6 +10,11 @@ from aorts.server.test_command import ActualInterestingTestObject
 
 from scxconf import PYRONSAO_PORT
 
+# Fetch autouse MILK fixtures from pyMilk
+pytest_plugins = [
+        "tests.conftestaux.milk",
+]
+
 
 # ConfTest.py FIXTture == ctfixt_
 @pytest.fixture(scope='session')
@@ -49,19 +54,22 @@ def ctfixt_server_w_status_command(ctfixt_server_pair):
     pyro_server: PyroServer = ctfixt_server_pair[0]
     tcp_server: ObjectDispatchingServer = ctfixt_server_pair[1]
 
-    from aorts.server.device_commands import StatusCommand
-    s = StatusCommand()
+    # FIXME we cant do that in simulated fixture mode...
+    # And we can't even import because we have all sort of static
+    # import time stuff in the command package
+    #from aorts.server.device_commands import StatusCommand
+    # Cuz we dont have (yet) the underlying FPS / SHM
+    # s = StatusCommand()
 
-    pyro_server.add_device(s.CALLEE, s.NAME)
-    tcp_server.add_device(key=s.NAME, obj=s)
+    #pyro_server.add_device(s.CALLEE, s.NAME)
+    #tcp_server.add_device(key=s.NAME, obj=s)
 
     yield pyro_server, tcp_server
 
-    pyro_server.remove_device_by_name(s.NAME)
-    tcp_server.remove_device_by_name(s.NAME)
+    #pyro_server.remove_device_by_name(s.NAME)
+    #tcp_server.remove_device_by_name(s.NAME)
 
 
-# Pretty sure fixture actually lets us avoid server/client deadlock!
 @pytest.fixture
 def ctfixt_server_w_smartfps(ctfixt_server_pair):
     pyro_server: PyroServer = ctfixt_server_pair[0]
@@ -70,7 +78,7 @@ def ctfixt_server_w_smartfps(ctfixt_server_pair):
     from aorts.cacao_stuff.mfilt import MFilt
 
     fps = MFilt.create('pytest_mfilt', force_recreate=True)
-    MFilt.NAME = 'FPS'
+    #MFilt.NAME = 'FPS'
     fps.NAME = 'FPS'
 
     pyro_server.add_device(fps, 'FPS')
