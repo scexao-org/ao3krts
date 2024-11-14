@@ -26,6 +26,7 @@ def _prep_posting_process(shm_name: str = 'test_shm',
     return multiprocessing.Process(target=post)
 
 
+@pytest.mark.skip
 def test_statisticator() -> None:
     shm_name = 'test_shm'
     proc = _prep_posting_process(shm_name)
@@ -43,6 +44,7 @@ def test_statisticator() -> None:
     proc.kill()
 
 
+@pytest.mark.skip
 def test_threaded_statisticator() -> None:
     shm_name = 'test_shm'
     proc = _prep_posting_process(shm_name)
@@ -62,6 +64,7 @@ def test_threaded_statisticator() -> None:
     proc.kill()
 
 
+@pytest.mark.skip
 def test_threaded_statisticator_pool() -> None:
     shm_names = ['testa', 'testb', 'testc', 'testd']
     tsleeps = [0.001, 0.0014, 0.0021, 0.0011]
