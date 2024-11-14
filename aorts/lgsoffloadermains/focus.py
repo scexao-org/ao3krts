@@ -19,6 +19,7 @@ from ..control.foc_offloader import FocusLGSOffloaderFPS
 
 
 @click.command('main_foc_offloader')
+@click.argument('fps_name', type=str, default='foc_offl')
 def main_foc_offloader(fps_name: str = 'foc_offl'):
 
     # For logging
@@ -42,7 +43,7 @@ def main_foc_offloader(fps_name: str = 'foc_offl'):
 
     while True:
 
-        if (time.time() - last_print_time) > 4.0:
+        if (time.time() - last_print_time) > 1.0:
             print("I'm alive!!")
             print("Here's an FPS dump:")
             for k in fps.key_types:

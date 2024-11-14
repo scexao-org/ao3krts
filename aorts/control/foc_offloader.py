@@ -23,22 +23,26 @@ class FocusLGSOffloaderFPS(SmartAttributesFPS):
     av_tilt: float  #= ('av. tilt', FPS_type.FLOAT64, FPS_flags.DEFAULT_OUTPUT)
     av_focus: float  #=('av. focus', FPS_type.FLOAT64, FPS_flags.DEFAULT_OUTPUT)
 
+    # yapf: disable
     _DICT_METADATA = {
             'in_stream': ('Input stream', FPS_type.STREAMNAME,
                           FPS_flags.DEFAULT_INPUT_STREAM),
-            'on_off':
-                    ('On/off toggle', FPS_type.ONOFF, FPS_flags.DEFAULT_INPUT),
-            'gain': ('Averaging gain', FPS_type.FLOAT64, FPS_flags.DEFAULT_INPUT
-                     ),
+            'on_off': ('On/off toggle', FPS_type.ONOFF,
+                       FPS_flags.DEFAULT_INPUT),
+            'gain': ('Averaging gain', FPS_type.FLOAT64,
+                     FPS_flags.DEFAULT_INPUT),
             'reset': ('Reset ave. value', FPS_type.ONOFF,
                       FPS_flags.DEFAULT_INPUT),
             'm_frate': ('Measured framerate', FPS_type.FLOAT64,
                         FPS_flags.DEFAULT_OUTPUT),
-            'av_tip': ('av. tip', FPS_type.FLOAT64, FPS_flags.DEFAULT_OUTPUT),
-            'av_tilt': ('av. tilt', FPS_type.FLOAT64, FPS_flags.DEFAULT_OUTPUT),
-            'av_focus':
-                    ('av. focus', FPS_type.FLOAT64, FPS_flags.DEFAULT_OUTPUT),
+            'av_tip': ('av. tip', FPS_type.FLOAT64,
+                       FPS_flags.DEFAULT_OUTPUT),
+            'av_tilt': ('av. tilt', FPS_type.FLOAT64,
+                        FPS_flags.DEFAULT_OUTPUT),
+            'av_focus': ('av. focus', FPS_type.FLOAT64,
+                         FPS_flags.DEFAULT_OUTPUT),
     }
+    # yapf: enable
 
 
 class FocusLGSOffloader:
