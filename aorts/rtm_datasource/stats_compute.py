@@ -20,7 +20,9 @@ class ShmStatisticator:
 
     def __init__(self, shm_name: str) -> None:
 
-        self.shm = SHM(shm_name, symcode=0)
+        # Autosqueeze is False and using shape_c to conserve
+        # singleton dims
+        self.shm = SHM(shm_name, symcode=0, autoSqueeze=False)
         sz, tp = self.shm.shape_c, self.shm.nptype
 
         # Create SHMs for stats.
@@ -60,9 +62,13 @@ class ShmStatisticator:
 
         self.compute_and_post_stats()
 
-    def test_me_unthreaded(self):
-        while True:
-            self.synced_compute_and_post_stats()
+    def test_me_unthreaded(self, max_it: int | None = None):
+        if max_it is None:
+            while True:
+                self.synced_compute_and_post_stats()
+        else:
+            for _ in range(max_it):
+                self.synced_compute_and_post_stats()
 
 
 class ThreadedStatisticator(ShmStatisticator):
