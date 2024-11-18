@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 import time
-import random
+from dataclasses import dataclass
 import multiprocessing
 
 from pyMilk.interfacing.shm import SHM
@@ -13,79 +13,119 @@ import pytest  # TODO look at pytest. Right now those tests are valid if we see:
 # c - the var SHM going towards 1
 
 
-def _prep_posting_process(shm_name: str = 'test_shm',
-                          tsleep: float = 0.001) -> multiprocessing.Process:
-    shm = SHM(shm_name,
-              ((random.randint(100, 200), random.randint(1, 3)), np.float32))
+@dataclass
+class ARGS:
+    shm_name: str
+    shm_shape: tuple[int, ...]
+    t_sleep: float = 0.001
 
-    def post():
+
+@pytest.fixture
+def fixt_shm_posting_process(request):
+
+    # defaults
+    prm: list[ARGS] = [ARGS('test_shm', (123, 7))]
+
+    if hasattr(request, 'param'):
+        if isinstance(request.param, ARGS):
+            prm = [request.param]
+        elif isinstance(request.param, list):
+            assert all([isinstance(x, ARGS) for x in request.param])
+            prm = request.param
+
+    shms = [SHM(p.shm_name, (p.shm_shape, np.float32)) for p in prm]
+
+    def post(shm: SHM, t_sleep: float):
         while True:
-            time.sleep(tsleep)  # Will ballpark to ~700 Hz
+            time.sleep(t_sleep)  # Will ballpark to ~700 Hz
             shm.set_data(np.random.randn(*shm.shape).astype(np.float32))
 
-    return multiprocessing.Process(target=post)
+    procs = [
+            multiprocessing.Process(target=post, args=(shm, p.t_sleep))
+            for p, shm in zip(prm, shms)
+    ]
+    for proc in procs:
+        proc.start()
+
+    yield prm, procs
+
+    for proc in procs:
+        proc.kill()
+        proc.join()
 
 
-@pytest.mark.skip
-def test_statisticator() -> None:
-    shm_name = 'test_shm'
-    proc = _prep_posting_process(shm_name)
+def test_fixt_prep_shm_posting_process(fixt_shm_posting_process):
+
+    args, procs = fixt_shm_posting_process
+    shm = SHM('test_shm')
+    assert shm.shape == (123, 7)
+
+    now = time.time()
+    assert shm.get_data(True, checkSemAndFlush=True, timeout=0.5) is not None
+    assert time.time() - now < 0.1
+
+
+@pytest.mark.parametrize(
+        'fixt_shm_posting_process',
+        [
+                ARGS('y', (123, 7)),
+                ARGS('y', (1, 7)),  # Overwrite size ok?
+                ARGS('yads', (14, 237))
+        ],
+        indirect=True)
+def test_statisticator(fixt_shm_posting_process) -> None:
+    args, procs = fixt_shm_posting_process
 
     from aorts.rtm_datasource.stats_compute import ShmStatisticator
-    stat = ShmStatisticator(shm_name)
+    stat = ShmStatisticator(args[0].shm_name)
 
-    proc.start()
+    stat.test_me_unthreaded(max_it=1000)
 
-    try:
-        stat.test_me_unthreaded()
-    except KeyboardInterrupt:
-        pass
+    # FIXME test something for real.
 
-    proc.kill()
+    assert True
 
 
-@pytest.mark.skip
-def test_threaded_statisticator() -> None:
-    shm_name = 'test_shm'
-    proc = _prep_posting_process(shm_name)
+@pytest.mark.parametrize('fixt_shm_posting_process',
+                         [ARGS('y', (123, 7)),
+                          ARGS('yads', (14, 237))], indirect=True)
+def test_threaded_statisticator(fixt_shm_posting_process) -> None:
+    args, proc = fixt_shm_posting_process
 
     from aorts.rtm_datasource.stats_compute import ThreadedStatisticator
-    stat = ThreadedStatisticator(shm_name)
-
-    proc.start()
+    stat = ThreadedStatisticator(args[0].shm_name)
+    stat.synced_compute_and_post_stats()
     stat.start_thread()
 
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        stat.stop_thread()
+    start_time = time.time()
 
-    proc.kill()
+    cnt0 = stat.cnt0  # only exists if stat has done 1st it
+    while time.time() - start_time < 1.0:
+        time.sleep(0.01)
+    stat.stop_thread()
+
+    assert stat.thread is None
+    assert stat.cnt0 - cnt0 > 100
 
 
-@pytest.mark.skip
-def test_threaded_statisticator_pool() -> None:
-    shm_names = ['testa', 'testb', 'testc', 'testd']
-    tsleeps = [0.001, 0.0014, 0.0021, 0.0011]
-    procs = [
-            _prep_posting_process(name, tsleep)
-            for (name, tsleep) in zip(shm_names, tsleeps)
-    ]
+@pytest.mark.parametrize('fixt_shm_posting_process',
+                         [[ARGS('testa', (123, 7), 0.001)],
+                          [
+                                  ARGS('testa', (14, 237), 0.00123),
+                                  ARGS('testb', (1, 23), 0.01)
+                          ],
+                          [
+                                  ARGS('testa', (1, 2), 0.001),
+                                  ARGS('testb', (2, 1), 0.0014),
+                                  ARGS('testc', (12, 17), 0.0021),
+                                  ARGS('testd', (3, 2, 5), 0.1),
+                          ]], indirect=True)
+def test_threaded_statisticator_pool(fixt_shm_posting_process) -> None:
+
+    args, _ = fixt_shm_posting_process
 
     from aorts.rtm_datasource.stats_compute import ThreadStatisticatorPool
-    stat_tpool = ThreadStatisticatorPool(shm_names)
-
-    for p in procs:
-        p.start()
+    stat_tpool = ThreadStatisticatorPool([arg.shm_name for arg in args])
 
     stat_tpool.start_threads()
-
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        stat_tpool.stop_threads()
-
-    for p in procs:
-        p.kill()
+    stat_tpool.stop_threads()
