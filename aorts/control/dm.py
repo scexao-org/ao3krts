@@ -79,10 +79,13 @@ class BIM188Manager(DMCombManager):
 
     def flat(self) -> None:
         self.zero(do_ch_zero=False)
-        # FIXME CHANGE THAT TO A SYMLINK? A CONF?
-        flat: np.ndarray = fits.getdata(
+        # force resolution of symlink?
+        flat_file: str = os.path.realpath(
                 os.environ['HOME'] +
-                '/conf/bim188_flats/current_flat_symlink.fits')  # type: ignore
+                '/conf/bim188_flats/current_flat_symlink.fits')
+
+        flat: np.ndarray = fits.getdata(flat_file)  # type: ignore
+
         assert flat.shape == (self.SHAPE, )
         assert self.dm_shms[0] is not None
         self.dm_shms[0].set_data(flat, check_dt=True)
@@ -123,10 +126,13 @@ class DM3kManager(DMCombManager):
 
     def flat(self) -> None:
         self.zero(do_ch_zero=False)
-        # FIXME CHANGE THAT TO A SYMLINK? A CONF?
-        flat: np.ndarray = fits.getdata(
+
+        # force resolution of symlink?
+        flat_file: str = os.path.realpath(
                 os.environ['HOME'] +
-                '/conf/alpao_flats/current_flat_symlink.fits')  # type: ignore
+                '/conf/alpao_flats/current_flat_symlink.fits')
+
+        flat: np.ndarray = fits.getdata(flat_file)  # type: ignore
         assert flat.shape == self.SHAPE
         assert self.dm_shms[0] is not None
         self.dm_shms[0].set_data(flat, check_dt=True)
