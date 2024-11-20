@@ -21,15 +21,20 @@ from .cacaovars_reader import load_cacao_environment
 
 # TODO I can actually make a big fat test fixture with an entire CACAO loop deployment???
 
+AOLOOP_ROOT = pathlib.Path(os.environ['HOME']) / 'AOloop'
+
 
 class CacaoConfigReader:
 
-    def __init__(self, loop_full_name: str, loop_number: int | None) -> None:
+    def __init__(self, loop_full_name: str, loop_number: int | None,
+                 root_all: str | pathlib.Path = AOLOOP_ROOT) -> None:
 
         self.loop_full_name = loop_full_name
 
-        self.conf_folder = pathlib.Path(
-                os.environ['HOME']) / 'AOloop' / f'{self.loop_full_name}-conf'
+        if isinstance(root_all, str):
+            root_all = pathlib.Path(root_all)
+
+        self.conf_folder = root_all / f'{self.loop_full_name}-conf'
 
         self.cacao_environment = load_cacao_environment(self.conf_folder /
                                                         'cacaovars.bash')
@@ -43,15 +48,15 @@ class CacaoConfigReader:
 
         self.loop_name = self.cacao_environment['CACAO_LOOPNAME']
 
-        self.rootdir = pathlib.Path(
-                os.environ['HOME']) / 'AOloop' / f'{self.loop_name}-rootdir'
+        self.rootdir = root_all / f'{self.loop_name}-rootdir'
 
 
 class CacaoLoopManager(CacaoConfigReader):
 
-    def __init__(self, loop_full_name: str, loop_number: int | None) -> None:
+    def __init__(self, loop_full_name: str, loop_number: int | None,
+                 root_all: str | pathlib.Path = AOLOOP_ROOT) -> None:
 
-        super().__init__(loop_full_name, loop_number)
+        super().__init__(loop_full_name, loop_number, root_all=root_all)
 
         self.fps_ctrl = FPSManager(
                 f'*-{self.loop_number}'
@@ -72,6 +77,18 @@ class CacaoLoopManager(CacaoConfigReader):
                 '    ' + fps.__str__()
                 for fps in self.fps_ctrl.fps_cache.values()
         ])
+
+    def obtain_tmux_handles(self):
+        from swmain.infra import tmux
+        self.fps_ctrl.rescan_all()
+        self.tmux_handles: dict[str, tuple[tmux.Pane_T, tmux.Pane_T,
+                                           tmux.Pane_T]] = {}
+        for fps_name in self.fps_ctrl.fps_cache:
+            self.tmux_handles[fps_name] = (
+                    tmux.find(fps_name, window_name='ctrl'),
+                    tmux.find(fps_name, window_name='conf'),
+                    tmux.find(fps_name, window_name='run'),
+            )
 
     @property
     def acquWFS(self) -> FPS:
