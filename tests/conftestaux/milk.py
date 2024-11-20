@@ -1,5 +1,4 @@
-import os
-import glob
+import os, shutil
 
 import pytest
 
@@ -17,11 +16,7 @@ def ctfixt_change_MILK_SHM_DIR(request):
     yield MILK_SHM_DIR_SPOOF
 
     # Fixture teardown here:
-
-    files = glob.glob(MILK_SHM_DIR_SPOOF + '/*')
-    for file in files:
-        os.remove(file)
-    os.removedirs(MILK_SHM_DIR_SPOOF)
+    shutil.rmtree(MILK_SHM_DIR_SPOOF)
 
 
 @pytest.fixture(scope='session', autouse=True)

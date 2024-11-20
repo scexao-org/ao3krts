@@ -13,6 +13,7 @@ from scxconf import PYRONSAO_PORT
 # Fetch autouse MILK fixtures from pyMilk
 pytest_plugins = [
         "tests.conftestaux.milk",
+        "tests.conftestaux.cacao_loop",
 ]
 
 
