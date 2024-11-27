@@ -16,7 +16,6 @@ MODULE_CLASSES: list[type[base.RTS_MODULE]] = [
         mh.Iiwi_RTSModule,
         mh.DAC40_RTSModule,
         mh.APD_RTSModule,
-        mh.PTAPD_RTSModule,
         mh.PTDAC_RTSModule,
         mh.DM3K_RTSModule,
         mh.KWFS_RTSModule,

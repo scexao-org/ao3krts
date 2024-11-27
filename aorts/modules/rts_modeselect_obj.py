@@ -125,10 +125,9 @@ class RTSModeSwitcher:
 
     def switch_pt_to_nir(self):
         retcode = invoke_sequence_pretty([
-                mh.PTAPD_RTSModule.stop_function,
                 mh.PTDAC_RTSModule.stop_function,
                 mh.DAC40_RTSModule.start_function,
-                mh.APD_RTSModule.start_function,
+                #mh.APD_RTSModule.start_function,
         ])
         RTS_MODE_ENUM.write_rtsmode(RTS_MODE_ENUM.NIR3K)
         set_mode_in_obcp('rts23-nirwfs')
@@ -136,10 +135,9 @@ class RTSModeSwitcher:
 
     def switch_nir_to_pt(self):
         retcode = invoke_sequence_pretty([
-                mh.APD_RTSModule.stop_function,
+                #mh.APD_RTSModule.stop_function,
                 mh.DAC40_RTSModule.stop_function,
                 mh.PTDAC_RTSModule.start_function,
-                mh.PTAPD_RTSModule.start_function,
         ])
         set_mode_in_obcp('pass-through')
         RTS_MODE_ENUM.write_rtsmode(RTS_MODE_ENUM.PT3K)

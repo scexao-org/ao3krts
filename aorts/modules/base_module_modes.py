@@ -31,7 +31,7 @@ class RTS_MODULE_ENUM(str, Enum):
     IIWI = 'IIWI'
     DAC40 = 'DAC40'
     APD = 'APD'
-    PT_APD = 'PT_APD'
+    # PT_APD = 'PT_APD' # DEPRECATED. APD just always passes-through.
     PT_DAC = 'PT_DAC'
     DM3K = 'DM3K'
     KWFS = 'KWFS'

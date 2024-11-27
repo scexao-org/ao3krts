@@ -167,8 +167,8 @@ class APD_RTSModule:  # implements RTS_MODULE Protocol
             if tmux.find_pane_running_pid(tmux_apd) is None:
                 return (ERR, "APD startup failure (apd_ctrl crash).")
             try:
-                iiwi_proxy = connect_aorts(pyrokeys.APD)
-                iiwi_proxy.poll_camera_for_keywords()
+                apd_proxy = connect_aorts(pyrokeys.APD)
+                apd_proxy.poll_camera_for_keywords()
                 return (OK, "APD acq. started successfully.")
             except:
                 pass
@@ -230,44 +230,6 @@ class KWFS_RTSModule:  # implements RTS_MODULE Protocol
             return (ERR, "KWFS acquisition halt error. Inspect tmux kwfs_ctrl.")
 
         return (OK, "KWFS acquisition halted successfully.")
-
-
-class PTAPD_RTSModule:  # implements RTS_MODULE Protocol
-    MODULE_NAMETAG: RME = RME.PT_APD
-
-    @classmethod
-    def start_function(cls) -> base.T_Result:
-        '''
-        Starter for passthrough (no conversion) mode.
-        '''
-        tmux_apd = tmux.find_or_create('pt_apd')
-        tmux.kill_running(tmux_apd)
-        tmux_apd.send_keys('hwint-fpdprelay -s apd_raw -u 0 -t 2 -B 464')
-
-        time.sleep(1)
-
-        pid = tmux.find_pane_running_pid(tmux_apd)
-        if pid is None:
-            return (ERR,
-                    "APD passthrough relay did not start. Inspect tmux pt_apd.")
-
-        milk_make_rt('fpdp_recv', pid, 45)
-
-        return (OK, "FPDP passthrough startup complete.")
-
-    @classmethod
-    def stop_function(cls) -> base.T_Result:
-        '''
-        Teardown for passthrough (no conversion) mode.
-        '''
-        # Teardown the tmux
-        tmux_apd = tmux.find_or_create('pt_apd')
-        tmux.kill_running(tmux_apd)
-
-        if not tmux.expect_no_pid(tmux_apd, timeout_sec=3):
-            return (ERR, "FPDP APD passthrough halt error. Inspect tmux pt_apd")
-
-        return (OK, "FPDP DAC passthrough halted successfully.")
 
 
 class PTDAC_RTSModule:  # implements RTS_MODULE Protocol
