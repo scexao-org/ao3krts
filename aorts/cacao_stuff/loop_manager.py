@@ -83,11 +83,12 @@ class CacaoLoopManager(CacaoConfigReader):
         self.tmux_handles: dict[str, tuple[tmux.Pane_T, tmux.Pane_T,
                                            tmux.Pane_T]] = {}
         for fps_name in self.fps_ctrl.fps_cache:
-            self.tmux_handles[fps_name] = (
-                    tmux.find(fps_name, window_name='ctrl'),
-                    tmux.find(fps_name, window_name='conf'),
-                    tmux.find(fps_name, window_name='run'),
-            )
+            tmux_triplet = (tmux.find(fps_name, window_name='ctrl'),
+                            tmux.find(fps_name, window_name='conf'),
+                            tmux.find(fps_name, window_name='run'))
+            assert all(t is not None
+                       for t in tmux_triplet)  # CANNOT do with a "in".
+            self.tmux_handles[fps_name] = tmux_triplet  # type: ignore
 
     @property
     def acquWFS(self) -> FPS:
