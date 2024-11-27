@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Assert we have a working .env / .profile with SCExAO variables
+# (see computer_config repository)
+
+echo "Echoing command:"
+echo "> $@"
+echo "----"
+echo $@ | nc localhost 63446
