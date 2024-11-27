@@ -58,9 +58,8 @@ class CacaoLoopManager(CacaoConfigReader):
 
         super().__init__(loop_full_name, loop_number, root_all=root_all)
 
-        self.fps_ctrl = FPSManager(
-                f'*-{self.loop_number}'
-        )  # We should DISCARD any DM we'd get in here, but there should be any.
+        # FIXME MUST FILTER BY KEYWORD.
+        self.fps_ctrl = FPSManager('*', f'aol{self.loop_number}')
         if len(self.fps_ctrl.fps_cache) == 0:
             logg.warning(
                     f"FPSCtrl cache is suspiciously empty for regex {self.fps_ctrl.fps_name_glob}.fps.shm"
@@ -110,15 +109,20 @@ class CacaoLoopManager(CacaoConfigReader):
     def init_input_symlink(self, sim: bool = False):
         pass
 
-    def confstart_processes(self) -> None:
+    def confstart_processes(self, timeout_each: float | None = None) -> None:
         self.fps_ctrl.rescan_all()
         for fps in self.fps_ctrl.fps_cache.values():
-            fps.conf_start()
+            fps.conf_start(timeout_each)
 
-    def confstop_processes(self) -> None:
+    def confstop_processes(self, timeout_each: float | None = None) -> None:
         self.fps_ctrl.rescan_all()
         for fps in self.fps_ctrl.fps_cache.values():
-            fps.conf_stop()
+            fps.conf_stop(timeout_each)
+
+    def runstop_processes(self, timeout_each: float | None = None) -> None:
+        self.fps_ctrl.rescan_all()
+        for fps in self.fps_ctrl.fps_cache.values():
+            fps.run_stop(timeout_each)
 
     '''
     # Not implemented - it's dangerous to just fire everything at once, including mlat and

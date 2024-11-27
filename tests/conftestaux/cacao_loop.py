@@ -50,10 +50,14 @@ def ctfixt_parse_config(request, tmpdir_factory):
         assert ctrl_tmux is not None
         assert conf_tmux is not None
         assert run_tmux is not None
-        #ctrl_tmux.send_keys(f'export MILK_SHM_DIR={os.environ["MILK_SHM_DIR"]}')
-        #conf_tmux.send_keys(f'export MILK_SHM_DIR={os.environ["MILK_SHM_DIR"]}')
-        #run_tmux.send_keys(f'export MILK_SHM_DIR={os.environ["MILK_SHM_DIR"]}')
 
     yield targetdir
 
     # Now clean up the whole thing
+    loop_mgr.runstop_processes(1.0)
+    loop_mgr.confstop_processes(1.0)
+
+    for ctrl_tmux, _, _ in loop_mgr.tmux_handles.values():
+        tmux.TMUX_SERVER.kill_session(ctrl_tmux.session_name)
+
+    tmux.TMUX_SERVER.kill_session('nir3ktest_fpsCTRL')
