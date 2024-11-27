@@ -55,19 +55,18 @@ class ClickDispatcher:
         from contextlib import redirect_stdout
 
         with io.StringIO() as buf, redirect_stdout(buf):
-            print('redirected')
-            output = buf.getvalue()
-
-        with io.StringIO() as buf, redirect_stdout(buf):
             ret = None
             try:
                 ret = self.click_invokator(arg_list, standalone_mode=False,
                                            prog_name=self.click_group.lower())
             except click.exceptions.UsageError as exc:
                 assert exc.ctx
-                return str(exc) + '\n' + exc.ctx.get_help() + '\n'
-            finally:
+                return str(exc) + exc.ctx.get_help() + '\n'
+            except Exception as exc:
                 captured = buf.getvalue()
+                return captured + '\n' + str(exc) + '\n'
+
+            captured = buf.getvalue()
 
         if ret is None or isinstance(ret, int):
             logg.debug(

@@ -24,6 +24,17 @@ class ActualInterestingTestObject(ClickRemotelyInvokableObject):
     def efgh(x: int) -> str:
         return f'efgh: {x} -> {x+1}'
 
+    @DISPATCHER.click_invokator.command('raises')
+    @staticmethod
+    def raises():
+        print('Raising an error as expected [print message]'
+              )  # Should show in the client return
+        logg.error('Raising an error as expected [log message]'
+                   )  # Should show in the log.
+        raise ValueError('Raising an error as expected [error message]'
+                         )  # Should show in the client return
+        return 'Raising an error as expected [return message]'  # Shouldn't.
+
 
 if __name__ == "__main__":
     from swmain.infra.logger import init_logger_autoname
