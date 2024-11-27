@@ -26,9 +26,11 @@ g2if-pyserver = "aorts.server.server_main:main_g2if"
 ao-testobj = "aorts.control.test_obj:TestControl.main"
 rts-modeselect = "aorts.modules.rts_modeselect_main:modeselect"
 
+
 [tool.pytest.ini_options]
 addopts = [
     "--import-mode=importlib",
+    "--ignore=mains",
 ]
 
 [tool.coverage.run]
@@ -40,7 +42,7 @@ source = ["./aorts"]
 # Need to list scexao's pip install -e packages...
 extraPaths = ["/home/aorts/src/swmain", "/home/vdeo/src/swmain",
               "/home/aorts/src/hardwaresecrets", "/home/vdeo/src/hardwaresecrets",
-              "/home/aorts/src/camstack", "/home/vdeo/src/camstack"]
+              "/home/aorts/src/camstack", "/home/vdeo/src/camstack", "/home/vdeo/src/pyMilk"]
 typeCheckingMode = "basic" # off | basic | standard | strict # Look there https://github.com/microsoft/pyright/blob/main/docs/configuration.md
 include = ["aorts", "rtm4obcp"]
 exclude = ["build/",
