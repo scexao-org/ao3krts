@@ -22,10 +22,19 @@ from .device_commands import DM3kCommand, TTCommand, StatusCommand, DM3kHKLComma
 from .ao_commands import LoopCommand, GainCommand, FocusOffloaderCommand
 from .system_commands import ModeSwitcher
 
+import click
 
-def main_g2if():
+
+@click.command('g2if-pyserver')
+@click.option('--debug', is_flag=True)
+def main_g2if(debug: bool):
     init_logger_autoname()
     logg = logging.getLogger()
+
+    if debug:
+        logg.setLevel(logging.DEBUG)
+        for h in logg.handlers:
+            h.setLevel(logging.DEBUG)
 
     auto_register_to_watchers('SRVS', 'RTS23 TCP/Pyro')
 
@@ -45,7 +54,7 @@ def main_g2if():
     }
 
     from scxconf import PYRONSAO_HOST, PYRONSAO_PORT, IP_AORTS_SUMMIT
-    pyro_server = PyroServer(bindTo=('localhost', 0),
+    pyro_server = PyroServer(bindTo=(IP_AORTS_SUMMIT, 0),
                              nsAddress=(PYRONSAO_HOST, PYRONSAO_PORT))
     # Fixme G2IF_SERVER_PORT
     tcp_server = ObjectDispatchingServer((IP_AORTS_SUMMIT, 18826), objs=[])
