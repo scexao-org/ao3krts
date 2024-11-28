@@ -3,6 +3,8 @@
 All utilities for the AO RTS23
 
 
+## This README is trash and was never updated don't read it.
+
 
 ### the datavault subpackage
 
