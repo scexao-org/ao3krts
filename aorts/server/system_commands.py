@@ -14,7 +14,7 @@ from .dispatcher import ClickDispatcher, ClickRemotelyInvokableObject
 
 import click
 
-from ..modules.base_module_modes import RTS_MODULE_ENUM, CONFIG_SUBMODES_ENUM
+from ..modules.base_module_modes import RTS_MODULE_ENUM, CONFIG_SUBMODES_ENUM, RTS_MODE_ENUM
 from ..modules.rts_modeselect_obj import RTSModeSwitcher
 
 # TODO move to a ssh util file in swmain.
@@ -84,6 +84,15 @@ class ModeSwitcher(ClickRemotelyInvokableObject):
         module_tag = RTS_MODULE_ENUM(_module.upper())
         submode_tag = CONFIG_SUBMODES_ENUM(_cfg.upper())
         ModeSwitcher.CALLEE.module_confstart_command(module_tag, submode_tag)
+
+    @INVOKATOR.command('setmode')
+    @click.argument(
+            '_mode', type=click.Choice(RTS_MODE_ENUM._member_names_,
+                                       case_sensitive=False))
+    @staticmethod
+    def set_mode(_mode: str):
+        mode_tag = RTS_MODE_ENUM(_mode.upper())
+        ModeSwitcher.CALLEE.mode_set_command(mode_tag)
 
     @INVOKATOR.group('switch')
     @staticmethod

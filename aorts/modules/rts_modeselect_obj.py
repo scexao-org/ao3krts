@@ -4,7 +4,7 @@ import typing as typ
 
 from .base_module_modes import (RTS_MODE_ENUM, RTS_MODULE_ENUM, OkErrEnum,
                                 CONFIG_SUBMODES_ENUM, RTS_MODULE_RECONFIGURABLE)
-from .dict_module_modes import MODULE_MAPPER
+from .dict_module_modes import MODULE_MAPPER, MODE_MAPPER
 from . import modules_hw as mh
 
 if typ.TYPE_CHECKING:
@@ -123,25 +123,54 @@ class RTSModeSwitcher:
         else:
             print(f'    OOPS!   {ret[1]}')
 
-    def switch_pt_to_nir(self):
+    def mode_set_command(self, _mode: RTS_MODE_ENUM) -> str:
+        '''
+        This fully ignores the issue of configurable modules.
+        '''
+        MODE_CLASS = MODE_MAPPER[_mode]
+        seq_exclusive_stops = [
+                MODULE_MAPPER[_mod].stop_function
+                for _mod in MODE_CLASS.NOPE_MODULES
+        ]
+        seq_req_stops = [
+                MODULE_MAPPER[_mod].stop_function
+                for _mod in MODE_CLASS.REQ_MODULES
+        ]
+        seq_req_starts = [
+                MODULE_MAPPER[_mod].start_function
+                for _mod in MODE_CLASS.REQ_MODULES
+        ]
+
+        retcode = invoke_sequence_pretty(seq_exclusive_stops + seq_req_stops +
+                                         seq_req_starts)
+
+        if retcode == OkErrEnum.OK:
+            RTS_MODE_ENUM.write_rtsmode(_mode)
+            return _mode
+        else:
+            RTS_MODE_ENUM.write_rtsmode(RTS_MODE_ENUM.UNKNOWN)
+            return RTS_MODE_ENUM.UNKNOWN
+
+    def switch_pt_to_nir(self) -> str:
         retcode = invoke_sequence_pretty([
+                # Stop exclusives
                 mh.PTDAC_RTSModule.stop_function,
-                mh.DAC40_RTSModule.start_function,
-                #mh.APD_RTSModule.start_function,
+
+                # Stop all necessary
+                mh.DAC40_RTSModule.stop_function,
         ])
         RTS_MODE_ENUM.write_rtsmode(RTS_MODE_ENUM.NIR3K)
         set_mode_in_obcp('rts23-nirwfs')
-        return 'pt'
+        return 'nir'
 
-    def switch_nir_to_pt(self):
+    def switch_nir_to_pt(self) -> str:
         retcode = invoke_sequence_pretty([
-                #mh.APD_RTSModule.stop_function,
                 mh.DAC40_RTSModule.stop_function,
                 mh.PTDAC_RTSModule.start_function,
         ])
         set_mode_in_obcp('pass-through')
         RTS_MODE_ENUM.write_rtsmode(RTS_MODE_ENUM.PT3K)
-        return 'nir'
+        return 'pt'
 
     def query(self) -> None:
         obcp_thinks = get_mode_from_obcp()
