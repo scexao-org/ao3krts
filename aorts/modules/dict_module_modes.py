@@ -46,3 +46,22 @@ if len(MODULE_MAPPER) < len(MODULE_CLASSES):
     inv_mapper = [(klass.__name__, klass.MODULE_NAMETAG)
                   for klass in MODULE_CLASSES]
     raise ValueError('Duplicate RTSModule class key identified?', inv_mapper)
+
+from . import modes_definitions as md
+
+MODE_CLASSES: list[type[base.RTS_MODE]] = [
+        md.NIR3K_RTSMODE,
+        md.APDNGS3K_RTSMODE,
+        md.OLGS3K_RTSMODE,
+        md.NLGS3K_RTSMODE,
+        md.PT3K_RTSMODE,
+]
+MODE_MAPPER: dict[base.RTS_MODE_ENUM, typ.Type[base.RTS_MODE]] = {
+        klass.MODE_NAMETAG: klass
+        for klass in MODE_CLASSES
+}
+
+if len(MODE_MAPPER) < len(MODE_CLASSES):
+    inv_mapper = [(klass.__name__, klass.MODE_NAMETAG)
+                  for klass in MODE_CLASSES]
+    raise ValueError('Duplicate RTSMode class key identified?', inv_mapper)

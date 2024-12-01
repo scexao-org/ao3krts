@@ -44,7 +44,6 @@ class RTS_MODULE_ENUM(str, Enum):
     PTLOOP = 'PTLOOP'
     # MISC
     WTTOFF = 'WTTOFF'
-    FOCOFF = 'FOCOFF'
     # TEST
     TEST = 'TEST'
 
@@ -112,6 +111,9 @@ def proto_func_static_test_RTS_MODULE_RECONFIGURABLE(
 
 
 class ThisClass:
+    '''
+    Just test boilerplate
+    '''
     MODULE_NAMETAG: RTS_MODULE_ENUM = RTS_MODULE_ENUM.TEST
 
     CFG_NAMES = []  # 0 is default!!
@@ -154,8 +156,10 @@ class RTS_MODE_ENUM(str, Enum):
 
     NIR188 = 'NIR188'
     NIR3K = 'NIR3K'
-    CWFS_NGS188 = 'CWFS_NGS188'
-    CWFS_NGS3K = 'CWFS_NGS3K'
+    APDNGS188 = 'APDNGS188'
+    APDNGS3K = 'APDNGS3K'
+    NLGS3K = 'NLGS3K'
+    OLGS3K = 'OLGS3K'
     PT188 = 'PT188'
     PT3K = 'PT3K'
 
@@ -175,3 +179,9 @@ class RTS_MODE_ENUM(str, Enum):
 
         with open(FILE_RTSMODE, 'r') as f:
             return RTS_MODE_ENUM(f.readline().strip())
+
+
+class RTS_MODE(typ.Protocol):
+    MODE_NAMETAG: RTS_MODE_ENUM
+    NOPE_MODULES: list[RTS_MODULE_ENUM]
+    REQ_MODULES: list[RTS_MODULE_ENUM]
