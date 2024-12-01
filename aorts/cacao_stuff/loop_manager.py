@@ -3,6 +3,7 @@ from __future__ import annotations
 import typing as typ
 
 import os
+import subprocess as sproc
 import time
 import re
 import glob
@@ -182,6 +183,15 @@ class CacaoLoopManager(CacaoConfigReader):
 
         if do_runstop:
             self.runstop_aorun()
+
+    def set_cwd_to_rootdir(self) -> None:
+        os.chdir(self.rootdir)
+
+    def exec_in_rootdit(self, command: str) -> None:
+        sproc.run(command.split(), cwd=self.rootdir)
+
+    def tui(self) -> None:
+        self.exec_in_rootdit('cacao-fpsctrl-TUI')
 
 
 def cacao_locate_all_mfilts() -> dict[int, MFilt]:
