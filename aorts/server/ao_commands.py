@@ -26,14 +26,17 @@ class LoopCommand(ClickRemotelyInvokableObject):
     DISPATCHER = ClickDispatcher(click_group=NAME)
     CALLEE = AO3kNIRLoopObject()
 
+    # TODO DETECT WHICH RTS MODE AND SEND COMMAND TO NIR OR HOWFS OR LOWFS
+    # TODO Probably just bundle multiple callees.
+
     @DISPATCHER.click_invokator.command('on')
-    @click.pass_obj
-    def on(self):
+    @staticmethod
+    def on():
         LoopCommand.CALLEE.loop_close()
 
     @DISPATCHER.click_invokator.command('off')
-    @click.pass_obj
-    def off(self):
+    @staticmethod
+    def off():
         LoopCommand.CALLEE.loop_open()
 
 
