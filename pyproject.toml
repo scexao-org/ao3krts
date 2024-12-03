@@ -42,9 +42,11 @@ source = ["./aorts"]
 # Need to list scexao's pip install -e packages...
 extraPaths = ["/home/aorts/src/swmain", "/home/vdeo/src/swmain",
               "/home/aorts/src/hardwaresecrets", "/home/vdeo/src/hardwaresecrets",
-              "/home/aorts/src/camstack", "/home/vdeo/src/camstack", "/home/vdeo/src/pyMilk"]
+              "/home/aorts/src/camstack", "/home/vdeo/src/camstack",
+              "/home/aorts/src/pyMilk", "/home/vdeo/src/pyMilk"]
 typeCheckingMode = "basic" # off | basic | standard | strict # Look there https://github.com/microsoft/pyright/blob/main/docs/configuration.md
-include = ["aorts", "rtm4obcp"]
+include = ["aorts"]
+          # "rtm4obcp" # Maybe one day...,
 exclude = ["build/",
            "**/__pycache",
            "**/.mypy_cache",
