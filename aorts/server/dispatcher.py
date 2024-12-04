@@ -8,17 +8,18 @@ possibly to dispatch the command to a given function call
 '''
 from __future__ import annotations
 
-import abc
 import click
 
 import typing as typ
-import threading
 
 import logging
 
 logg = logging.getLogger(__name__)
 
 from swmain.network.tcpserver import InvokableObjectForServer
+
+# pass this as context_settings to click commands that need to accept (negative) floats
+FLT_OK = {"ignore_unknown_options": True}
 
 
 @click.group
@@ -36,10 +37,18 @@ class ClickDispatcher:
         self.click_group = click_group
         self.click_invokator = global_click_invokator.group(
                 click_group.lower())(self._click_invokator)
+        self.klass = None
+
+    def set_klass(self, klass):
+        self.klass = klass
 
     def _click_invokator(self):
         # Just a placeholder instance method.
-        pass
+        if self.klass:
+            ctx = click.get_current_context()
+            # This enables the decorator pass_obj on command classes
+            # to pass the class as the 1st argument and make everything behave as a classmethod.
+            ctx.obj = self.klass
 
     def click_dispatch_remote_calls(self, arg_list: str | list[str]) -> str:
         logg.debug(f'invoke_remote_call @ "{self.click_group} {arg_list}"')
@@ -61,7 +70,7 @@ class ClickDispatcher:
                                            prog_name=self.click_group.lower())
             except click.exceptions.UsageError as exc:
                 assert exc.ctx
-                return str(exc) + exc.ctx.get_help() + '\n'
+                return str(exc) + '\n' + exc.ctx.get_help() + '\n'
             except Exception as exc:
                 captured = buf.getvalue()
                 return captured + '\n' + str(exc) + '\n'
@@ -92,6 +101,11 @@ class ClickRemotelyInvokableObject(InvokableObjectForServer):
     DESCR = 'Test Object'
 
     DISPATCHER = ClickDispatcher(click_group=NAME)
+
+    def __init__(self):
+        type(self).DISPATCHER.set_klass(type(
+                self))  # can I have this invoked at import time?? Probs not!
+        self.DISPATCHER.set_klass(self)
 
     def invoke_call(self, argstring: str) -> str:
         return self.DISPATCHER.click_dispatch_remote_calls(argstring)
