@@ -10,11 +10,11 @@ import logging
 
 logg = logging.getLogger(__name__)
 
-from .dispatcher import ClickDispatcher, ClickRemotelyInvokableObject
+from .dispatcher import ClickDispatcher, ClickRemotelyInvokableObject, FLT_OK
 
 import click
 
-from ..control.dm import TTManager, DM3kManager
+from ..control.dm import TTManager, DM3kManager, WTTManager
 from ..control.status import StatusObj
 
 from hwmain.alpao64.alpao_hkl import AlpaoHKL
@@ -41,9 +41,19 @@ class DM3kCommand(ClickRemotelyInvokableObject, DM3kManager):
 
     # TODO: optional args not click'd yet
     @DISPATCHER.click_invokator.command('flat')
-    @click.pass_obj
-    def flat(self) -> str:
+    @staticmethod
+    def flat() -> str:
         DM3kCommand.CALLEE.flat()
+        return f''
+
+    @DISPATCHER.click_invokator.command('saveflat0')
+    def saveflat0() -> str:
+        DM3kCommand.CALLEE.save_0_to_flat()
+        return f''
+
+    @DISPATCHER.click_invokator.command('saveflatagg')
+    def saveflatagg() -> str:
+        DM3kCommand.CALLEE.save_agg_to_flat()
         return f''
 
 
@@ -99,10 +109,114 @@ class TTCommand(ClickRemotelyInvokableObject):
 
     # TODO: optional args not click'd yet
     @DISPATCHER.click_invokator.command('zero')
-    @click.pass_obj
-    def zero(self) -> str:
+    @staticmethod
+    def zero() -> str:
         TTCommand.CALLEE.zero()
         return f''
+
+    @DISPATCHER.click_invokator.command('flat')
+    @staticmethod
+    def flat() -> str:
+        TTCommand.CALLEE.flat()
+        return f''
+
+    @DISPATCHER.click_invokator.command('saveflat0')
+    @staticmethod
+    def saveflat0() -> str:
+        TTCommand.CALLEE.save_0_to_flat()
+        return f''
+
+    @DISPATCHER.click_invokator.command('saveflatagg')
+    @staticmethod
+    def saveflatagg() -> str:
+        TTCommand.CALLEE.save_agg_to_flat()
+        return f''
+
+    @DISPATCHER.click_invokator.command('x', context_settings=FLT_OK)
+    @click.option('-n', '--nudge', is_flag=True)
+    @click.argument('x', type=float)
+    @click.argument('chan', type=int, default=0)
+    @staticmethod
+    def xset(x: float, chan: int, nudge: bool) -> str:
+        if nudge:
+            TTCommand.CALLEE.xnudge(x, chan=chan)
+        else:
+            TTCommand.CALLEE.xset(x, chan=chan)
+        return f'{x=}, {chan=}'
+
+    @DISPATCHER.click_invokator.command('y', context_settings=FLT_OK)
+    @click.option('-n', '--nudge', is_flag=True)
+    @click.argument('y', type=float)
+    @click.argument('chan', type=int, default=0)
+    @staticmethod
+    def yset(y: float, chan: int, nudge: bool) -> str:
+        if nudge:
+            TTCommand.CALLEE.ynudge(y, chan=chan)
+        else:
+            TTCommand.CALLEE.yset(y, chan=chan)
+        return f'{y=}, {chan=}'
+
+    @DISPATCHER.click_invokator.command('xy', context_settings=FLT_OK)
+    @click.option('-n', '--nudge', is_flag=True)
+    @click.argument('x', type=float)
+    @click.argument('y', type=float)
+    @click.argument('chan', type=int, default=0)
+    @staticmethod
+    def set(x: float, y: float, chan: int, nudge: bool) -> str:
+        if nudge:
+            TTCommand.CALLEE.nudge(x, y, chan=chan)
+        else:
+            TTCommand.CALLEE.set(x, y, chan=chan)
+        return f'{x=}, {y=}, {chan=}'
+
+
+class WTTCommand(ClickRemotelyInvokableObject):
+    NAME = 'WTT'
+    DESCR = 'WTT Control'
+
+    DISPATCHER = ClickDispatcher(click_group=NAME)
+    CALLEE = WTTManager()
+
+    # TODO: optional args not click'd yet
+    @DISPATCHER.click_invokator.command('zero')
+    @staticmethod
+    def zero() -> str:
+        WTTCommand.CALLEE.zero()
+        return f''
+
+    @DISPATCHER.click_invokator.command('x', context_settings=FLT_OK)
+    @click.option('-n', '--nudge', is_flag=True)
+    @click.argument('x', type=float)
+    @staticmethod
+    def xset(x: float, nudge: bool) -> str:
+        if nudge:
+            WTTCommand.CALLEE.xnudge(x)
+        else:
+            WTTCommand.CALLEE.xset(x)
+        return f'{x=}'
+
+    @DISPATCHER.click_invokator.command('y', context_settings=FLT_OK)
+    @click.option('-n', '--nudge', is_flag=True)
+    @click.argument('y', type=float)
+    @staticmethod
+    def yset(y: float, chan: int, nudge: bool) -> str:
+        if nudge:
+            WTTCommand.CALLEE.ynudge(y)
+        else:
+            WTTCommand.CALLEE.yset(y)
+        return f'{y=}, {chan=}'
+
+    @DISPATCHER.click_invokator.command('xy', context_settings=FLT_OK)
+    @click.option('-n', '--nudge', is_flag=True)
+    @click.argument('x', type=float)
+    @click.argument('y', type=float)
+    @staticmethod
+    def set(x: float, y: float, nudge: bool) -> str:
+        if nudge:
+            WTTCommand.CALLEE.nudge(x, y)
+        else:
+            WTTCommand.CALLEE.set(x, y)
+        return f'{x=}, {y=}'
 
 
 class StatusCommand(ClickRemotelyInvokableObject):

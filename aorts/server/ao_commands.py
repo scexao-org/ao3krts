@@ -14,7 +14,7 @@ from .dispatcher import ClickDispatcher, ClickRemotelyInvokableObject
 
 import click
 
-from ..control.loop import AO3kNIRLoopObject
+from ..control.loop import AO3kNIRLoopControllerObject
 from ..control.foc_offloader import FocusLGSOffloader
 
 
@@ -24,7 +24,7 @@ class LoopCommand(ClickRemotelyInvokableObject):
     # If we ever want that as a "main", will that work?
     # But then again, we'll favor Pyro, and not care.
     DISPATCHER = ClickDispatcher(click_group=NAME)
-    CALLEE = AO3kNIRLoopObject()
+    CALLEE = AO3kNIRLoopControllerObject()
 
     # TODO DETECT WHICH RTS MODE AND SEND COMMAND TO NIR OR HOWFS OR LOWFS
     # TODO Probably just bundle multiple callees.

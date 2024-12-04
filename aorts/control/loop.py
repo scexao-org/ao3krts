@@ -12,9 +12,11 @@ from ..cacao_stuff.loop_manager import CacaoLoopManager
 from .. import config
 
 
-class AO3kNIRLoopObject:
+class AO3kNIRLoopControllerObject:
     '''
     Loop manager object for loop on / loop off in NIR mode
+
+    This is really the binding for the loop on / off control from gen2.
     '''
 
     def __init__(self) -> None:

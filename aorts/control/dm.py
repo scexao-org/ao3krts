@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import typing as typ
 
-import os
+import os, pathlib
 import time
 import logging
 
@@ -20,6 +20,7 @@ from .. import config
 class DMCombManager:
 
     SHAPE: int | tuple[int, int]
+    CONFDIR: str | pathlib.Path | None
 
     def __init__(self, dm_number: str) -> None:
 
@@ -69,73 +70,95 @@ class DMCombManager:
                     dm_shm_chan.set_data(np.zeros(self.SHAPE, np.float32),
                                          autorelink_if_need=True)
 
-
-class BIM188Manager(DMCombManager):
-
-    SHAPE = 188
-
-    def __init__(self) -> None:
-        super().__init__(config.DMNUM_BIM188)
-
     def flat(self) -> None:
-        self.zero(do_ch_zero=False)
-        # force resolution of symlink?
-        flat_file: str = os.path.realpath(
-                os.environ['HOME'] +
-                '/conf/bim188_flats/current_flat_symlink.fits')
-
-        flat: np.ndarray = fits.getdata(flat_file)  # type: ignore
-
-        assert flat.shape == (self.SHAPE, )
-        assert self.dm_shms[0] is not None
-        self.dm_shms[0].set_data(flat, check_dt=True)
-
-
-class TTManager(DMCombManager):
-
-    SHAPE = 2
-
-    def __init__(self) -> None:
-        super().__init__(config.DMNUM_TT)
-
-    '''
-    THOSE WERE NICE WE PROBABLY WANT TO KEEP THEM
-
-    def xset(self, val_x: float) -> None:
-        vals = self.tt_shm_0.get_data()
-        vals[0] = val_x
-        self.tt_shm_0.set_data(vals)
-
-    def yset(self, val_x: float) -> None:
-        vals = self.tt_shm_0.get_data()
-        vals[1] = val_x
-        self.tt_shm_0.set_data(vals)
-
-    def set(self, val_x: float, val_y: float) -> None:
-        self.tt_shm_0.set_data(np.array([val_x, val_y], np.float32),
-                               autorelink_if_need=True)
-    '''
-
-
-class DM3kManager(DMCombManager):
-
-    SHAPE = (64, 64)
-
-    def __init__(self) -> None:
-        super().__init__(config.DMNUM_ALPAO)
-
-    def flat(self) -> None:
+        assert self.CONFDIR is not None
         self.zero(do_ch_zero=False)
 
         # force resolution of symlink?
         flat_file: str = os.path.realpath(
-                os.environ['HOME'] +
-                '/conf/alpao_flats/current_flat_symlink.fits')
+                str(self.CONFDIR) + '/current_flat_symlink.fits')
 
         flat: np.ndarray = fits.getdata(flat_file)  # type: ignore
         assert flat.shape == self.SHAPE
         assert self.dm_shms[0] is not None
         self.dm_shms[0].set_data(flat, check_dt=True)
+
+    def save_0_to_flat(self) -> None:
+        assert self.CONFDIR is not None
+        ...
+
+    def save_agg_to_flat(self) -> None:
+        assert self.CONFDIR is not None
+        ...
+
+
+class BIM188Manager(DMCombManager):
+
+    SHAPE = 188
+    CONFDIR = '/home/rts/conf/bim188_flats'
+
+    def __init__(self) -> None:
+        super().__init__(config.DMNUM_BIM188)
+
+
+class TTManager(DMCombManager):
+
+    SHAPE = 2
+    CONFDIR = '/home/rts/conf/tt_flats'
+
+    def __init__(self) -> None:
+        super().__init__(config.DMNUM_TT)
+
+    def xset(self, val_x: float, chan: int = 0) -> None:
+        shm = self.dm_shms[chan]
+        assert shm is not None
+        vals = shm.get_data()
+        vals[0] = val_x
+        shm.set_data(vals)
+
+    def yset(self, val_y: float, chan: int = 0) -> None:
+        shm = self.dm_shms[chan]
+        assert shm is not None
+        vals = shm.get_data()
+        vals[1] = val_y
+        shm.set_data(vals)
+
+    def set(self, val_x: float, val_y: float, chan: int = 0) -> None:
+        shm = self.dm_shms[chan]
+        assert shm is not None
+        shm.set_data(np.array([val_x, val_y], np.float32),
+                     autorelink_if_need=True)
+
+    def xnudge(self, val_x: float, chan: int = 0) -> None:
+        shm = self.dm_shms[chan]
+        assert shm is not None
+        vals = shm.get_data()
+        vals[0] += val_x
+        shm.set_data(vals)
+
+    def ynudge(self, val_y: float, chan: int = 0) -> None:
+        shm = self.dm_shms[chan]
+        assert shm is not None
+        vals = shm.get_data()
+        vals[1] += val_y
+        shm.set_data(vals)
+
+    def nudge(self, val_x: float, val_y: float, chan: int = 0) -> None:
+        shm = self.dm_shms[chan]
+        assert shm is not None
+
+        shm.set_data(
+                np.array([val_x, val_y], np.float32) + shm.get_data(),
+                autorelink_if_need=True)
+
+
+class DM3kManager(DMCombManager):
+
+    SHAPE = (64, 64)
+    CONFDIR = '/home/rts/conf/alpao_flats'
+
+    def __init__(self) -> None:
+        super().__init__(config.DMNUM_ALPAO)
 
 
 class WTTManager:
@@ -148,3 +171,34 @@ class WTTManager:
 
     def flat(self):
         self.shm.set_data(np.zeros(2, np.float32) + 5.0)
+
+    def xset(self, val_x: float) -> None:
+        vals = self.shm.get_data()
+        vals[0] = val_x
+        self.shm.set_data(vals)
+
+    def yset(self, val_y: float) -> None:
+        vals = self.shm.get_data()
+        vals[1] = val_y
+        self.shm.set_data(vals)
+
+    def set(self, val_x: float, val_y: float) -> None:
+        assert self.shm is not None
+        self.shm.set_data(np.array([val_x, val_y], np.float32),
+                          autorelink_if_need=True)
+
+    def xnudge(self, val_x: float) -> None:
+        vals = self.shm.get_data()
+        vals[0] += val_x
+        self.shm.set_data(vals)
+
+    def ynudge(self, val_y: float) -> None:
+        vals = self.shm.get_data()
+        vals[1] += val_y
+        self.shm.set_data(vals)
+
+    def nudge(self, val_x: float, val_y: float) -> None:
+        assert self.shm is not None
+        self.shm.set_data(
+                np.array([val_x, val_y], np.float32) + self.shm.get_data(),
+                autorelink_if_need=True)
