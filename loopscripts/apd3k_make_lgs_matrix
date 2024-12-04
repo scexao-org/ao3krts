@@ -1,0 +1,41 @@
+#!/bin/env python
+
+import os
+import numpy as np
+from astropy.io import fits
+
+from aorts.cacao_stuff.loop_manager import CacaoConfigReader
+from aorts.mixed_utils.octave import octave_read # So legacy...
+
+FULLPATH = os.environ['HOME'] + '/src/aorts/loopscripts'
+
+LGS_PERMUT_MATRIX = octave_read(FULLPATH + '/permuted_lgs_identity_times2.22.oct') / 2.22
+
+# Make sure we still have a permutation matrix in this file
+assert np.sum(LGS_PERMUT_MATRIX) == 188
+assert np.all(np.sum(LGS_PERMUT_MATRIX, axis=0) == 1)
+assert np.all(np.sum(LGS_PERMUT_MATRIX, axis=1) == 1)
+
+# This is small, we apply the permutation the linear algebra way and that's that.
+loop_cfg = CacaoConfigReader('ao3k-apd3k', None)
+
+RMmodesWFS_file = loop_cfg.rootdir / 'conf' / 'RMmodesWFS' / 'RMmodesWFS.fits'
+CMmodesWFS_file = loop_cfg.rootdir / 'conf' / 'CMmodesWFS' / 'CMmodesWFS.fits'
+
+RMmodesWFS: np.ndarray = fits.getdata(RMmodesWFS_file) # Shape is n_input_modes x 1 x 188
+CMmodesWFS: np.ndarray = fits.getdata(CMmodesWFS_file) # Shape is n_output_modes x 1 x 188
+
+assert RMmodesWFS.ndim == 3 and RMmodesWFS.shape[1:] == (1,188)
+assert CMmodesWFS.ndim == 3 and CMmodesWFS.shape[1:] == (1,188)
+
+
+RMmodesWFS_LGS_file = loop_cfg.rootdir / 'conf' / 'RMmodesWFS' / 'RMmodesWFS_LGS.fits'
+CMmodesWFS_LGS_file = loop_cfg.rootdir / 'conf' / 'CMmodesWFS' / 'CMmodesWFS_LGS.fits'
+
+# And now the million dollar question, what is the permutation convention and is a transpose needed here.
+fits.writeto(RMmodesWFS_LGS_file, RMmodesWFS @ LGS_PERMUT_MATRIX.T)
+fits.writeto(CMmodesWFS_LGS_file, RMmodesWFS @ LGS_PERMUT_MATRIX.T)
+
+print('Done recomputing/saving LGS swap matrix.')
+print(RMmodesWFS_LGS_file)
+print(CMmodesWFS_LGS_file)
