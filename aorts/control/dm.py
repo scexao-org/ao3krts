@@ -84,12 +84,30 @@ class DMCombManager:
         self.dm_shms[0].set_data(flat, check_dt=True)
 
     def save_0_to_flat(self) -> None:
-        assert self.CONFDIR is not None
-        ...
+        new_flat = self.dm_shms[0].get_data()
+        self._save_flat_to_file(new_flat)
 
     def save_agg_to_flat(self) -> None:
+        dm_array = np.asarray([dm_chan.get_data() for dm_chan in self.dm_shms])
+        new_flat = np.sum(dm_array, axis=0)
+        self._save_flat_to_file(new_flat)
+
+    def _save_flat_to_file(self, arr: np.ndarray) -> None:
         assert self.CONFDIR is not None
-        ...
+        assert (arr.ndim == 1 and len(arr) == self.SHAPE) or (arr.shape
+                                                              == self.SHAPE)
+
+        # Save cube and flat. Make sure flat is MORE alphabetical than cube...
+        import datetime
+        timestring = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+
+        new_file = str(self.CONFDIR) + f'/flat_{timestring}.fits'
+        fits.writeto(str(new_file), arr)
+
+        symlinkpath = str(self.CONFDIR) + '/current_flat_symlink.fits'
+        os.symlink(f'flat_{timestring}.fits', symlinkpath)
+
+        logg.info(f'TT: new flat saved flat_{timestring}.fits.')
 
 
 class BIM188Manager(DMCombManager):
