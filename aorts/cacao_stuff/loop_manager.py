@@ -50,6 +50,7 @@ class CacaoConfigReader:
         self.loop_name = self.cacao_environment['CACAO_LOOPNAME']
 
         self.rootdir = root_all / f'{self.loop_name}-rootdir'
+        self.rundir = root_all / f'{self.loop_name}-rootdir' / f'{self.loop_name}-rundir'
 
 
 class CacaoLoopManager(CacaoConfigReader):
@@ -144,23 +145,18 @@ class CacaoLoopManager(CacaoConfigReader):
         take time
         '''
         if not self.acquWFS.run_isrunning():
-            self.acquWFS.run_start()
-            time.sleep(2.0)
+            self.acquWFS.run_start(timeoutsync=3.0)
         if not self.wfs2cmodeval.run_isrunning():
-            self.wfs2cmodeval.run_start()
-            time.sleep(2.0)
+            self.wfs2cmodeval.run_start(timeoutsync=3.0)
         if not self.mfilt.run_isrunning():
-            self.mfilt.run_start()
-            time.sleep(2.0)
+            self.mfilt.run_start(timeoutsync=3.0)
         if not self.mvalC2dm.run_isrunning():
-            self.mvalC2dm.run_start()
+            self.mvalC2dm.run_start(timeoutsync=3.0)
 
     def runstop_aorun(self, stop_acqWFS: bool = False) -> None:
-        self.mvalC2dm.run_stop()
-        time.sleep(.3)
-        self.mfilt.run_stop()
-        time.sleep(.3)
-        self.wfs2cmodeval.run_stop()
+        self.mvalC2dm.run_stop(timeoutsync=1.0)
+        self.mfilt.run_stop(timeoutsync=1.0)
+        self.wfs2cmodeval.run_stop(timeoutsync=1.0)
 
         if stop_acqWFS:
             time.sleep(.3)
@@ -192,6 +188,11 @@ class CacaoLoopManager(CacaoConfigReader):
 
     def tui(self) -> None:
         self.exec_in_rootdit('cacao-fpsctrl-TUI')
+
+
+'''
+    A few global functions
+'''
 
 
 def cacao_locate_all_mfilts() -> dict[int, MFilt]:
@@ -228,3 +229,24 @@ def guess_loops() -> list[CacaoLoopManager]:
         loop_managers.append(CacaoLoopManager(loop_full_name, None))
 
     return loop_managers
+
+
+def cacao_loop_deploy(loop_full_name: str, root_aodir: str |
+                      pathlib.Path = os.environ['HOME'] + '/AOloop',
+                      delete_logdir: bool = False):
+    cfg_reader = CacaoConfigReader(loop_full_name, loop_number=None,
+                                   root_all=root_aodir)
+
+    root_aodir = pathlib.Path(root_aodir)
+    if delete_logdir:
+        cacao_deploy_folder = root_aodir / f'.{cfg_reader.loop_name}.cacaotaskmanager.log'
+        import shutil
+        shutil.rmtree(cacao_deploy_folder)
+
+    from swmain.infra import tmux
+    fpsCTRL_tmux = tmux.find_or_create(cfg_reader.loop_name + '_fpsCTRL')
+    # Well now, deploy.
+    # The -r is CRITICAL
+    proc = sproc.Popen(f'cacao-loop-deploy -r {loop_full_name}'.split(),
+                       cwd=root_aodir)
+    proc.wait()

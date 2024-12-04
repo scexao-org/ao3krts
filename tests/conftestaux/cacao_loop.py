@@ -9,7 +9,7 @@ import tests  # should be the pytest file tree root
 
 from swmain.infra import tmux
 
-from aorts.cacao_stuff.loop_manager import CacaoConfigReader, CacaoLoopManager
+from aorts.cacao_stuff.loop_manager import CacaoConfigReader, CacaoLoopManager, cacao_loop_deploy
 
 
 # ConfTest.py FIXTture == ctfixt_
@@ -30,18 +30,15 @@ def ctfixt_parse_config(request, tmpdir_factory):
 
     cfg_reader = CacaoConfigReader(loop_full_name, loop_number=None,
                                    root_all=targetdir)
-    # spoof one more terminal
+    # spoof MILK_SHM_DIR in fps tmux (that is not affected by the loop's tmuxsetenv)
     nir3ktest_fpsCTRL_tmux = tmux.find_or_create(cfg_reader.loop_name +
                                                  '_fpsCTRL')
     nir3ktest_fpsCTRL_tmux.send_keys(
             f'export MILK_SHM_DIR={os.environ["MILK_SHM_DIR"]}')
 
     # Well now, deploy.
-    proc = sproc.Popen(f'cacao-loop-deploy -r {loop_full_name}'.split(),
-                       cwd=targetdir)
-    proc.wait()
+    cacao_loop_deploy(loop_full_name, root_aodir=targetdir)
 
-    # So here we have an insane problem with tmuxes... we need to spoof the bashrc in all of them!!
     loop_mgr = CacaoLoopManager('ao3k-nirpyr3k-testonly', None,
                                 root_all=targetdir)
 
