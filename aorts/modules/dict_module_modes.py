@@ -34,7 +34,13 @@ MODULE_CLASSES: list[type[base.RTS_MODULE]] = [
 _checker: list[type[base.RTS_MODULE_RECONFIGURABLE]] = [
         #ml.HOWFSLOOP_RTSModule,
         #ml.LOWFSLOOP_RTSModule,
-        mlgs.FOCOffloader_RTSModule,
+        #mlgs.FOCOffloader_RTSModule,
+        ml.NIRLOOP_RTSModule,
+        ml.HOWFSLOOP_RTSModule,
+        ml.LOWFSLOOP_RTSModule,
+        ml.KWFSLOOP_RTSModule,
+        ml.TTOFFLOOP_RTSModule,
+        ml.PTLOOP_RTSModule,
 ]
 
 MODULE_MAPPER: dict[base.RTS_MODULE_ENUM, typ.Type[base.RTS_MODULE]] = {

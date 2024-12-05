@@ -84,11 +84,14 @@ class DMCombManager:
         self.dm_shms[0].set_data(flat, check_dt=True)
 
     def save_0_to_flat(self) -> None:
-        new_flat = self.dm_shms[0].get_data()
+        new_flat = self.dm_shms[0].get_data()  # type: ignore
         self._save_flat_to_file(new_flat)
 
     def save_agg_to_flat(self) -> None:
-        dm_array = np.asarray([dm_chan.get_data() for dm_chan in self.dm_shms])
+        dm_array = np.asarray([
+                dm_chan.get_data()  #type:ignore
+                for dm_chan in self.dm_shms
+        ])
         new_flat = np.sum(dm_array, axis=0)
         self._save_flat_to_file(new_flat)
 

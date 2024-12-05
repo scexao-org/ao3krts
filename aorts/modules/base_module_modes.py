@@ -48,21 +48,6 @@ class RTS_MODULE_ENUM(str, Enum):
     TEST = 'TEST'
 
 
-class CONFIG_SUBMODES_ENUM(str, Enum):
-    '''
-    Enumeration of the RTS modules configurations for configurables
-    Essentially this is just used as a safe-typing option
-
-    It is not indispensible, but is used by the parsers (CLI + remote server)
-    to know if a mode is supposed to exist or not!
-    '''
-    # Note: for the click parser, left and right DO need to match
-    NGS = 'NGS'
-    OLGS = 'OLGS'
-    NLGS = 'NLGS'
-    TT = 'TT'
-
-
 class RTS_MODULE(typ.Protocol):
     MODULE_NAMETAG: RTS_MODULE_ENUM
     '''
@@ -82,10 +67,11 @@ class RTS_MODULE(typ.Protocol):
 
 class RTS_MODULE_RECONFIGURABLE(RTS_MODULE, typ.Protocol):
 
-    CFG_NAMES: list[CONFIG_SUBMODES_ENUM]
+    CFG_MODE_DEFAULT: RTS_MODE_ENUM
+    CFG_NAMES: list[RTS_MODE_ENUM]
 
     @classmethod
-    def reconfigure(cls, mode: CONFIG_SUBMODES_ENUM) -> T_Result:
+    def reconfigure(cls, mode: RTS_MODE_ENUM) -> T_Result:
         '''
         Hypothesis: reconfigure should NOT require the module to be started, even
         partially. Actually, it should require that the module is FULLY stopped.
@@ -96,56 +82,8 @@ class RTS_MODULE_RECONFIGURABLE(RTS_MODULE, typ.Protocol):
         ...
 
     @classmethod
-    def configure_and_start(cls, mode: CONFIG_SUBMODES_ENUM | None = None
-                            ) -> T_Result:
+    def start_and_configure(cls, mode: RTS_MODE_ENUM | None = None) -> T_Result:
         ...
-
-
-def proto_func_static_test_RTS_MODULE(mod: RTS_MODULE) -> None:
-    pass
-
-
-def proto_func_static_test_RTS_MODULE_RECONFIGURABLE(
-        mod: RTS_MODULE_RECONFIGURABLE) -> None:
-    pass
-
-
-class ThisClass:
-    '''
-    Just test boilerplate
-    '''
-    MODULE_NAMETAG: RTS_MODULE_ENUM = RTS_MODULE_ENUM.TEST
-
-    CFG_NAMES = []  # 0 is default!!
-
-    @classmethod
-    def start_function(cls) -> T_Result:
-        return OkErrEnum.OK, ''
-
-    @classmethod
-    def stop_function(cls) -> T_Result:
-        return OkErrEnum.OK, ''
-
-    @classmethod
-    def reconfigure(cls, mode: CONFIG_SUBMODES_ENUM) -> T_Result:
-        assert mode in cls.CFG_NAMES
-        return OkErrEnum.OK, ''
-
-    @classmethod
-    def configure_and_start(cls, mode: CONFIG_SUBMODES_ENUM | None = None
-                            ) -> T_Result:
-        if mode is None:
-            mode = CONFIG_SUBMODES_ENUM(cls.CFG_NAMES[0])
-        assert mode in cls.CFG_NAMES
-
-        rc, msg = cls.reconfigure(mode)
-        if rc == OkErrEnum.ERR:
-            return rc, msg
-        return cls.start_function()
-
-
-proto_func_static_test_RTS_MODULE(ThisClass())
-proto_func_static_test_RTS_MODULE_RECONFIGURABLE(ThisClass())
 
 
 class RTS_MODE_ENUM(str, Enum):
@@ -162,6 +100,7 @@ class RTS_MODE_ENUM(str, Enum):
     OLGS3K = 'OLGS3K'
     PT188 = 'PT188'
     PT3K = 'PT3K'
+    TT3K = 'PT3K'
 
     @classmethod
     def _missing_(cls, value: str) -> RTS_MODE_ENUM:
@@ -185,3 +124,52 @@ class RTS_MODE(typ.Protocol):
     MODE_NAMETAG: RTS_MODE_ENUM
     NOPE_MODULES: list[RTS_MODULE_ENUM]
     REQ_MODULES: list[RTS_MODULE_ENUM]
+
+
+class ATestClass_RTSReconfigurableModule:
+    '''
+    Just test boilerplate
+    '''
+    MODULE_NAMETAG: RTS_MODULE_ENUM = RTS_MODULE_ENUM.TEST
+
+    CFG_MODE_DEFAULT: RTS_MODE_ENUM = RTS_MODE_ENUM.PT3K
+    CFG_NAMES = []  # 0 is default!!
+
+    @classmethod
+    def start_function(cls) -> T_Result:
+        return OkErrEnum.OK, ''
+
+    @classmethod
+    def stop_function(cls) -> T_Result:
+        return OkErrEnum.OK, ''
+
+    @classmethod
+    def reconfigure(cls, mode: RTS_MODE_ENUM) -> T_Result:
+        assert mode in cls.CFG_NAMES
+        return OkErrEnum.OK, ''
+
+    @classmethod
+    def start_and_configure(cls, mode: RTS_MODE_ENUM | None = None) -> T_Result:
+        if mode is None:
+            mode = RTS_MODE_ENUM(cls.CFG_MODE_DEFAULT)
+        assert mode in cls.CFG_NAMES
+
+        rc, msg = cls.reconfigure(mode)
+        if rc == OkErrEnum.ERR:
+            return rc, msg
+        return cls.start_function()
+
+
+# Static analyzer warnings.
+def proto_func_static_test_RTS_MODULE(mod: RTS_MODULE) -> None:
+    pass
+
+
+def proto_func_static_test_RTS_MODULE_RECONFIGURABLE(
+        mod: RTS_MODULE_RECONFIGURABLE) -> None:
+    pass
+
+
+proto_func_static_test_RTS_MODULE(ATestClass_RTSReconfigurableModule())
+proto_func_static_test_RTS_MODULE_RECONFIGURABLE(
+        ATestClass_RTSReconfigurableModule())
