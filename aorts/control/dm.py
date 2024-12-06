@@ -108,6 +108,8 @@ class DMCombManager:
         fits.writeto(str(new_file), arr)
 
         symlinkpath = str(self.CONFDIR) + '/current_flat_symlink.fits'
+        if os.path.exists(symlinkpath):
+            os.remove(symlinkpath)
         os.symlink(f'flat_{timestring}.fits', symlinkpath)
 
         logg.info(f'TT: new flat saved flat_{timestring}.fits.')
@@ -116,7 +118,7 @@ class DMCombManager:
 class BIM188Manager(DMCombManager):
 
     SHAPE = 188
-    CONFDIR = '/home/rts/conf/bim188_flats'
+    CONFDIR = os.environ['HOME'] + '/conf/bim188_flats'
 
     def __init__(self) -> None:
         super().__init__(config.DMNUM_BIM188)
@@ -125,7 +127,7 @@ class BIM188Manager(DMCombManager):
 class TTManager(DMCombManager):
 
     SHAPE = 2
-    CONFDIR = '/home/rts/conf/tt_flats'
+    CONFDIR = os.environ['HOME'] + '/conf/tt_flats'
 
     def __init__(self) -> None:
         super().__init__(config.DMNUM_TT)
@@ -176,7 +178,7 @@ class TTManager(DMCombManager):
 class DM3kManager(DMCombManager):
 
     SHAPE = (64, 64)
-    CONFDIR = '/home/rts/conf/alpao_flats'
+    CONFDIR = os.environ['HOME'] + '/conf/alpao_flats'
 
     def __init__(self) -> None:
         super().__init__(config.DMNUM_ALPAO)
