@@ -28,12 +28,10 @@ MODULE_CLASSES: list[type[base.RTS_MODULE]] = [
         ml.PTLOOP_RTSModule,
         # LGS offloaders
         mlgs.WTTOffloader_RTSModule,
-        mlgs.FOCOffloader_RTSModule,
+        #mlgs.FOCOffloader_RTSModule,
 ]
 
 _checker: list[type[base.RTS_MODULE_RECONFIGURABLE]] = [
-        #ml.HOWFSLOOP_RTSModule,
-        #ml.LOWFSLOOP_RTSModule,
         #mlgs.FOCOffloader_RTSModule,
         ml.NIRLOOP_RTSModule,
         ml.HOWFSLOOP_RTSModule,

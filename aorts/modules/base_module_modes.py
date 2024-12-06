@@ -92,15 +92,18 @@ class RTS_MODE_ENUM(str, Enum):
     UNKNOWN = 'UNKNOWN'
     NONE = 'NONE'
 
-    NIR188 = 'NIR188'
     NIR3K = 'NIR3K'
-    APDNGS188 = 'APDNGS188'
-    APDNGS3K = 'APDNGS3K'
+    PT3K = 'PT3K'
+    NGS3K = 'NGS3K'
+
     NLGS3K = 'NLGS3K'
     OLGS3K = 'OLGS3K'
+
+    TT3K = 'TT3K'
+
+    NIR188 = 'NIR188'
+    APDNGS188 = 'APDNGS188'
     PT188 = 'PT188'
-    PT3K = 'PT3K'
-    TT3K = 'PT3K'
 
     @classmethod
     def _missing_(cls, value: str) -> RTS_MODE_ENUM:

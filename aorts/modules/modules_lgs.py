@@ -9,8 +9,8 @@ from swmain.infra.rttools import milk_make_rt
 
 from . import base_module_modes as base
 
-RME: typ.TypeAlias = base.RTS_MODULE_ENUM  # Alias
-CSE: typ.TypeAlias = base.CONFIG_SUBMODES_ENUM  # Alias
+ModuEn: typ.TypeAlias = base.RTS_MODULE_ENUM  # Alias
+ModeEn: typ.TypeAlias = base.RTS_MODE_ENUM  # Alias
 OK = base.OkErrEnum.OK
 ERR = base.OkErrEnum.ERR
 
@@ -19,23 +19,23 @@ from ..control.foc_offloader import FocusLGSOffloader
 
 
 class WTTOffloader_RTSModule:  # implements RTS_MODULE Protocol
-    MODULE_NAMETAG: RME = RME.WTTOFF
+    MODULE_NAMETAG: ModuEn = ModuEn.WTTOFF
 
     @classmethod
     def start_function(cls) -> base.T_Result:
-        ...
+        return (OK, 'Bypass start_function @ WTTOffloader_RTSModule')
 
     @classmethod
     def stop_function(cls) -> base.T_Result:
-        ...
+        return (OK, 'Bypass stop_function @ WTTOffloader_RTSModule')
 
 
 class FOCOffloader_RTSModule:  # implements RTS_MODULE_CONFIGURABLE Protocol
-    MODULE_NAMETAG: RME = RME.FOCOFF
+    MODULE_NAMETAG: ModuEn = ModuEn.TEST
 
-    CFG_NAMES: list[CSE] = [CSE.OLGS, CSE.NLGS]
+    CFG_NAMES: list[ModeEn] = [ModeEn.UNKNOWN, ModeEn.UNKNOWN]
 
-    last_requested_mode: CSE | None = None
+    last_requested_mode: ModeEn | None = None
 
     @classmethod
     def start_function(cls) -> base.T_Result:
@@ -91,7 +91,7 @@ class FOCOffloader_RTSModule:  # implements RTS_MODULE_CONFIGURABLE Protocol
         return (OK, "Focus offloader halted successfully.")
 
     @classmethod
-    def reconfigure(cls, mode: CSE) -> base.T_Result:
+    def reconfigure(cls, mode: ModeEn) -> base.T_Result:
         if mode not in cls.CFG_NAMES:
             return (ERR,
                     f'FOCOffloader_RTSModule mode {mode} is invalid. Valid modes are: {cls.CFG_NAMES}'
@@ -105,9 +105,9 @@ class FOCOffloader_RTSModule:  # implements RTS_MODULE_CONFIGURABLE Protocol
             return ret
 
         ctrl = FocusLGSOffloader(allow_creation=False)
-        if mode == CSE.OLGS:
+        if mode == ModeEn.OLGS:
             input_stream = f'aol{config.LINFO_HOAPD_3K.n}_modevalWFS'
-        elif mode == CSE.NLGS:
+        elif mode == ModeEn.NLGS:
             input_stream = f'aol{config.LINFO_LOAPD_3K.n}_modevalWFS'
         else:
             return (ERR,
@@ -127,7 +127,7 @@ class FOCOffloader_RTSModule:  # implements RTS_MODULE_CONFIGURABLE Protocol
         return (OK, f'FOCOffloader reconfigured mode: {mode}')
 
     @classmethod
-    def configure_and_start(cls, mode: CSE | None = None) -> base.T_Result:
+    def configure_and_start(cls, mode: ModeEn | None = None) -> base.T_Result:
         if mode is None:
             mode = cls.CFG_NAMES[0]
 

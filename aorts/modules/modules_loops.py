@@ -1,12 +1,14 @@
 from __future__ import annotations
 import typing as typ
 
+import os
 import time
 
 from . import base_module_modes as base
 
-ModuEn: typ.TypeAlias = base.RTS_MODULE_ENUM  # Alias
-ModeEn: typ.TypeAlias = base.RTS_MODE_ENUM  # Alias
+from .base_module_modes import RTS_MODULE_ENUM as ModuEn  # Alias
+from .base_module_modes import RTS_MODE_ENUM as ModeEn  # Alias
+
 from .. import config
 
 from ..cacao_stuff.loop_manager import CacaoLoopManager, cacao_loop_deploy, CacaoConfigReader
@@ -60,9 +62,8 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE_RECONFIGURABLE Protocol
         loop_mgr = CacaoLoopManager(cls.LOOP_FULL_NAME, None)
         loop_mgr.confstart_processes()
 
-        try:
-            aorun_fps = cls._expected_aorun_fps(loop_mgr)
-        except FPSDoesntExistError:
+        aorun_fps = cls._expected_aorun_fps(loop_mgr)
+        if any(x is None for x in aorun_fps):
             return (ERR,
                     f'_pre_configure_start for loop {cls.LOOP_FULL_NAME} -- missing core AO pipe FPS.'
                     )
@@ -72,8 +73,8 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE_RECONFIGURABLE Protocol
         # INFO for subclasses: the tail end of _pre_configure_start is a perfect place to re-route custom symlinks
 
     @classmethod
-    def _expected_aorun_fps(cls,
-                            loop_mgr: CacaoLoopManager) -> typ.Sequence[FPS]:
+    def _expected_aorun_fps(cls, loop_mgr: CacaoLoopManager
+                            ) -> typ.Sequence[FPS | None]:
         '''
         Raises FPSDoesntExistError if one of these is missing.
         '''
@@ -88,9 +89,11 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE_RECONFIGURABLE Protocol
 
         time.sleep(1.0)
 
-        run_states = (loop_mgr.acquWFS.run_isrunning(),
-                      loop_mgr.wfs2cmodeval.run_isrunning(),
-                      loop_mgr.mfilt.run_isrunning(),
+        run_states = (loop_mgr.acquWFS is None or
+                      loop_mgr.acquWFS.run_isrunning(), loop_mgr.wfs2cmodeval
+                      is None or loop_mgr.wfs2cmodeval.run_isrunning(),
+                      loop_mgr.mfilt is None or loop_mgr.mfilt.run_isrunning(),
+                      loop_mgr.mvalC2dm is None or
                       loop_mgr.mvalC2dm.run_isrunning())
 
         if not all(run_states):
@@ -110,15 +113,17 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE_RECONFIGURABLE Protocol
 
         loop_mgr = CacaoLoopManager(cls.LOOP_FULL_NAME, None)
 
-        loop_mgr.mfilt.loopON = False
+        if loop_mgr.mfilt:
+            loop_mgr.mfilt.loopON = False
+
         loop_mgr.runstop_aorun(stop_acqWFS=True)
 
         time.sleep(1.0)
 
-        if (loop_mgr.acquWFS.run_isrunning() or
-                    loop_mgr.wfs2cmodeval.run_isrunning() or
-                    loop_mgr.mfilt.run_isrunning() or
-                    loop_mgr.mvalC2dm.run_isrunning()):
+        if ((loop_mgr.acquWFS and loop_mgr.acquWFS.run_isrunning()) or
+            (loop_mgr.wfs2cmodeval and loop_mgr.wfs2cmodeval.run_isrunning()) or
+            (loop_mgr.mfilt and loop_mgr.mfilt.run_isrunning()) or
+            (loop_mgr.mvalC2dm and loop_mgr.mvalC2dm.run_isrunning())):
             return (ERR,
                     f'Error stopping loop {cls.LOOP_FULL_NAME} from rootdir {loop_mgr.rootdir}'
                     )
@@ -157,16 +162,15 @@ class NIRLOOP_RTSModule(CACAOLOOP_RTSModule):
 class HOWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
     MODULE_NAMETAG: ModuEn = ModuEn.HOLOOP
     LOOP_FULL_NAME: str = config.LINFO_HOAPD_3K.full_name
-    CFG_MODE_DEFAULT: ModeEn = ModeEn.APDNGS3K
-    CFG_NAMES = [ModeEn.APDNGS3K, ModeEn.OLGS3K,
-                 ModeEn.NLGS3K]  # What about TT?
+    CFG_MODE_DEFAULT: ModeEn = ModeEn.NGS3K
+    CFG_NAMES = [ModeEn.NGS3K, ModeEn.OLGS3K, ModeEn.NLGS3K]  # What about TT?
 
     @classmethod
     def reconfigure(cls, mode: ModeEn) -> base.T_Result:
         import subprocess as sproc
         cfg = CacaoConfigReader(cls.LOOP_FULL_NAME, None)
 
-        if mode == ModeEn.APDNGS3K:
+        if mode == ModeEn.NGS3K:
             file = str(cfg.rootdir / 'conf' / 'CMmodesWFS' / 'CMmodesWFS.fits')
         elif mode == ModeEn.OLGS3K or mode == ModeEn.NLGS3K:
             file = str(cfg.rootdir / 'conf' / 'CMmodesWFS' /
@@ -193,12 +197,13 @@ class LOWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
 
     @classmethod
     def reconfigure(cls, mode: ModeEn) -> base.T_Result:
+        return (OK, 'BYPASS reconfigure @ LOWFSLOOP_RTSModule')
         1 / 0  # MHHHHH
         ...
 
     @classmethod
-    def _expected_aorun_fps(cls,
-                            loop_mgr: CacaoLoopManager) -> typ.Sequence[FPS]:
+    def _expected_aorun_fps(cls, loop_mgr: CacaoLoopManager
+                            ) -> typ.Sequence[FPS | None]:
         '''
         Raises FPSDoesntExistError if one of these is missing.
         '''
@@ -215,14 +220,20 @@ class PTLOOP_RTSModule(CACAOLOOP_RTSModule):
     CFG_NAMES = []
 
     @classmethod
-    def _expected_aorun_fps(cls,
-                            loop_mgr: CacaoLoopManager) -> typ.Sequence[FPS]:
-        return (loop_mgr.mvalC2dm, )
+    def _expected_aorun_fps(cls, loop_mgr: CacaoLoopManager
+                            ) -> typ.Sequence[FPS | None]:
+        return (loop_mgr.mvalC2dm, loop_mgr.acquWFS)
 
     @classmethod
     def _pre_configure_start(cls):
         (ret, msg) = super()._pre_configure_start()
 
+        loop_cfg = CacaoConfigReader(cls.LOOP_FULL_NAME, None)
+        targ = os.environ[
+                'MILK_SHM_DIR'] + f'/aol{loop_cfg.loop_number}_mC.im.shm'
+        if os.path.exists(targ):
+            os.remove(targ)
+        os.symlink('dm64disp07.im.shm', targ)
         # This is an example -- assuming this particular loop would like to do symlink shenanigans post-deployment of the FPSs
 
         return ret, msg
@@ -237,6 +248,6 @@ class KWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
 
 class TTOFFLOOP_RTSModule(CACAOLOOP_RTSModule):
     MODULE_NAMETAG: ModuEn = ModuEn.TTOFFL
-    LOOP_FULL_NAME: str = config.LINFO_NLCWFS_3K.full_name
+    LOOP_FULL_NAME: str = config.LINFO_3KTTOFFLOAD.full_name
     CFG_MODE_DEFAULT: ModeEn = ModeEn.NIR3K
     CFG_NAMES = []
