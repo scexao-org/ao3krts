@@ -73,7 +73,8 @@ class ClickDispatcher:
                 return str(exc) + '\n' + exc.ctx.get_help() + '\n'
             except Exception as exc:
                 captured = buf.getvalue()
-                return captured + '\n' + str(exc) + '\n'
+                return captured + '\n' + f'Exception {type(exc)}: ' + str(
+                        exc) + '\n'
 
             captured = buf.getvalue()
 
