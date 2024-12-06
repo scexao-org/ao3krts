@@ -15,7 +15,7 @@ logg = logging.getLogger(__name__)
 
 # Check bindings to swmain for logging. Duh.
 
-from pyMilk.interfacing.fps import FPS, FPSManager
+from pyMilk.interfacing.fps import FPS, FPSManager, FPSDoesntExistError
 
 from .mfilt import MFilt
 from .cacaovars_reader import load_cacao_environment
@@ -93,21 +93,33 @@ class CacaoLoopManager(CacaoConfigReader):
             self.tmux_handles[fps_name] = tmux_triplet  # type: ignore
 
     @property
-    def acquWFS(self) -> FPS:
-        return self.fps_ctrl.find_fps(f'acquWFS-{self.loop_number}')
+    def acquWFS(self) -> FPS | None:
+        try:
+            return self.fps_ctrl.find_fps(f'acquWFS-{self.loop_number}')
+        except FPSDoesntExistError:
+            return None
 
     @property
-    def wfs2cmodeval(self) -> FPS:
-        return self.fps_ctrl.find_fps(f'wfs2cmodeval-{self.loop_number}')
+    def wfs2cmodeval(self) -> FPS | None:
+        try:
+            return self.fps_ctrl.find_fps(f'wfs2cmodeval-{self.loop_number}')
+        except FPSDoesntExistError:
+            return None
 
     @property
-    def mfilt(self) -> MFilt:
-        return MFilt.smartfps_downcast(
-                self.fps_ctrl.find_fps(f'mfilt-{self.loop_number}'))
+    def mfilt(self) -> MFilt | None:
+        try:
+            return MFilt.smartfps_downcast(
+                    self.fps_ctrl.find_fps(f'mfilt-{self.loop_number}'))
+        except FPSDoesntExistError:
+            return None
 
     @property
-    def mvalC2dm(self) -> FPS:
-        return self.fps_ctrl.find_fps(f'mvalC2dm-{self.loop_number}')
+    def mvalC2dm(self) -> FPS | None:
+        try:
+            return self.fps_ctrl.find_fps(f'mvalC2dm-{self.loop_number}')
+        except FPSDoesntExistError:
+            return None
 
     def init_input_symlink(self, sim: bool = False):
         pass
@@ -144,21 +156,24 @@ class CacaoLoopManager(CacaoConfigReader):
         it could
         take time
         '''
-        if not self.acquWFS.run_isrunning():
+        if self.acquWFS and not self.acquWFS.run_isrunning():
             self.acquWFS.run_start(timeoutsync=3.0)
-        if not self.wfs2cmodeval.run_isrunning():
+        if self.wfs2cmodeval and not self.wfs2cmodeval.run_isrunning():
             self.wfs2cmodeval.run_start(timeoutsync=3.0)
-        if not self.mfilt.run_isrunning():
+        if self.mfilt and not self.mfilt.run_isrunning():
             self.mfilt.run_start(timeoutsync=3.0)
-        if not self.mvalC2dm.run_isrunning():
+        if self.mvalC2dm and not self.mvalC2dm.run_isrunning():
             self.mvalC2dm.run_start(timeoutsync=3.0)
 
     def runstop_aorun(self, stop_acqWFS: bool = False) -> None:
-        self.mvalC2dm.run_stop(timeoutsync=1.0)
-        self.mfilt.run_stop(timeoutsync=1.0)
-        self.wfs2cmodeval.run_stop(timeoutsync=1.0)
+        if self.mvalC2dm:
+            self.mvalC2dm.run_stop(timeoutsync=1.0)
+        if self.mfilt:
+            self.mfilt.run_stop(timeoutsync=1.0)
+        if self.wfs2cmodeval:
+            self.wfs2cmodeval.run_stop(timeoutsync=1.0)
 
-        if stop_acqWFS:
+        if self.acquWFS and stop_acqWFS:
             time.sleep(.3)
             self.acquWFS.run_stop()
 
@@ -167,15 +182,16 @@ class CacaoLoopManager(CacaoConfigReader):
         # perform a graceful fade-out of the mfilt
         # the open the loop, then stop the processes
 
-        saved_gain = self.mfilt.loopgain
-        saved_mult = self.mfilt.loopmult
-        self.mfilt.loopgain = 0.0
-        self.mfilt.loopmult = 0.98
-        time.sleep(1.0)
+        if self.mfilt:
+            saved_gain = self.mfilt.loopgain
+            saved_mult = self.mfilt.loopmult
+            self.mfilt.loopgain = 0.0
+            self.mfilt.loopmult = 0.98
+            time.sleep(1.0)
 
-        self.mfilt.loopON = False
-        self.mfilt.loopgain = saved_gain
-        self.mfilt.loopmult = saved_mult
+            self.mfilt.loopON = False
+            self.mfilt.loopgain = saved_gain
+            self.mfilt.loopmult = saved_mult
 
         if do_runstop:
             self.runstop_aorun()
@@ -239,7 +255,7 @@ def cacao_loop_deploy(loop_full_name: str, root_aodir: str |
 
     root_aodir = pathlib.Path(root_aodir)
     if delete_logdir:
-        cacao_deploy_folder = root_aodir / f'.{cfg_reader.loop_name}.cacaotaskmanager.log'
+        cacao_deploy_folder = root_aodir / f'.{cfg_reader.loop_name}.cacaotaskmanager-log'
         import shutil
         shutil.rmtree(cacao_deploy_folder)
 
