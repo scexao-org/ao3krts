@@ -199,12 +199,12 @@ class WTTCommand(ClickRemotelyInvokableObject):
     @click.option('-n', '--nudge', is_flag=True)
     @click.argument('y', type=float)
     @staticmethod
-    def yset(y: float, chan: int, nudge: bool) -> str:
+    def yset(y: float, nudge: bool) -> str:
         if nudge:
             WTTCommand.CALLEE.ynudge(y)
         else:
             WTTCommand.CALLEE.yset(y)
-        return f'{y=}, {chan=}'
+        return f'{y=}'
 
     @DISPATCHER.click_invokator.command('xy', context_settings=FLT_OK)
     @click.option('-n', '--nudge', is_flag=True)
