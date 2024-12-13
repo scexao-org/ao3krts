@@ -20,7 +20,7 @@ from ..control.status import StatusObj
 from hwmain.alpao64.alpao_hkl import AlpaoHKL
 
 
-class DM3kCommand(ClickRemotelyInvokableObject, DM3kManager):
+class DM3kCommand(ClickRemotelyInvokableObject):
     NAME = 'DM'
     DESCR = 'DM3k Control'
 
@@ -57,7 +57,7 @@ class DM3kCommand(ClickRemotelyInvokableObject, DM3kManager):
         return f''
 
 
-class DM3kHKLCommand(ClickRemotelyInvokableObject, AlpaoHKL):
+class DM3kHKLCommand(ClickRemotelyInvokableObject):
     NAME = 'DMC'
     DESCR = 'DM3k HKL'
 
