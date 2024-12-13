@@ -27,6 +27,15 @@ def global_click_invokator(self):
     pass
 
 
+def recursive_help(cmd, parent=None):
+    ctx = click.core.Context(cmd, info_name=cmd.name, parent=parent)
+    print(cmd.get_help(ctx))
+    print()
+    commands = getattr(cmd, 'commands', {})
+    for sub in commands.values():
+        recursive_help(sub, ctx)
+
+
 class ClickDispatcher:
 
     def __init__(self, click_group: str):
@@ -38,6 +47,12 @@ class ClickDispatcher:
         self.click_invokator = global_click_invokator.group(
                 click_group.lower())(self._click_invokator)
         self.klass = None
+
+        def recursive_help_caller():
+            recursive_help(self.click_invokator)
+
+        self.recursive_helper = self.click_invokator.command('morehelp')(
+                recursive_help_caller)
 
     def set_klass(self, klass):
         self.klass = klass
@@ -110,3 +125,9 @@ class ClickRemotelyInvokableObject(InvokableObjectForServer):
 
     def invoke_call(self, argstring: str) -> str:
         return self.DISPATCHER.click_dispatch_remote_calls(argstring)
+
+    def help_string(self) -> str:
+        '''
+        Using this mandated abstract function to generate click recursive help.
+        '''
+        return self.DISPATCHER.click_dispatch_remote_calls('morehelp')
