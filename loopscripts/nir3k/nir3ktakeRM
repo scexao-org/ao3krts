@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
 confd=${1:-"conf"}
 
 
 mkdir -p ${confd}
 
 # make wfsmask for RM acquisision
-./nir3k_mkWFSmask
+./scripts/nir3k_mkWFSmask
 milk-all << EOF
 imgen.mkdisk d00 160 160 40 40 40
 imgen.mkdisk d10 160 160 120 40 40

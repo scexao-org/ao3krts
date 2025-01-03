@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/bimdm3kpt-rootdir
+
 milk-shm2FITS dm64disp07 pterr.fits

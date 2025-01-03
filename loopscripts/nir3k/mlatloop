@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
 ACTX=20
 ACTY=20
 
@@ -22,17 +25,19 @@ if [[ $i -lt ${NBITER} ]]; then
     echo "Closing loop"
     cacao-fpsctrl setval mfilt loopON ON
 
-    cd ../ttoff3k-rootdir
-    cacao-fpsctrl setval mfilt loopON ON
-    cd -
+    (
+      cd ../ttoff3k-rootdir
+      cacao-fpsctrl setval mfilt loopON ON
+    )
 
     sleep 2
     echo "Opening loop"
     cacao-fpsctrl setval mfilt loopON OFF
 
+    (
     cd ../ttoff3k-rootdir
     cacao-fpsctrl setval mfilt loopON OFF
-    cd -
+    )
 
     cacao-aorun-020-mlat -a -ax $ACTX -ay $ACTY -w
     cp nir3k-rundir/fps.mlat-7.datadir/mlat-diffseq.fits ${OUTFILE}

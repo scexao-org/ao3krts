@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-zrmDIR="/home/aorts/AOloop/nir3k-rootdir/logdir/aol_nir3k/RMzrec_modesWFS"
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
+zrmDIR="${HOME}/AOloop/nir3k-rootdir/logdir/aol_nir3k/RMzrec_modesWFS"
 
 zrm0="RMzrec_modesWFS.2024-08-18T11:52:56.802270850Z.fits"
 zrm1="RMzrec_modesWFS.2024-08-18T11:56:24.509074726Z.fits"

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
 # This script should be running with AO loop ON
 # Records current DM shape, averaged over NBframe loop iteration
 # stores it in new dmflat.fits file

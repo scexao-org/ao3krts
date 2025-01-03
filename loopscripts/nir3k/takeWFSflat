@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
 NBframe=5000
 sname="iiwi"
 

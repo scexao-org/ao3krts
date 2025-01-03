@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
 
 for i in {0..999}
 do

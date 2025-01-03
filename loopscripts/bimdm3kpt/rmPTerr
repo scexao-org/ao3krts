@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/bimdm3kpt-rootdir
 
 #cp ../conf/pt_matrix_bim2alpao.fits ptmat.fits
 

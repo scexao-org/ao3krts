@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
 milk-all << EOF
 
 loadfits "imdarkraw.00.fits" imd00

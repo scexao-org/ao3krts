@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/bimdm3kpt-rootdir
+
 LOOPNUMBER=8
 
 SVDl100=${1:-"06"}

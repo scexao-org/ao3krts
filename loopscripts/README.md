@@ -24,7 +24,7 @@ Some cleverness might be better with `cacao-loops` so that the scripts can be de
 #!/usr/bin/env bash
 
 # Fix rootdir for nested scripts/ loop scripts!
-cd ${HOME}/AOloop/apd3k
+cd ${HOME}/AOloop/apd3k-rootdir
 
 ...
 ```

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
 milk-all << EOF
 loadfits "dmflat.fits" imf
 readshmim dm64disp00

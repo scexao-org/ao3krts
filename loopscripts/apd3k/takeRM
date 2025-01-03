@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Fix rootdir for nested scripts/ loop scripts!
-cd ${HOME}/AOloop/apd3k
+cd ${HOME}/AOloop/apd3k-rootdir
 
 
 cacao-fpsctrl setval measlinresp ampl 0.03

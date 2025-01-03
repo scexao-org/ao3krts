@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
 
 NBITER=${1:-10}
 
@@ -7,35 +9,37 @@ echo "NBITER = ${NBITER}"
 
 for i in {0..9999}
 do
-if [[ $i -lt ${NBITER} ]]; then
-  i2=$(printf "%04d" $i)
-  echo "iteration  $i2"
-  OUTFILE="HpokeC.WFSresp.$i2.fits"
-  echo "output : $OUTFILE"
-  if [ -f $OUTFILE ];
-  then
-    echo "   File already exists ... skipping"
-  else
+    if [[ $i -lt ${NBITER} ]]; then
+        i2=$(printf "%04d" $i)
+        echo "iteration  $i2"
+        OUTFILE="HpokeC.WFSresp.$i2.fits"
+        echo "output : $OUTFILE"
+        if [ -f $OUTFILE ];
+        then
+            echo "   File already exists ... skipping"
+        else
 
-    echo "Closing loop"
-    cacao-fpsctrl setval mfilt loopON ON
+            echo "Closing loop"
+            cacao-fpsctrl setval mfilt loopON ON
 
-    cd ../ttoff3k-rootdir
-    cacao-fpsctrl setval mfilt loopON ON
-    cd -
+            (
+                cd ../ttoff3k-rootdir
+                cacao-fpsctrl setval mfilt loopON ON
+            )
 
-    sleep 2
-    echo "Opening loop"
-    cacao-fpsctrl setval mfilt loopON OFF
+            sleep 2
+            echo "Opening loop"
+            cacao-fpsctrl setval mfilt loopON OFF
 
-    cd ../ttoff3k-rootdir
-    cacao-fpsctrl setval mfilt loopON OFF
-    cd -
+            (
+                cd ../ttoff3k-rootdir
+                cacao-fpsctrl setval mfilt loopON OFF
+            )
 
-    cacao-aorun-030-acqlinResp -n 8 HpokeC
-    cp conf/RMmodesWFS/HpokeC.WFSresp.fits ${OUTFILE}
+            cacao-aorun-030-acqlinResp -n 8 HpokeC
+            cp conf/RMmodesWFS/HpokeC.WFSresp.fits ${OUTFILE}
 
-  fi
-  echo "end iteration"
-fi
+        fi
+        echo "end iteration"
+    fi
 done

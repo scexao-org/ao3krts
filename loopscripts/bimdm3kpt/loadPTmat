@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/bimdm3kpt-rootdir
+
 #load original pt matrix
 #milk-FITS2shm ptmat.fits aol9_DMmodes
 

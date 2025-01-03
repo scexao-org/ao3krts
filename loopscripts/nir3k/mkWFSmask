@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
 milk-all << EOF
 imgen.mkdisk imd 160 160 80 80 40
 mk2Dim "s>aol7_wfsmask" 160 160

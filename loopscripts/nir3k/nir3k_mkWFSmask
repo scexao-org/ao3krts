@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
 milk-all << EOF
 imgen.mkdisk d00 160 160 40 40 40
 imgen.mkdisk d10 160 160 120 40 40
