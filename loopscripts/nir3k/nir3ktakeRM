@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
+confd=${1:-"conf"}
+
+
+mkdir -p ${confd}
+
+# make wfsmask for RM acquisision
+./scripts/nir3k_mkWFSmask
+milk-all << EOF
+imgen.mkdisk d00 160 160 40 40 40
+imgen.mkdisk d10 160 160 120 40 40
+imgen.mkdisk d11 160 160 120 120 40
+imgen.mkdisk d01 160 160 40 120 40
+mask=d00+d01+d11+d10
+saveFITS mask "./${confd}/wfsmask.fits"
+exitCLI
+EOF
+milk-FITS2shm "./${confd}/wfsmask.fits" aol7_wfsmask
+
+
+
+mkdir -p ${confd}/RMmodesDM
+mkdir -p ${confd}/RMmodesWFS
+
+mkdir -p ${confd}/CMmodesDM
+mkdir -p ${confd}/CMmodesWFS
+
+
+cp ./conf/RMmodesDM/HpokeC.fits ./${confd}/RMmodesDM/HpokeC.fits
+cp ./conf/RMmodesDM/Hmat.fits ./${confd}/RMmodesDM/Hmat.fits
+cp ./conf/RMmodesDM/Hpixindex.fits ./${confd}/RMmodesDM/Hpixindex.fits
+
+CACAO_CONFWDIR="${confd}" cacao-aorun-030-acqlinResp -n 6 HpokeC
+
+CACAO_CONFWDIR="${confd}" cacao-aorun-031-RMHdecode
+
+
+CACAO_CONFWDIR="${confd}" cacao-aorun-032-RMmkmask -wfsc0 0.2 -wfsc1 0.2
+# make idealized DM mask
+milk-all << EOF
+imgen.mkdisk d1 64 64 30.5 31.5 31.0
+saveFITS d1 "./${confd}/dmmask.fits"
+exitCLI
+EOF
+
+
+
+
+CACAO_CONFWDIR="${confd}" cacao-aorun-028-mkZFmodes -c0 0 -c1 32 -c 50 -ea 2.0 -t 1.0 -a 0.3
+CACAO_CONFWDIR="${confd}" cacao-aorun-034-RMzonal2modal modesZF
+# output:
+# ${confd}/RMmodesDM/RMmodesDM.fits
+# ${confd}/RMmodesWFS/RMmodesWFS.fits

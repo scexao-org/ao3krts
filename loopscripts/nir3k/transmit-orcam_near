@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
+milk-nettransmit -s orcam_near -T ${IPLAN_SC6} -c aollog 40100

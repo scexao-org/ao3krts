@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
+milk-all << EOF
+
+loadfits "imdarkraw.00.fits" imd00
+loadfits "imdarkraw.01.fits" imd01
+loadfits "imdarkraw.02.fits" imd02
+loadfits "imdarkraw.03.fits" imd03
+loadfits "imdarkraw.04.fits" imd04
+loadfits "imdarkraw.05.fits" imd05
+imd=imd00+imd01
+imd=imd+imd02
+imd=imd+imd03
+imd=imd+imd04
+imd=imd+imd05
+imdn=imd/6
+
+loadfits "imflatraw.00.fits" imf00
+loadfits "imflatraw.01.fits" imf01
+loadfits "imflatraw.02.fits" imf02
+loadfits "imflatraw.03.fits" imf03
+loadfits "imflatraw.04.fits" imf04
+loadfits "imflatraw.05.fits" imf05
+imf=imf00+imf01
+imf=imf+imd02
+imf=imf+imd03
+imf=imf+imd04
+imf=imf+imd05
+imfn=imf/6
+
+listim
+imff=imfn-imdn
+saveFITS imff "imWFSflat.fits"
+
+exitCLI
+EOF

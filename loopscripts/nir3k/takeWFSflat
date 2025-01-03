@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
+NBframe=5000
+sname="iiwi"
+
+
+milk-all << EOF
+readshmim iiwi
+readshmim aol7_imWFS0
+readshmim aol7_imWFS1
+readshmim aol7_imWFS2
+streamave ..procinfo 1
+streamave ..triggersname ${sname}
+streamave ..triggermode 1
+streamave ..loopcntMax ${NBframe}
+streamave .out_shared 0
+streamave ${sname} imave ${NBframe}
+saveFITS imave imflatraw.fits
+#readshmim aol7_wfsdark
+#cp imave aol7_wfsdark
+exitCLI
+EOF

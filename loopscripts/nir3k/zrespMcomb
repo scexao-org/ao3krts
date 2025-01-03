@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
+ZRESPMHAVEFILE="zrespMHave.fits"
+cnt=1
+if [ ! -f $ZRESPMHAVEFILE ]; then
+    for i in {0..9999}
+    do
+        i2=$(printf "%04d" $i)
+        OUTFILE="HpokeC.WFSresp.$i2.fits"
+        if [[ $i -eq 0 ]]; then
+            cp ${OUTFILE} zrespMHsum.fits
+        else
+            if [ -f $OUTFILE ];
+            then
+                echo "   Combining file ${OUTFILE}"
+                milk-all << EOF
+loadfits "${OUTFILE}" im
+loadfits zrespMHsum.fits ims
+ims1=ims+im
+saveFITS ims1 "zrespMHsum1.fits"
+exitCLI
+EOF
+                mv zrespMHsum1.fits zrespMHsum.fits
+                cnt=$i
+            fi
+        fi
+    done
+
+milk-all << EOF
+nbim=$cnt+1
+loadfits zrespMHsum.fits mls
+mla=mls/nbim
+saveFITS mla zrespMHave.fits
+exitCLI
+EOF
+
+fi
+
+# DECODE
+
+zrespMfile="zrespM.fits"
+
+cp zrespMHave.fits ./conf/RMmodesWFS/HpokeC.WFSresp.fits
+cacao-aorun-031-RMHdecode
+
+# OUTPUT: conf/RMmodesWFS/zrespM-H.fits
+cacao-aorun-032-RMmkmask -nm
+
+cacao-fpsctrl setval compstrCM RMmodesDM "../conf/RMmodesDM/RMmodesDM.fits"
+cacao-fpsctrl setval compstrCM RMmodesWFS "../conf/RMmodesWFS/RMmodesWFS.fits"
+cacao-fpsctrl setval compstrCM svdlim 0.01
+cacao-fpsctrl setval compstrCM CMmodesDM "../CMmodesDM.fits"
+cacao-fpsctrl setval compstrCM CMmodesWFS "../CMmodesWFS.fits"
+cacao-fpsctrl runstart compstrCM 0 0

@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
+zrmDIR="${HOME}/AOloop/nir3k-rootdir/logdir/aol_nir3k/RMzrec_modesWFS"
+
+zrm0="RMzrec_modesWFS.2024-08-18T11:52:56.802270850Z.fits"
+zrm1="RMzrec_modesWFS.2024-08-18T11:56:24.509074726Z.fits"
+zrm2="RMzrec_modesWFS.2024-08-18T12:00:00.600653434Z.fits"
+zrm3="RMzrec_modesWFS.2024-08-18T12:03:27.323910321Z.fits"
+
+milk-all << EOF
+loadfits "${zrmDIR}/${zrm0}" zrm0
+loadfits "${zrmDIR}/${zrm1}" zrm1
+zrm01=zrm0+zrm1
+rm zrm0
+rm zrm1
+loadfits "${zrmDIR}/${zrm2}" zrm2
+loadfits "${zrmDIR}/${zrm3}" zrm3
+zrm23=zrm2+zrm3
+rm zrm2
+rm zrm3
+zrms=zrm01+zrm23
+zrmn=zrms/4
+saveFITS zrmn "zrespM.fits"
+exitCLI
+EOF

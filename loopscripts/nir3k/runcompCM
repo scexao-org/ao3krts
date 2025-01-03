@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
+TYPE=1
+
+./scripts/nir3k_compCM 14 ${TYPE}
+./scripts/nir3k_compCM 12 ${TYPE}
+./scripts/nir3k_compCM 10 ${TYPE}
+./scripts/nir3k_compCM 08 ${TYPE}
+./scripts/nir3k_compCM 06 ${TYPE}
+./scripts/nir3k_compCM 04 ${TYPE}
+./scripts/nir3k_compCM 02 ${TYPE}
+./scripts/nir3k_compCM 01 ${TYPE}

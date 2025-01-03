@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/nir3k-rootdir
+
+# This script should be running with AO loop ON
+# Records current DM shape, averaged over NBframe loop iteration
+# stores it in new dmflat.fits file
+#
+# to load it to DM at any time, run ./dmflat
+#
+
+sname="dm64disp"
+NBframe=20000
+
+milk-all << EOF
+readshmim "${sname}"
+streamave ..procinfo 1
+streamave ..triggersname ${sname}
+streamave ..triggermode 1
+streamave ..loopcntMax ${NBframe}
+streamave .out_shared 0
+streamave ${sname} dmflat ${NBframe}
+imgen.mkdisk imd 64 64 31.5 31.5 32
+dmflatm=dmflat*imd
+av1=itot(dmflatm)/itot(imd)
+dmflatm1=(dmflatm-av1)*imd
+saveFITS imd imd.fits
+saveFITS dmflatm1 "dmflat.fits"
+readshmim dm64disp00
+cp dmflatm1 dm64disp00
+exitCLI
+EOF

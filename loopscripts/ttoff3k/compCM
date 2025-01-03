@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/bimdm3kpt-rootdir
+
+LOOPNUMBER=8
+
+SVDl100=${1:-"06"}
+MARGMODE=${2:-1}
+
+
+
+SVDlim="0.${SVDl100}"
+
+echo "SVDlim = ${SVDlim}"
+
+
+
+WHICH_MARG="-marg"
+MARGTT="-margDM 0:1"
+margstring="margDM01-margWFS"
+
+
+
+
+
+if [[ ${MARGMODE} -eq 1 ]]; then
+echo "MARGMODE = 1"
+WHICH_MARG="-marg"
+MARGTT="-margDM 0:1"
+margstring="margDM01-margWFS"
+fi
+
+
+if [[ ${MARGMODE} -eq 2 ]]; then
+echo "MARGMODE = 2"
+WHICH_MARG="-marg"
+margstring="margWFS"
+fi
+
+if [[ ${MARGMODE} -eq 3 ]]; then
+echo "MARGMODE = 2"
+WHICH_MARG="-margDM"
+margstring="margDM"
+fi
+
+
+
+SAVEDIR="calib/svd${SVDl100}-${margstring}/"
+echo "SAVEDIR : ${SAVEDIR}"
+
+
+
+if [ ! -d ${SAVEDIR} ]; then
+
+cacao-fpsctrl setval compstrCM svdlim ${SVDlim}
+
+# Make T CM
+cacao-aorun-039-compstrCM -mb 0 -mr 1:1
+
+# Make T CM
+cacao-fpsctrl setval compstrCM svdlim ${SVDlim}
+cacao-aorun-039-compstrCM -mb 1 -mr 2:2
+
+# merge CMs
+cacao-aorun-039-compstrCM -mbm 0:1
+
+
+
+
+
+mkdir -p ${SAVEDIR}
+cp conf/CMmodesDM.fits ${SAVEDIR}
+cp conf/CMmodesWFS.fits ${SAVEDIR}
+cp conf/CMmodesDM.xp.fits ${SAVEDIR}
+cp conf/CMmodesWFS.xp.fits ${SAVEDIR}
+
+else
+
+echo "DIRECTORY ${SAVEDIR} exists"
+
+cp ${SAVEDIR}/CMmodesDM.fits ./conf/
+cp ${SAVEDIR}/CMmodesWFS.fits ./conf/
+cp ${SAVEDIR}/CMmodesDM.xp.fits ./conf/
+cp ${SAVEDIR}/CMmodesWFS.xp.fits ./conf/
+
+fi
+
+
+milk-FITS2shm ./conf/CMmodesDM.fits aol${LOOPNUMBER}_DMmodes
+milk-FITS2shm ./conf/CMmodesWFS.fits aol${LOOPNUMBER}_modesWFS
+
+cacao-fpsctrl runstop wfs2cmodeval 0 0
+cacao-fpsctrl runstop mfilt 0 0
+cacao-fpsctrl runstop mvalC2dm 0 0
+
+cacao-fpsctrl confstop wfs2cmodeval 0 0
+cacao-fpsctrl confstop mfilt 0 0
+cacao-fpsctrl confstop mvalC2dm 0 0
+
+sleep 2
+
+# START
+
+cacao-fpsctrl confstart wfs2cmodeval 0 0
+sleep 1
+cacao-fpsctrl runstart wfs2cmodeval 0 0
+
+sleep 2
+
+cacao-fpsctrl confstart mfilt 0 0
+sleep 1
+cacao-fpsctrl runstart mfilt 0 0
+#cacao-fpsctrl setval mfilt loopON ON
+#cacao-fpsctrl setval mfilt loopgain 0.0
+
+
+sleep 2
+
+cacao-fpsctrl confstart mvalC2dm 0 0
+sleep 1
+cacao-fpsctrl runstart mvalC2dm 0 0
+
+echo "Done"
