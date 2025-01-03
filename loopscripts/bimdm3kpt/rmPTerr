@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+
+#cp ../conf/pt_matrix_bim2alpao.fits ptmat.fits
+
+milk-modes-project ptmat.00.fits pterr.00.fits 0.000001 ptmatrec.01.1.fits ptmatres.01.1.fits
+#milk-modes-project ptmatres.01.fits pterr.01.fits 0.001 ptmatrec.02.fits ptmatres.02.fits
+#milk-modes-project ptmatres.01.fits pterr.02.fits 0.001 ptmatrec.02.fits ptmatres.02.fits

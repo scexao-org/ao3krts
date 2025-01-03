@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+#load original pt matrix
+#milk-FITS2shm ptmat.fits aol9_DMmodes
+
+# load mode-rejected pt matrix
+milk-FITS2shm ptmatres.01.fits aol9_CMmodesDM

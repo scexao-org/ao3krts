@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+milk-shm2FITS dm64disp07 pterr.fits
