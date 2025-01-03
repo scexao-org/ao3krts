@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/apd3k
+
 
 cacao-fpsctrl setval measlinresp ampl 0.03
 cacao-fpsctrl setval measlinresp timing.NBave 8

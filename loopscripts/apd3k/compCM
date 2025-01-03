@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Fix rootdir for nested scripts/ loop scripts!
+cd ${HOME}/AOloop/apd3k
 
 SVDl100=${1:-"06"}
 MARGMODE=${2:-1}
