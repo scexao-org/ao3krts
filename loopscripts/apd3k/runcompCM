@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+TYPE=1
+
+source milk-script-std-config
+source cacao-check-cacaovars
+
+
+./scripts/compCM 10 ${TYPE}
+./scripts/compCM 09 ${TYPE}
+./scripts/compCM 08 ${TYPE}
+./scripts/compCM 07 ${TYPE}
+./scripts/compCM 06 ${TYPE}
+./scripts/compCM 05 ${TYPE}
+./scripts/compCM 04 ${TYPE}
+./scripts/compCM 03 ${TYPE}
+./scripts/compCM 02 ${TYPE}
+./scripts/compCM 01 ${TYPE}

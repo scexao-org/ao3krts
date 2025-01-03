@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+
+cacao-fpsctrl setval measlinresp ampl 0.03
+cacao-fpsctrl setval measlinresp timing.NBave 8
+cacao-fpsctrl setval measlinresp timing.NBexcl 8
+cacao-fpsctrl setval measlinresp timing.WFSfrequ 1000
+cacao-fpsctrl setval measlinresp timing.haedwlatfr 0.8
+
+
+
+# make DM mask
+milk-all << EOF
+imgen.mkdisk d1 64 64 30.5 31.5 31.0
+saveFITS d1 "./conf/dmmask.fits"
+exitCLI
+EOF
+
+cacao-aorun-028-mkZFmodes -c0 0 -c1 7 -c 10 -ea 0.5 -t 3.0 -a 1.0
+cacao-aorun-030-acqlinResp -n 40 modesZF
+
+# output:
+# conf/RMmodesDM/RMmodesDM.fits
+# conf/RMmodesWFS/RMmodesWFS.fits
