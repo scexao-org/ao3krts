@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+milk-all << EOF
+readshmim iiwi
+multicrop2D ..procinfo 1
+multicrop2D ..triggersname iiwi
+multicrop2D ..triggermode 3
+multicrop2D ..loopcntMax -1
+
+
+multicrop2D .w00.active 1
+multicrop2D .w00.addmode 1
+multicrop2D .w00.cropxstart 0
+multicrop2D .w00.cropxsize 80
+multicrop2D .w00.cropystart 0
+multicrop2D .w00.cropysize 80
+multicrop2D .w00.cropxpos 0
+multicrop2D .w00.cropypos 0
+
+multicrop2D .w01.active 1
+multicrop2D .w01.addmode 1
+multicrop2D .w01.cropxstart 80
+multicrop2D .w01.cropxsize 80
+multicrop2D .w01.cropystart 0
+multicrop2D .w01.cropysize 80
+multicrop2D .w01.cropxpos 0
+multicrop2D .w01.cropypos 0
+
+multicrop2D .w02.active 1
+multicrop2D .w02.addmode 1
+multicrop2D .w02.cropxstart 0
+multicrop2D .w02.cropxsize 80
+multicrop2D .w02.cropystart 80
+multicrop2D .w02.cropysize 80
+multicrop2D .w02.cropxpos 0
+multicrop2D .w02.cropypos 0
+
+multicrop2D .w03.active 1
+multicrop2D .w03.addmode 1
+multicrop2D .w03.cropxstart 80
+multicrop2D .w03.cropxsize 80
+multicrop2D .w03.cropystart 80
+multicrop2D .w03.cropysize 80
+multicrop2D .w03.cropxpos 0
+multicrop2D .w03.cropypos 0
+
+multicrop2D iiwi iiwic 80 80
+listim
+exitCLI
+EOF

@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+
+
+for i in {0..999}
+do
+  i2=$(printf "%03d" $i)
+  echo "iteration  $i2"
+  OUTFILE="mlatseq.$i2.fits"
+  echo "output : $OUTFILE"
+  if [[ $i -eq 0 ]]; then
+    cp ${OUTFILE} mlatsum.fits
+  else
+  if [ -f $OUTFILE ];
+  then
+    echo "   Combining file ${OUTFILE}"
+milk-all << EOF
+loadfits "${OUTFILE}" im
+loadfits mlatsum.fits ims
+ims1=ims+im
+saveFITS ims1 "mlatsum1.fits"
+exitCLI
+EOF
+mv mlatsum1.fits mlatsum.fits
+cnt=$i
+  fi
+  fi
+done
+
+milk-all << EOF
+nbim=$cnt+1
+loadfits mlatsum.fits mls
+mla=mls/nbim
+saveFITS mla mlatave.fits
+exitCLI
+EOF

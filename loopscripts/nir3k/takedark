@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+NBframe=20000
+sname="iiwi"
+
+
+milk-all << EOF
+readshmim iiwi
+readshmim aol7_imWFS0
+readshmim aol7_imWFS1
+readshmim aol7_imWFS2
+streamave ..procinfo 1
+streamave ..triggersname ${sname}
+streamave ..triggermode 1
+streamave ..loopcntMax ${NBframe}
+streamave .out_shared 0
+streamave ${sname} imave ${NBframe}
+saveFITS imave imave.fits
+readshmim aol7_wfsdark
+imcpshm imave aol7_wfsdark
+exitCLI
+EOF

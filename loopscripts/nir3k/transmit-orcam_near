@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+milk-nettransmit -s orcam_near -T 10.20.30.6 -c aollog 40100

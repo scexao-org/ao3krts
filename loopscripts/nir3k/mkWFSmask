@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+milk-all << EOF
+imgen.mkdisk imd 160 160 80 80 40
+mk2Dim "s>aol7_wfsmask" 160 160
+cp imd aol7_wfsmask
+saveFITS imd "wfsmask.fits"
+exitCLI
+EOF

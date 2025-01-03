@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+MGAIN1MAX=${1:-10}
+MODEMAX=${2:-1200}
+
+MGAINALPHA=${3:-"1.0"}
+MMULTALPHA=${4:-"1.0"}
+
+MMFACT=${5:-"0.98"}
+
+TTMGAIN=${6:-"1.0"}
+
+NBMODE=1119
+
+# GAIN
+
+cacao-aorun-061-setmgains ${MGAINALPHA} -f 0.1
+
+milk-all << EOF
+readshmim aol7_mgainfact
+setpix1Drange aol7_mgainfact 0.0 ${MODEMAX} ${NBMODE}
+setpix1Drange aol7_mgainfact 1.0 0 ${MGAIN1MAX}
+setpix1Drange aol7_mgainfact ${TTMGAIN} 0 2
+exitCLI
+EOF
+
+
+# MULT
+
+cacao-aorun-062-setmmults ${MMULTALPHA} -f 0.1
+
+milk-all << EOF
+readshmim aol7_mmultfact
+mmm=${MMFACT}*aol7_mmultfact
+cp mmm aol7_mmultfact
+setpix1Drange aol7_mmultfact 0.0 ${MODEMAX} ${NBMODE}
+setpix1Drange aol7_mmultfact 1.0 0 ${MGAIN1MAX}
+exitCLI
+EOF

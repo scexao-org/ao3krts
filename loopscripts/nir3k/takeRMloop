@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+while [ ! -f takeRM.stop ] ; do
+cacao-aorun-030-acqlinResp HpokeC -n 4
+cacao-aorun-031-RMHdecode
+sleep 5
+done
+rm takeRM.stop

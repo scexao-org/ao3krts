@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+sname="iiwi"
+snameout="iiwi_blurr"
+
+milk-all << EOF
+readshmim ${sname}
+imgfilt.im2Dfilt1pblurr ..procinfo 1
+imgfilt.im2Dfilt1pblurr ..triggersname ${sname}
+imgfilt.im2Dfilt1pblurr ..triggermode 3
+imgfilt.im2Dfilt1pblurr ..loopcntMax -1
+imgfilt.im2Dfilt1pblurr ?
+imgfilt.im2Dfilt1pblurr ${sname} ${snameout} 0.15 1
+exitCLI
+EOF
+exit

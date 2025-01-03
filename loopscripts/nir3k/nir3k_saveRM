@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+SAVEDIR="$1"
+
+mkdir -p $1
+cp conf/wfsmask.fits $1/
+cp conf/dmmask.fits $1/
+
+cp conf/wfsmap.fits $1/
+cp conf/dmmap.fits $1/
+cp conf/zrespM.fits $1/
+cp conf/wfsref.fits $1/
+cp conf/RMmodesDM/RMmodesDM.fits $1/
+cp conf/RMmodesWFS/RMmodesWFS.fits $1/

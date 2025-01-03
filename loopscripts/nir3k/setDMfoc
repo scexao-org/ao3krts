@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+milk-all << EOF
+readshmim dm64disp04
+zern.mkzer zfoc 64 3 32.0
+zfoc1=zfoc*$1
+cp zfoc1 dm64disp04
+#saveFITS zfoc1 zfoc.fits
+#listim
+exitCLI
+EOF
