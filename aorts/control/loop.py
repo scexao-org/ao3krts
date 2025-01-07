@@ -24,23 +24,31 @@ class AO3kNIRLoopControllerObject:
         self.tt_loop = CacaoLoopManager(*config.LINFO_3KTTOFFLOAD)
 
         self.nir_loop.confstart_processes()  # start ALL confs
-        self.nir_loop.runstart_aorun()  # Start the AO 4 processes
-
         self.tt_loop.confstart_processes()  # start ALL confs
+
+    def runstart(self) -> None:
+        # Moving this in a function, so
+        self.nir_loop.runstart_aorun()  # Start the AO 4 processes
         self.tt_loop.runstart_aorun()  # Start the AO 4 processes
 
     def loop_open(self) -> None:
+        assert self.nir_loop.mfilt and self.tt_loop.mfilt
+
         self.tt_loop.mfilt.loopON = False
         self.nir_loop.mfilt.loopON = False
 
     def loop_close(self) -> None:
+        assert self.nir_loop.mfilt and self.tt_loop.mfilt
+
         self.nir_loop.mfilt.loopZERO = True
         self.tt_loop.mfilt.loopZERO = True
         self.nir_loop.mfilt.loopON = True
         self.tt_loop.mfilt.loopON = True
 
     def set_dmgain(self, gain: float) -> None:
+        assert self.nir_loop.mfilt
         self.nir_loop.mfilt.loopgain = gain
 
     def set_ttgain(self, gain: float) -> None:
+        assert self.tt_loop.mfilt
         self.tt_loop.mfilt.loopgain = gain
