@@ -238,6 +238,7 @@ class PTDAC_RTSModule:  # implements RTS_MODULE Protocol
     @classmethod
     def start_function(cls) -> base.T_Result:
         loop9 = CacaoLoopManager(*config.LINFO_BIM3KTRANSLATION)
+        assert loop9.mvalC2dm and loop9.acquWFS
         loop9.mvalC2dm.run_stop()
         loop9.acquWFS.run_stop()
 
