@@ -62,8 +62,9 @@ class PT3K_RTSMODE:
     ]
 
 
-class OLGS3K_RTSMODE:
-    MODE_NAMETAG: ModeEn = ModeEn.OLGS3K
+class LGS_RTSMODE:
+    # Factorizing OLGS and NLGS since they have the same modules,
+    # Just not the same name.
 
     NOPE_MODULES = [
             ModuEn.PT_DAC,
@@ -84,23 +85,9 @@ class OLGS3K_RTSMODE:
     ]
 
 
-class NLGS3K_RTSMODE:
-    MODE_NAMETAG: ModeEn = ModeEn.NLGS3K
+class OLGS3K_RTSMODE(LGS_RTSMODE):
+    MODE_NAMETAG: ModeEn = ModeEn.OLGS3K
 
-    NOPE_MODULES = [
-            ModuEn.PT_DAC,
-            ModuEn.PTLOOP,
-            ModuEn.KWFSLOOP,
-            ModuEn.NIRLOOP,
-    ]
-    REQ_MODULES = [
-            ModuEn.APD,
-            ModuEn.DAC40,
-            ModuEn.DM3K,
-            ModuEn.TTOFFL,
-            ModuEn.
-            HOLOOP,  # Reconfigured for LGS # Flip the matrix -- and automatically apply ???
-            ModuEn.LOLOOP,  # Have to respect LTT and LDF
-            ModuEn.
-            WTTOFF,  # Have to respect WTT -- need to build LOWFS -> WTT control matrix.
-    ]
+
+class NLGS3K_RTSMODE(LGS_RTSMODE):
+    MODE_NAMETAG: ModeEn = ModeEn.NLGS3K
