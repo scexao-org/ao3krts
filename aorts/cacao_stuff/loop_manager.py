@@ -49,6 +49,10 @@ class CacaoConfigReader:
 
         self.loop_name = self.cacao_environment['CACAO_LOOPNAME']
 
+        self.dm_number: int | None = None
+        if 'CACAO_DMINDEX' in self.cacao_environment:
+            self.dm_number = int(self.cacao_environment['CACAO_DMINDEX'])
+
         self.rootdir = root_all / f'{self.loop_name}-rootdir'
         self.rundir = root_all / f'{self.loop_name}-rootdir' / f'{self.loop_name}-rundir'
 
