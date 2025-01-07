@@ -85,9 +85,13 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE_RECONFIGURABLE Protocol
     def _post_configure_start(cls) -> base.T_Result:
 
         loop_mgr = CacaoLoopManager(cls.LOOP_FULL_NAME, None)
-        loop_mgr.runstart_aorun()
+        # Perform a confupdate // equivalent of pressing u in fps TUI.
+        # Not ideal... we need better bindings/wrapping
+        loop_mgr.wfs2cmodeval.fps.signal_update()
+        loop_mgr.mvalC2dm.fps.signal_update()
+        time.sleep(0.1)
 
-        time.sleep(1.0)
+        loop_mgr.runstart_aorun()
 
         run_states = (loop_mgr.acquWFS is None or
                       loop_mgr.acquWFS.run_isrunning(), loop_mgr.wfs2cmodeval
@@ -148,8 +152,22 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE_RECONFIGURABLE Protocol
         file = str(cfg.rootdir / 'conf' / 'CMmodesDM' / 'CMmodesDM.fits')
         shm = f'aol{cfg.loop_number}_CMmodesDM'
         sproc.run(f'milk-FITS2shm {file} {shm}'.split())
+        '''
+        Actually maybe I need to do a rescan here...
+        How? Just need to wait until conf has re-ran?
+        '''
+
+        time.sleep(1)
 
         return OK, 'Loaded default RM paths.'
+
+    @staticmethod
+    def symlink_dmC_to_dmchannel(loop_number: int, dm_num: int,
+                                 ch_num: int) -> None:
+        targ = os.environ['MILK_SHM_DIR'] + f'/aol{loop_number}_dmC.im.shm'
+        if os.path.exists(targ):
+            os.remove(targ)
+        os.symlink(f'dm{dm_num:02d}disp{ch_num:02d}.im.shm', targ)
 
 
 class NIRLOOP_RTSModule(CACAOLOOP_RTSModule):
@@ -188,18 +206,22 @@ class HOWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
 
         return OK, f'Loaded HOWFSLOOP_RTSModule CMs for mode {mode}'
 
+    @classmethod
+    def _pre_configure_start(cls):
+        (ret, msg) = super()._pre_configure_start()
+
+        loop_cfg = CacaoConfigReader(cls.LOOP_FULL_NAME, None)
+        CACAOLOOP_RTSModule.symlink_dmC_to_dmchannel(loop_cfg.loop_number, 64,
+                                                     5)
+
+        return ret, msg
+
 
 class LOWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
     MODULE_NAMETAG: ModuEn = ModuEn.LOLOOP
     LOOP_FULL_NAME: str = config.LINFO_LOAPD_3K.full_name
     CFG_MODE_DEFAULT: ModeEn = ModeEn.NLGS3K
     CFG_NAMES = [ModeEn.OLGS3K, ModeEn.NLGS3K, ModeEn.TT3K]
-
-    @classmethod
-    def reconfigure(cls, mode: ModeEn) -> base.T_Result:
-        return (OK, 'BYPASS reconfigure @ LOWFSLOOP_RTSModule')
-        1 / 0  # MHHHHH
-        ...
 
     @classmethod
     def _expected_aorun_fps(cls, loop_mgr: CacaoLoopManager
@@ -209,6 +231,16 @@ class LOWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
         '''
         # FIXME must reconf symlink directly from
         return (loop_mgr.acquWFS, loop_mgr.mfilt, loop_mgr.mvalC2dm)
+
+    @classmethod
+    def _pre_configure_start(cls):
+        (ret, msg) = super()._pre_configure_start()
+
+        loop_cfg = CacaoConfigReader(cls.LOOP_FULL_NAME, None)
+        CACAOLOOP_RTSModule.symlink_dmC_to_dmchannel(loop_cfg.loop_number, 64,
+                                                     6)
+
+        return ret, msg
 
 
 class PTLOOP_RTSModule(CACAOLOOP_RTSModule):
@@ -229,12 +261,8 @@ class PTLOOP_RTSModule(CACAOLOOP_RTSModule):
         (ret, msg) = super()._pre_configure_start()
 
         loop_cfg = CacaoConfigReader(cls.LOOP_FULL_NAME, None)
-        targ = os.environ[
-                'MILK_SHM_DIR'] + f'/aol{loop_cfg.loop_number}_mC.im.shm'
-        if os.path.exists(targ):
-            os.remove(targ)
-        os.symlink('dm64disp07.im.shm', targ)
-        # This is an example -- assuming this particular loop would like to do symlink shenanigans post-deployment of the FPSs
+        CACAOLOOP_RTSModule.symlink_dmC_to_dmchannel(loop_cfg.loop_number, 64,
+                                                     7)
 
         return ret, msg
 

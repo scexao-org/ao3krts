@@ -105,9 +105,9 @@ class FOCOffloader_RTSModule:  # implements RTS_MODULE_CONFIGURABLE Protocol
             return ret
 
         ctrl = FocusLGSOffloader(allow_creation=False)
-        if mode == ModeEn.OLGS:
+        if mode == ModeEn.OLGS3K:
             input_stream = f'aol{config.LINFO_HOAPD_3K.n}_modevalWFS'
-        elif mode == ModeEn.NLGS:
+        elif mode == ModeEn.NLGS3K:
             input_stream = f'aol{config.LINFO_LOAPD_3K.n}_modevalWFS'
         else:
             return (ERR,
