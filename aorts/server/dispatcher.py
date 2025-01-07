@@ -110,7 +110,7 @@ class ClickDispatcher:
         try:
             return self.click_invokator(arg_list, standalone_mode=False,
                                         prog_name=self.click_group.lower())
-        except click.exceptions.ClickException as exc:
+        except click.exceptions.UsageError as exc:
             assert exc.ctx
             print(str(exc) + '\n' + exc.ctx.get_help() + '\n')
 
