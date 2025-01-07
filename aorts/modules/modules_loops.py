@@ -211,8 +211,9 @@ class HOWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
         (ret, msg) = super()._pre_configure_start()
 
         loop_cfg = CacaoConfigReader(cls.LOOP_FULL_NAME, None)
-        CACAOLOOP_RTSModule.symlink_dmC_to_dmchannel(loop_cfg.loop_number, 64,
-                                                     5)
+        assert loop_cfg.dm_number
+        CACAOLOOP_RTSModule.symlink_dmC_to_dmchannel(loop_cfg.loop_number,
+                                                     loop_cfg.dm_number, 6)
 
         return ret, msg
 
@@ -237,8 +238,9 @@ class LOWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
         (ret, msg) = super()._pre_configure_start()
 
         loop_cfg = CacaoConfigReader(cls.LOOP_FULL_NAME, None)
-        CACAOLOOP_RTSModule.symlink_dmC_to_dmchannel(loop_cfg.loop_number, 64,
-                                                     6)
+        assert loop_cfg.dm_number
+        CACAOLOOP_RTSModule.symlink_dmC_to_dmchannel(loop_cfg.loop_number,
+                                                     loop_cfg.dm_number, 6)
 
         return ret, msg
 
@@ -261,8 +263,9 @@ class PTLOOP_RTSModule(CACAOLOOP_RTSModule):
         (ret, msg) = super()._pre_configure_start()
 
         loop_cfg = CacaoConfigReader(cls.LOOP_FULL_NAME, None)
-        CACAOLOOP_RTSModule.symlink_dmC_to_dmchannel(loop_cfg.loop_number, 64,
-                                                     7)
+        assert loop_cfg.dm_number
+        CACAOLOOP_RTSModule.symlink_dmC_to_dmchannel(loop_cfg.loop_number,
+                                                     loop_cfg.dm_number, 6)
 
         return ret, msg
 
