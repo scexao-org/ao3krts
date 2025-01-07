@@ -87,6 +87,7 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE_RECONFIGURABLE Protocol
         loop_mgr = CacaoLoopManager(cls.LOOP_FULL_NAME, None)
         # Perform a confupdate // equivalent of pressing u in fps TUI.
         # Not ideal... we need better bindings/wrapping
+        assert loop_mgr.wfs2cmodeval and loop_mgr.mvalC2dm
         loop_mgr.wfs2cmodeval.fps.signal_update()
         loop_mgr.mvalC2dm.fps.signal_update()
         time.sleep(0.1)
