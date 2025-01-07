@@ -107,8 +107,12 @@ class ClickDispatcher:
         if isinstance(arg_list, str):
             arg_list = arg_list.split()
 
-        return self.click_invokator(arg_list, standalone_mode=False,
-                                    prog_name=self.click_group.lower())
+        try:
+            return self.click_invokator(arg_list, standalone_mode=False,
+                                        prog_name=self.click_group.lower())
+        except click.exceptions.ClickException as exc:
+            assert exc.ctx
+            print(str(exc) + '\n' + exc.ctx.get_help() + '\n')
 
 
 class ClickRemotelyInvokableObject(InvokableObjectForServer):
