@@ -210,6 +210,18 @@ class CacaoLoopManager(CacaoConfigReader):
         self.exec_in_rootdit('cacao-fpsctrl-TUI')
 
 
+class CacaoLoopManagerWithMFilt(CacaoLoopManager):
+    '''
+    subclass such that the existence of mfilt not being None is guaranteed
+    (or will raise the FPSDoesntExistError)
+    '''
+
+    @property
+    def mfilt(self) -> MFilt:
+        return MFilt.smartfps_downcast(
+                self.fps_ctrl.find_fps(f'mfilt-{self.loop_number}'))
+
+
 '''
     A few global functions
 '''
