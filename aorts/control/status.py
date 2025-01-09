@@ -9,6 +9,7 @@ logg = logging.getLogger(__name__)
 import numpy as np
 
 from ..cacao_stuff.mfilt import MFilt
+from ..control.loop import GlobalLoopGainController
 
 from pyMilk.interfacing.shm import SHM
 
@@ -24,8 +25,12 @@ class StatusObj:
 
     def __init__(self):
 
+        self.loop_gain_state_watcher = GlobalLoopGainController()
+
         # Begin report variables
-        self.loop_state: bool = False
+        self.rts_mode: str = 'Unknown'
+
+        self.loop_state: int = 0  # 0, 1, 2 for off, on, weird.
 
         self.dmg: float = 0.0
         self.ttg: float = 0.0
@@ -63,11 +68,19 @@ class StatusObj:
         assert self.apd_ave_shm.shape == (
                 2, 216)  # Never too sure, one transpose away...
 
+        self.lowfs_data_ave_shm = SHM('lowfs_data_ave')
+        self.lowfs_data_ave = self.lowfs_data_ave_shm.get_data(
+        )  # 11-element numpy array
+
+        self.curv_defocus: float = 0.0  # Should come from stats of aolX_modevalWFS
+        self.dm_defocus: float = 0.0  # Should come from stats of aolX_modevalDM
+
     def __str__(self) -> str:
         s = self
-        X1 = X2 = X3 = Y1 = Y2 = 0
+        X1 = X2 = 0  # FIXME
         string = (
-                f'LOOP : State = {("OFF", " ON")[self.loop_state]}',
+                f'MODE : {s.rts_mode}',
+                f'LOOP : State = {("OFF", " ON", "???")[self.loop_state]}',
                 f'GAIN : DMG = {s.dmg:0.4f} , TTG = {s.ttg:0.4f}',
                 f'     : HTT = {s.htt:0.4f} , HDF = {s.hdf:0.4f}',
                 f'     : LTT = {s.ltt:0.4f} , LDF = {s.ldf:0.4f}',
@@ -77,8 +90,9 @@ class StatusObj:
                 f'     : CTT_CH1 = {s.ctt_x:0.4f} [V] , CTT_CH2 = {s.ctt_y:0.4f} [V]',
                 f'APD  : HOWFS-Ave. = {s.howfs_ave:.2f} [kcnt/sec/elem] , ( Rmag = {s.howfs_rmag:.2f} )',
                 f'     : LOWFS-Ave. = {s.lowfs_ave:.2f} [kcnt/sec/elem] , ( Rmag = {s.lowfs_rmag:.2f} )',
-                f'Eval : DMdefocus = {X1:.3f} , CVdefocus = {X2:.3f} , LWdefocus = {X3:.3f}',  # units? Mean value.
-                f'     : LWttx = {Y1:.3f} , LWtty = {Y2:.3f}',  # TT x and y from LOWFS mean value.
+                f'Eval : DMdefocus = {X1:.3f} , CVdefocus = {X2:.3f} , LWdefocus = {s.lowfs_data_ave[2]:.3f}',  # units? Mean value.
+                # TT x and y from LOWFS mean value. # Swapped to match the axes of HOWFS first 2 modes (will probs change again...).
+                f'     : LWttx = {-s.lowfs_data_ave[1]:.3f} , LWtty = {+s.lowfs_data_ave[0]:.3f}',
                 #f'     : WFE = 0.000',
                 #f'     : DMvar = 0.000 , DMtvar = 0.000 , DMfvar = 0.000', # No idea.
                 #f'     : TTvar = 0.000 , TTtvar = 0.000 , TTfvar = 1.791',
@@ -95,22 +109,24 @@ class StatusObj:
         '''
             This function performs the internal polling necessary to have an up-to-date status
         '''
-        self.loop_state = self.mfilt_nir3kloop.loopON
+        last_state = self.loop_gain_state_watcher.get_loop_and_gain_states()
 
-        self.dmg = self.mfilt_nir3kloop.loopgain
-        self.ttg = self.mfilt_ttoffload.loopgain
+        self.loop_state = last_state.loop_state
+
+        self.dmg = last_state.dmg
+        self.ttg = last_state.ttg
 
         # Should these be the rel gains on HTT? i.e. on top of DMG.
-        self.htt: float = 0.0
-        self.hdf: float = 0.0
+        self.htt: float = last_state.htt
+        self.hdf: float = last_state.hdf
 
         # Idem.
-        self.ltt: float = 0.0
-        self.ldf: float = 0.0
+        self.ltt: float = last_state.ltt
+        self.ldf: float = last_state.ldf
 
         # Little more specific.
-        self.wtt: float = 0.0
-        self.adf: float = 0.0
+        self.wtt: float = last_state.wtt
+        self.adf: float = -1.0  # Not our business! OBCP in charge.
 
         ttval = self.tt_shm.get_data()
         self.tt_x = -ttval[0]  # ACHTUNG! From TT mount position flip.
@@ -129,3 +145,5 @@ class StatusObj:
         self.lowfs_ave: float = np.mean(
                 apd_data[:, 188:204]) * 2 + 1e-7  # type: ignore
         self.lowfs_rmag: float = LOWFS_ZP - 0.4 * np.log10(self.howfs_ave)
+
+        self.lowfs_data_ave = self.lowfs_data_ave_shm.get_data()
