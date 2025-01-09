@@ -163,4 +163,12 @@ def start_pool(names: typ.Sequence[str]):
 
 
 if __name__ == '__main__':
+    '''
+        This main is actually used by the APD ctrl from camstack.
+        FIXME we'll probably move this to pyMilk of swmain
+        as it is a very generic tool.
+
+        Currently it's used straight as python -m aorts.rtm_datasource.stats_compute <args...>
+        and there is no configured entrypoint.
+    '''
     start_pool()
