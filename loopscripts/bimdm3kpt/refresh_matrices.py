@@ -7,7 +7,7 @@ from astropy.io import fits
 import os
 
 ROOTDIR_APD188 = os.environ['HOME'] + '/AOloop/apd188-rootdir'
-#ROOTDIR_APD3K = os.environ['HOME'] + '/AOloop/apd3k-rootdir'
+#ROOTDIR_APD3K = os.environ['HOME'] + '/AOloop/apd3k-rootdir' # Unused here
 ROOTDIR_PT = os.environ['HOME'] + '/AOloop/bimdm3kpt-rootdir'
 
 # Prepare mask that cuts off BIM188 from DAC40 packets
