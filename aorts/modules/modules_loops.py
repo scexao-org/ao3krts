@@ -228,6 +228,16 @@ class HOWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
 
         return ret, msg
 
+    @classmethod
+    def _post_configure_start(cls):
+        ret = super()._post_configure_start()
+
+        loop_cfg = CacaoConfigReader(cls.LOOP_FULL_NAME, None)
+        sproc.run(f'cacao-aorun-061-setmgains 2 -f 0.1 -t 1.0'.split(),
+                  cwd=loop_cfg.rootdir)
+
+        return ret
+
 
 class LOWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
     MODULE_NAMETAG: ModuEn = ModuEn.LOLOOP
