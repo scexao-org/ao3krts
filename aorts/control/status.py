@@ -102,9 +102,9 @@ class StatusObj:
                 f'APD  : HOWFS-Ave. = {s.howfs_ave:.2f} [kcnt/sec/elem] , ( Rmag = {s.howfs_rmag:.2f} )',
                 f'     : LOWFS-Ave. = {s.lowfs_ave:.2f} [kcnt/sec/elem] , ( Rmag = {s.lowfs_rmag:.2f} )',
                 f'Eval : DMdefocus = {s.dm_defoc:.3f} , CVdefocus = {s.ngs_defoc:.3f}',  # units? Mean value.
-                f'     : LWdefocus = {s.lowfs_data_ave[2]:.3f} , NIRdefocus = {s.nir_defoc:.3f}'
+                f'     : LWdefocus = {s.lowfs_data_ave[10]:.3f} , NIRdefocus = {s.nir_defoc:.3f}',
                 # TT x and y from LOWFS mean value. # Swapped to match the axes of HOWFS first 2 modes (will probs change again...).
-                f'     : LWttx = {-s.lowfs_data_ave[1]:.3f} , LWtty = {+s.lowfs_data_ave[0]:.3f}',
+                f'     : LWttx = {-s.lowfs_data_ave[9]:.3f} , LWtty = {+s.lowfs_data_ave[8]:.3f}',
                 #f'     : WFE = 0.000',
                 #f'     : DMvar = 0.000 , DMtvar = 0.000 , DMfvar = 0.000', # No idea.
                 #f'     : TTvar = 0.000 , TTtvar = 0.000 , TTfvar = 1.791',
@@ -122,6 +122,8 @@ class StatusObj:
             This function performs the internal polling necessary to have an up-to-date status
         '''
         last_state = self.loop_gain_state_watcher.get_loop_and_gain_states()
+
+        self.rts_mode = self.loop_gain_state_watcher.rts_mode
 
         self.loop_state = last_state.loop_state
 
@@ -160,8 +162,16 @@ class StatusObj:
 
         self.lowfs_data_ave = self.lowfs_data_ave_shm.get_data()
 
-        self.ngs_defoc: float = SHM('aol5_modevalWFS_ave').get_data()[2]
-        self.nir_defoc: float = SHM('aol7_modevalWFS_ave').get_data()[2]
+        try:
+            self.ngs_defoc: float = SHM('aol5_modevalWFS_ave').get_data()[2]
+            assert isinstance(self.ngs_defoc, float)
+        except:
+            self.ngs_defoc = 0.0
+        try:
+            self.nir_defoc: float = SHM('aol7_modevalWFS_ave').get_data()[2]
+            assert isinstance(self.nir_defoc, float)
+        except:
+            self.nir_defoc = 0.0
 
         dm_map = SHM('dm64out_ave').get_data()
         dm_flat = SHM('dm64disp00').get_data()
