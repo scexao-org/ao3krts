@@ -308,6 +308,10 @@ class DM3K_RTSModule:  # implements RTS_MODULE Protocol
 
         milk_make_rt('dm188_drv', pid, 40)
 
+        tmux_stats = tmux.find_or_create('dm64_stats')
+        tmux_stats.send_keys(
+                'python -m aorts.rtm_datasource.stats_compute -r dm64out')
+
         return (OK, "DM3k driver startup complete.")
 
     @classmethod

@@ -20,6 +20,17 @@ from .. import config
 HOWFS_ZP = 15.7
 LOWFS_ZP = 18.7
 
+# Make a FOCUS projector for the DM... just for the sake of computing the projection.
+x = np.arange(64) - 31.5
+PREP_FOCUS = x[None, :]**2 + x[:, None]**2
+pixels_to_norm = np.sum(PREP_FOCUS**.5
+                        < 28)  # slightly undersize to avoid edge effects
+pupil = PREP_FOCUS**.5 < 28
+PREP_FOCUS -= np.mean(PREP_FOCUS[pupil])
+PREP_FOCUS /= np.mean(PREP_FOCUS[pupil]**2)**.5
+PREP_FOCUS /= 3228
+PREP_FOCUS *= pupil
+
 
 class StatusObj:
 
@@ -72,12 +83,12 @@ class StatusObj:
         self.lowfs_data_ave = self.lowfs_data_ave_shm.get_data(
         )  # 11-element numpy array
 
-        self.curv_defocus: float = 0.0  # Should come from stats of aolX_modevalWFS
-        self.dm_defocus: float = 0.0  # Should come from stats of aolX_modevalDM
+        self.ngs_defoc: float = 0.0  # Should come from stats of aol5_modevalWFS
+        self.nir_defoc: float = 0.0  # Should come from stats of aol7_modevalWFS
+        self.dm_defoc: float = 0.0  # Should come from stats of dm64out
 
     def __str__(self) -> str:
         s = self
-        X1 = X2 = 0  # FIXME
         string = (
                 f'MODE : {s.rts_mode}',
                 f'LOOP : State = {("OFF", " ON", "???")[self.loop_state]}',
@@ -90,7 +101,8 @@ class StatusObj:
                 f'     : CTT_CH1 = {s.ctt_x:0.4f} [V] , CTT_CH2 = {s.ctt_y:0.4f} [V]',
                 f'APD  : HOWFS-Ave. = {s.howfs_ave:.2f} [kcnt/sec/elem] , ( Rmag = {s.howfs_rmag:.2f} )',
                 f'     : LOWFS-Ave. = {s.lowfs_ave:.2f} [kcnt/sec/elem] , ( Rmag = {s.lowfs_rmag:.2f} )',
-                f'Eval : DMdefocus = {X1:.3f} , CVdefocus = {X2:.3f} , LWdefocus = {s.lowfs_data_ave[2]:.3f}',  # units? Mean value.
+                f'Eval : DMdefocus = {s.dm_defoc:.3f} , CVdefocus = {s.ngs_defoc:.3f}',  # units? Mean value.
+                f'     : LWdefocus = {s.lowfs_data_ave[2]:.3f} , NIRdefocus = {s.nir_defoc:.3f}'
                 # TT x and y from LOWFS mean value. # Swapped to match the axes of HOWFS first 2 modes (will probs change again...).
                 f'     : LWttx = {-s.lowfs_data_ave[1]:.3f} , LWtty = {+s.lowfs_data_ave[0]:.3f}',
                 #f'     : WFE = 0.000',
@@ -147,3 +159,11 @@ class StatusObj:
         self.lowfs_rmag: float = LOWFS_ZP - 0.4 * np.log10(self.howfs_ave)
 
         self.lowfs_data_ave = self.lowfs_data_ave_shm.get_data()
+
+        self.ngs_defoc: float = SHM('aol5_modevalWFS_ave').get_data()[2]
+        self.nir_defoc: float = SHM('aol7_modevalWFS_ave').get_data()[2]
+
+        dm_map = SHM('dm64out_ave').get_data()
+        dm_flat = SHM('dm64disp00').get_data()
+
+        self.dm_defoc = np.sum((dm_map - dm_flat) * PREP_FOCUS)

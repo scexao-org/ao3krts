@@ -4,6 +4,8 @@ import typing as typ
 import os
 import time
 
+from swmain.infra import tmux
+
 from . import base_module_modes as base
 
 from .base_module_modes import RTS_MODULE_ENUM as ModuEn  # Alias
@@ -106,6 +108,12 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE_RECONFIGURABLE Protocol
                     f'Error in _post_configure_start loop {cls.LOOP_FULL_NAME} from rootdir {loop_mgr.rootdir}'
                     f'Process runstates are {run_states}.')
 
+        n = loop_mgr.loop_number
+        tmux_stats = tmux.find_or_create(f'aol{n}_stats')
+        tmux_stats.send_keys(
+                f'python -m aorts.rtm_datasource.stats_compute -r aol{n}_modevalWFS aol{n}_modevalDM'
+        )
+
         return (OK, f'_post_configure_start for loop {cls.LOOP_FULL_NAME}')
 
     @classmethod
@@ -122,6 +130,9 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE_RECONFIGURABLE Protocol
             loop_mgr.mfilt.loopON = False
 
         loop_mgr.runstop_aorun(stop_acqWFS=True)
+
+        tmux_stats = tmux.find_or_create(f'aol{loop_mgr.loop_number}_stats')
+        tmux.kill_running(tmux_stats)
 
         time.sleep(1.0)
 
