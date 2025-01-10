@@ -13,7 +13,7 @@ import pytest  # TODO look at pytest. Right now those tests are valid if we see:
 # c - the var SHM going towards 1
 
 
-@dataclass
+@dataclass(frozen=True)
 class ARGS:
     shm_name: str
     shm_shape: tuple[int, ...]
@@ -21,11 +21,52 @@ class ARGS:
 
 
 @pytest.fixture
-def fixt_shm_posting_process(request):
+def fixt_shm_posting_process_as_func_factory(request):
+    # Making a complicated fixture factory...
+    # This enables calling the made fixture multiple times in a single test
+    # See test_changing_size_statisticator
+    # There is a child fixture below which is only the inner function.
 
-    # defaults
+    # request is ignored, since it's really useful to the child fixture, but it's passed up.
+
+    factory_fixt_created_processes = []
+
+    def inner_function(prm: list[ARGS]):
+
+        shms = [SHM(p.shm_name, (p.shm_shape, np.float32)) for p in prm]
+
+        def post(shm: SHM, t_sleep: float):
+            while True:
+                time.sleep(t_sleep)  # Will ballpark to ~700 Hz
+                shm.set_data(np.random.randn(*shm.shape).astype(np.float32))
+
+        procs = [
+                multiprocessing.Process(target=post, args=(shm, p.t_sleep))
+                for p, shm in zip(prm, shms)
+        ]
+        factory_fixt_created_processes.append(procs)
+
+        for proc in procs:
+            proc.start()
+
+        return prm, procs
+
+    yield inner_function
+
+    for proclist in factory_fixt_created_processes:
+        for proc in proclist:
+            proc.kill()
+            proc.join()
+
+
+@pytest.fixture
+def fixt_shm_posting_process(request, fixt_shm_posting_process_as_func_factory):
+    # https://stackoverflow.com/questions/44959124/is-there-way-to-directly-reference-to-a-pytest-fixture-from-a-simple-non-test
+    # https://stackoverflow.com/questions/42014484/pytest-using-fixtures-as-arguments-in-parametrize/42599627#42599627
+    # Essentially running the parent fixture which is a function factory
+    factory_made_function = request.getfixturevalue(
+            'fixt_shm_posting_process_as_func_factory')
     prm: list[ARGS] = [ARGS('test_shm', (123, 7))]
-
     if hasattr(request, 'param'):
         if isinstance(request.param, ARGS):
             prm = [request.param]
@@ -33,25 +74,7 @@ def fixt_shm_posting_process(request):
             assert all([isinstance(x, ARGS) for x in request.param])
             prm = request.param
 
-    shms = [SHM(p.shm_name, (p.shm_shape, np.float32)) for p in prm]
-
-    def post(shm: SHM, t_sleep: float):
-        while True:
-            time.sleep(t_sleep)  # Will ballpark to ~700 Hz
-            shm.set_data(np.random.randn(*shm.shape).astype(np.float32))
-
-    procs = [
-            multiprocessing.Process(target=post, args=(shm, p.t_sleep))
-            for p, shm in zip(prm, shms)
-    ]
-    for proc in procs:
-        proc.start()
-
-    yield prm, procs
-
-    for proc in procs:
-        proc.kill()
-        proc.join()
+    yield factory_made_function(prm)
 
 
 def test_fixt_prep_shm_posting_process(fixt_shm_posting_process):
@@ -86,6 +109,40 @@ def test_statisticator(fixt_shm_posting_process) -> None:
     assert True
 
 
+def test_changing_size_statisticator(fixt_shm_posting_process_as_func_factory):
+    from aorts.rtm_datasource.stats_compute import ShmStatisticator, AutoRelinkError
+
+    prm, procs = fixt_shm_posting_process_as_func_factory([ARGS('y', (123, 7))])
+    stat = ShmStatisticator('y')
+    stat.test_me_unthreaded(max_it=1000)
+
+    stat2 = ShmStatisticator('y', allow_autorelink_error=True)
+    stat2.test_me_unthreaded(max_it=1000)
+
+    assert SHM('y_ave').shape == (123, 7)
+    assert SHM('y_var').shape == (123, 7)
+
+    # cleanup before restarting a changed-size poster
+    for p in procs:
+        p.kill()
+        p.join()
+
+    prm, procs = fixt_shm_posting_process_as_func_factory([ARGS('y', (12, 36))])
+
+    with pytest.raises(AutoRelinkError):
+        stat.test_me_unthreaded(max_it=1000)
+    stat2.test_me_unthreaded(max_it=1000)
+
+    assert SHM('y_ave').shape == (12, 36)
+    assert SHM('y_var').shape == (12, 36)
+
+    # We still should cleanup, even though _eventually_ the fixture factory should do it.
+    # But until then we could get conflicts on a given SHM name!
+    for p in procs:  # Cleanup
+        p.kill()
+        p.join()
+
+
 @pytest.mark.parametrize('fixt_shm_posting_process',
                          [ARGS('y', (123, 7)),
                           ARGS('yads', (14, 237))], indirect=True)
@@ -106,6 +163,47 @@ def test_threaded_statisticator(fixt_shm_posting_process) -> None:
 
     assert stat.thread is None
     assert stat.cnt0 - cnt0 > 100
+
+
+def test_changing_size_threaded_statisticator_stays_alive(
+        fixt_shm_posting_process_as_func_factory):
+    prm, procs = fixt_shm_posting_process_as_func_factory([ARGS('y', (123, 7))])
+
+    from aorts.rtm_datasource.stats_compute import ThreadedStatisticator
+    stat = ThreadedStatisticator('y', allow_autorelink_error=True)
+    stat.synced_compute_and_post_stats()
+
+    stat.start_thread()
+
+    start_time = time.time()
+    cnt0 = stat.cnt0  # only exists if stat has done 1st it
+    while time.time() - start_time < 1.0:
+        time.sleep(0.01)
+
+    for p in procs:  # Cleanup
+        p.kill()
+        p.join()
+
+    # Resize
+    prm, procs = fixt_shm_posting_process_as_func_factory([ARGS('y', (12, 36))])
+
+    time.sleep(0.1)
+    start_time = time.time()
+    cnt0 = stat.cnt0  # only exists if stat has done 1st it
+    while time.time() - start_time < 1.0:
+        time.sleep(0.01)
+
+    assert (stat.thread is not None) and stat.thread.is_alive(), 'A'
+    assert SHM('y_ave').shape == (12, 36), 'B'
+    assert SHM('y_var').shape == (12, 36), 'C'
+
+    stat.stop_thread()
+    assert stat.thread is None
+    assert stat.cnt0 - cnt0 > 100
+
+    for p in procs:  # Cleanup
+        p.kill()
+        p.join()
 
 
 @pytest.mark.parametrize('fixt_shm_posting_process',

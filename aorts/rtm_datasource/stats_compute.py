@@ -8,6 +8,7 @@ import time
 import numpy as np
 
 from pyMilk.interfacing.shm import SHM
+from pyMilk.errors import AutoRelinkError
 
 
 class ShmStatisticator:
@@ -20,16 +21,22 @@ class ShmStatisticator:
         to <shm_name>_sa and <shm_name>_sv
     '''
 
-    def __init__(self, shm_name: str) -> None:
+    def __init__(self, shm_name: str,
+                 allow_autorelink_error: bool = False) -> None:
+        self.shm_name = shm_name
+        self.allow_autorelink_error = allow_autorelink_error
 
+        self._init_inners()
+
+    def _init_inners(self) -> None:
         # Autosqueeze is False and using shape_c to conserve
         # singleton dims
-        self.shm = SHM(shm_name, symcode=0, autoSqueeze=False)
+        self.shm = SHM(self.shm_name, symcode=0, autoSqueeze=False)
         sz, tp = self.shm.shape_c, self.shm.nptype
 
         # Create SHMs for stats.
-        self.shm_ave = SHM(shm_name + '_ave', (sz, np.float32), symcode=0)
-        self.shm_var = SHM(shm_name + '_var', (sz, np.float32), symcode=0)
+        self.shm_ave = SHM(self.shm_name + '_ave', (sz, np.float32), symcode=0)
+        self.shm_var = SHM(self.shm_name + '_var', (sz, np.float32), symcode=0)
 
         # Straight memory pointers to the SHM
         self.data_ave_ptr = self.shm_ave.get_data(copy=False)
@@ -54,9 +61,26 @@ class ShmStatisticator:
         self.shm_ave.repost()
         self.shm_var.repost()
 
-    def synced_compute_and_post_stats(self) -> None:
-        get_data = self.shm.get_data(True, timeout=0.05, checkSemAndFlush=False,
+    def _get_data_and_raise_aptly(self) -> np.ndarray | None:
+        '''
+            Helper function to handle or raise autorelink errors
+            If the underlying SHM has changed size or data type
+        '''
+        try:
+            return self.shm.get_data(True, timeout=0.05, checkSemAndFlush=False,
                                      copy=False, return_none_on_timeout=True)
+        except AutoRelinkError as err:
+            if not self.allow_autorelink_error:
+                raise
+            self._init_inners()  # Re-init buffers and counter and everything.
+            return self.shm.get_data(True, timeout=0.05, checkSemAndFlush=False,
+                                     copy=False, return_none_on_timeout=True)
+
+        # If any other error, we raise anyway
+
+    def synced_compute_and_post_stats(self) -> None:
+        get_data = self._get_data_and_raise_aptly()
+
         if get_data is None:
             return
         else:
@@ -82,8 +106,9 @@ class ShmStatisticator:
 
 class ThreadedStatisticator(ShmStatisticator):
 
-    def __init__(self, shm_name: str) -> None:
-        super().__init__(shm_name)
+    def __init__(self, shm_name: str,
+                 allow_autorelink_error: bool = False) -> None:
+        super().__init__(shm_name, allow_autorelink_error)
 
         self.thread: threading.Thread | None = None
         self.event: threading.Event | None = None
@@ -120,8 +145,12 @@ class ThreadedStatisticator(ShmStatisticator):
 
 class ThreadStatisticatorPool:
 
-    def __init__(self, names: typ.Sequence[str]) -> None:
-        self.statobjs = [ThreadedStatisticator(name) for name in names]
+    def __init__(self, names: typ.Sequence[str],
+                 allow_autorelink_error: bool = False) -> None:
+        self.statobjs = [
+                ThreadedStatisticator(name, allow_autorelink_error)
+                for name in names
+        ]
 
     def start_threads(self):
         for statobj in self.statobjs:
@@ -138,8 +167,9 @@ import click
 
 
 @click.command('run_stats_pool')
+@click.option('-r', '--size_change_allowed', is_flag=True)
 @click.argument('names', nargs=-1)
-def start_pool(names: typ.Sequence[str]):
+def start_pool(names: typ.Sequence[str], size_change_allowed: bool):
 
     from swmain.infra.logger import init_logger_autoname
     init_logger_autoname()
@@ -152,7 +182,8 @@ def start_pool(names: typ.Sequence[str]):
         return
 
     try:
-        tpool = ThreadStatisticatorPool(names)
+        tpool = ThreadStatisticatorPool(
+                names, allow_autorelink_error=size_change_allowed)
         tpool.start_threads()
         while True:
             time.sleep(1.0)  # Check on threads!
