@@ -166,4 +166,4 @@ class StatusObj:
         dm_map = SHM('dm64out_ave').get_data()
         dm_flat = SHM('dm64disp00').get_data()
 
-        self.dm_defoc = np.sum((dm_map - dm_flat) * PREP_FOCUS)
+        self.dm_defoc = np.sum((dm_map - dm_flat) * PREP_FOCUS)  # type: ignore
