@@ -36,8 +36,8 @@ RMmodesWFS_LGS_file = loop_cfg.rootdir / 'conf' / 'RMmodesWFS' / 'RMmodesWFS_LGS
 CMmodesWFS_LGS_file = loop_cfg.rootdir / 'conf' / 'CMmodesWFS' / 'CMmodesWFS_LGS.fits'
 
 # And now the million dollar question, what is the permutation convention and is a transpose needed here.
-fits.writeto(RMmodesWFS_LGS_file, (RMmodesWFS.squeeze() @ LGS_PERMUT_MATRIX)[:, None, :].astype(np.float32), overwrite=True)
-fits.writeto(CMmodesWFS_LGS_file, (CMmodesWFS.squeeze() @ LGS_PERMUT_MATRIX)[:, None, :].astype(np.float32), overwrite=True)
+fits.writeto(RMmodesWFS_LGS_file, (RMmodesWFS.squeeze() @ LGS_PERMUT_MATRIX.T)[:, None, :].astype(np.float32), overwrite=True)
+fits.writeto(CMmodesWFS_LGS_file, (CMmodesWFS.squeeze() @ LGS_PERMUT_MATRIX.T)[:, None, :].astype(np.float32), overwrite=True)
 
 print('Done recomputing/saving LGS swap matrix.')
 print(RMmodesWFS_LGS_file)
