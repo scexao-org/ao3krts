@@ -14,6 +14,9 @@ from .. import config
 
 
 class GenericTTControl:
+    '''
+    WARNING this is probably completely stale code. See dm.py instead.
+    '''
     NAME: str
 
     def __init__(self):

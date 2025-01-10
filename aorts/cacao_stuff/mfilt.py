@@ -23,3 +23,11 @@ class MFilt(SmartAttributesFPS):
             'looplimit':
                     ('loop limit', FPS_type.FLOAT32, FPS_flags.DEFAULT_INPUT),
     }
+
+    def post_create_set_defaults(self):
+        super().post_create_set_defaults()
+        self.loopON = False
+        self.loopZERO = False
+        self.loopgain = 0.0
+        self.loopmult = 1.0
+        self.looplimit = 1.0  # Arbitrary

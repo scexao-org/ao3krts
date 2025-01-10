@@ -15,6 +15,7 @@ OK = base.OkErrEnum.OK
 ERR = base.OkErrEnum.ERR
 
 from .. import config
+from ..control.wtt_offloader import WTTOffloaderControl
 from ..control.foc_offloader import FocusLGSOffloader
 
 
@@ -23,19 +24,64 @@ class WTTOffloader_RTSModule:  # implements RTS_MODULE Protocol
 
     @classmethod
     def start_function(cls) -> base.T_Result:
-        return (OK, 'Bypass start_function @ WTTOffloader_RTSModule')
+
+        # Open a control object (ensures the FPS is created)
+        ctrl = WTTOffloaderControl(allow_creation=True)
+        ctrl.set_input_stream('aol5_modevalWFS')
+
+        # Turn computations off for when starting
+        ctrl.set_gain(0.0)
+        ctrl.loop_open()
+
+        tmux_wttoff = tmux.find_or_create('wtt_offloader')
+
+        # NEED TO RUN THE MAIN # TODO
+        tmux.kill_running(tmux_wttoff)
+        tmux_wttoff.send_keys("python -m aorts.lgsoffloadermains.wtt")
+
+        now = time.time()
+        while time.time() - now < 20.0:
+            time.sleep(0.1)
+            if tmux.find_pane_running_pid(tmux_wttoff) is None:
+                return (ERR,
+                        "WTT offloader startup failure (wtt_offloader tmux crash)."
+                        )
+            try:
+                ttf_ave_shm = SHM('wtt_value_float')
+                ttf_ave_shm.check_sem_trywait()
+                return (OK, "WTT offloader started successfully.")
+            except:
+                pass
+
+        return (ERR,
+                "WTT offloader startup failure (SHM wtt_value_float not posting after 20 seconds)."
+                )
 
     @classmethod
     def stop_function(cls) -> base.T_Result:
-        return (OK, 'Bypass stop_function @ WTTOffloader_RTSModule')
+        # Open a control object (ensures the FPS)
+        # In case the offloader is still running...
+        ctrl = FocusLGSOffloader(allow_creation=True)
+        ctrl.disable()
+        ctrl.reset()  # Reset to avoid runaway integrator somewhere
+
+        tmux_foc = tmux.find('wtt_offloader')
+        if tmux_foc is None:
+            return (ERR, "WTT offloader startup failure (no tmux)")
+
+        tmux.kill_running(tmux_foc)
+
+        if not (tmux.expect_no_pid(tmux_foc, timeout_sec=5)):
+            return (ERR,
+                    "WTT offloader halt error. Inspect tmux foc_offloader.")
+
+        return (OK, "WTT offloader halted successfully.")
 
 
 class FOCOffloader_RTSModule:  # implements RTS_MODULE_CONFIGURABLE Protocol
     MODULE_NAMETAG: ModuEn = ModuEn.TEST
 
     CFG_NAMES: list[ModeEn] = [ModeEn.UNKNOWN, ModeEn.UNKNOWN]
-
-    last_requested_mode: ModeEn | None = None
 
     @classmethod
     def start_function(cls) -> base.T_Result:

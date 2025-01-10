@@ -184,6 +184,12 @@ class WTTCommand(ClickRemotelyInvokableObject):
         WTTCommand.CALLEE.zero()
         return f''
 
+    @DISPATCHER.click_invokator.command('flat')
+    @staticmethod
+    def flat() -> str:
+        WTTCommand.CALLEE.flat()
+        return f''
+
     @DISPATCHER.click_invokator.command('x', context_settings=FLT_OK)
     @click.option('-n', '--nudge', is_flag=True)
     @click.argument('x', type=float)

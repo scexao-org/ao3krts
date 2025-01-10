@@ -190,7 +190,7 @@ class WTTManager:
         self.shm = SHM('wtt_value_float')
 
     def zero(self):
-        self.shm.set_data(np.zeros(2, np.float32))
+        self.shm.set_data(np.zeros(2, np.float32) + 5.0)
 
     def flat(self):
         self.shm.set_data(np.zeros(2, np.float32) + 5.0)

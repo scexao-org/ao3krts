@@ -47,7 +47,7 @@ class ModeSwitcher(ClickRemotelyInvokableObject):
     @staticmethod
     def module_start_command(_module: str):
         module_tag = RTS_MODULE_ENUM(_module.upper())
-        print(f'WTF WTF are we calling module start command for {module_tag}??')
+        print(f'We are calling module start command for {module_tag}!?')
         ModeSwitcher.CALLEE.module_start_command(module_tag)
 
     @INVOKATOR.command('stopmodule')

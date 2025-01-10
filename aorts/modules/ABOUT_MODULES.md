@@ -19,7 +19,6 @@ Modules:
 - HOWFS_LOOP [LOOP, CFG]
 - LOWFS_LOOP [LOOP, CFG]
 - WTTOFFL [MISC]
-- AU1OFFL [MISC, CFG]
 - PT_APD [HW]
 - PT_DAC [HW]
 - IIWI [HW]
@@ -56,5 +55,4 @@ And 7 modes (for now)
 | PTLOOP     | x   |     |     |      |      |     |      |                   |
 | KWFSLOOP   |     |     |     |      |      |     | x    |                   |
 | TTOFF_LOOP |     | x   | x   | x    | x    | ?   | x    |                   |
-| AU1OFFL    | NO  |     |     | OLGS | NLGS | ?   |      |                   |
 | WTTOFFL    | NO  |     |     | x    | x    | ?   |      |                   |

@@ -204,10 +204,13 @@ class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
         lo_gains_shm.set_data(lo_gains_data)
 
     def set_wtt_gain(self, gain: float):
-        # HAAAA!!!!
-        ...
+        from ..control.wtt_offloader import WTTOffloaderControl
+        wtt_controller = WTTOffloaderControl(allow_creation=False)
+        wtt_controller.set_gain(gain)
 
     def get_loop_and_gain_states(self) -> LoopGainStatusReportStruct:
+        from ..control.wtt_offloader import WTTOffloaderControl
+        wtt_controller = WTTOffloaderControl(allow_creation=False)
 
         ho_lims_data = SHM(
                 f'aol{self.ho_loop.loop_number}_mlimitfact').get_data()
@@ -218,7 +221,7 @@ class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
                 dmg=self.ho_loop.mfilt.loopgain,
                 ttg=self.tt_loop.mfilt.loopgain, htt=ho_lims_data[0],
                 hdf=ho_lims_data[2], ltt=lo_gains_data[0], ldf=lo_gains_data[2],
-                wtt=-1.0)
+                wtt=wtt_controller.fps.loopgain)
 
     def _figure_out_loop_state(self) -> int:
         if self.ho_loop.mfilt.loopON and \
