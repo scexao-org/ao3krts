@@ -167,8 +167,9 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE_RECONFIGURABLE Protocol
         '''
         Actually maybe I need to do a rescan here...
         How? Just need to wait until conf has re-ran?
-        '''
 
+        It's actually in the _post_configure_start!
+        '''
         time.sleep(1)
 
         return OK, 'Loaded default RM paths.'
