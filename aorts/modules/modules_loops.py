@@ -3,6 +3,7 @@ import typing as typ
 
 import os
 import time
+import subprocess as sproc
 
 from swmain.infra import tmux
 
@@ -89,9 +90,11 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE_RECONFIGURABLE Protocol
         loop_mgr = CacaoLoopManager(cls.LOOP_FULL_NAME, None)
         # Perform a confupdate // equivalent of pressing u in fps TUI.
         # Not ideal... we need better bindings/wrapping
-        assert loop_mgr.wfs2cmodeval and loop_mgr.mvalC2dm
-        loop_mgr.wfs2cmodeval.fps.signal_update()
-        loop_mgr.mvalC2dm.fps.signal_update()
+        if loop_mgr.wfs2cmodeval:
+            loop_mgr.wfs2cmodeval.fps.signal_update()
+        if loop_mgr.mvalC2dm:
+            loop_mgr.mvalC2dm.fps.signal_update()
+
         time.sleep(0.1)
 
         loop_mgr.runstart_aorun()
@@ -124,8 +127,6 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE_RECONFIGURABLE Protocol
         loop_mgr.runstop_processes(timeout_each=3.0)
         loop_mgr.confstop_processes(timeout_each=3.0)
 
-        loop_mgr = CacaoLoopManager(cls.LOOP_FULL_NAME, None)
-
         if loop_mgr.mfilt:
             loop_mgr.mfilt.loopON = False
 
@@ -153,7 +154,6 @@ class CACAOLOOP_RTSModule:  # implements RTS_MODULE_RECONFIGURABLE Protocol
         We just call milk-FITS2shm on the default FITS path
         And we get going.
         '''
-        import subprocess as sproc
 
         cfg = CacaoConfigReader(cls.LOOP_FULL_NAME, None)
 
@@ -197,7 +197,6 @@ class HOWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
 
     @classmethod
     def reconfigure(cls, mode: ModeEn) -> base.T_Result:
-        import subprocess as sproc
         cfg = CacaoConfigReader(cls.LOOP_FULL_NAME, None)
 
         if mode == ModeEn.NGS3K:
@@ -223,9 +222,9 @@ class HOWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
         (ret, msg) = super()._pre_configure_start()
 
         loop_cfg = CacaoConfigReader(cls.LOOP_FULL_NAME, None)
-        assert loop_cfg.dm_number
+        assert loop_cfg.dm_number, "loop_cfg.dm_number unset"
         CACAOLOOP_RTSModule.symlink_dmC_to_dmchannel(loop_cfg.loop_number,
-                                                     loop_cfg.dm_number, 6)
+                                                     loop_cfg.dm_number, 5)
 
         return ret, msg
 
@@ -250,7 +249,7 @@ class LOWFSLOOP_RTSModule(CACAOLOOP_RTSModule):
         (ret, msg) = super()._pre_configure_start()
 
         loop_cfg = CacaoConfigReader(cls.LOOP_FULL_NAME, None)
-        assert loop_cfg.dm_number
+        assert loop_cfg.dm_number, "loop_cfg.dm_number unset"
         CACAOLOOP_RTSModule.symlink_dmC_to_dmchannel(loop_cfg.loop_number,
                                                      loop_cfg.dm_number, 6)
 
@@ -275,9 +274,9 @@ class PTLOOP_RTSModule(CACAOLOOP_RTSModule):
         (ret, msg) = super()._pre_configure_start()
 
         loop_cfg = CacaoConfigReader(cls.LOOP_FULL_NAME, None)
-        assert loop_cfg.dm_number
+        assert loop_cfg.dm_number, "loop_cfg.dm_number unset"
         CACAOLOOP_RTSModule.symlink_dmC_to_dmchannel(loop_cfg.loop_number,
-                                                     loop_cfg.dm_number, 6)
+                                                     loop_cfg.dm_number, 7)
 
         return ret, msg
 
