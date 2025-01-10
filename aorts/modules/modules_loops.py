@@ -303,3 +303,15 @@ class TTOFFLOOP_RTSModule(CACAOLOOP_RTSModule):
     LOOP_FULL_NAME: str = config.LINFO_3KTTOFFLOAD.full_name
     CFG_MODE_DEFAULT: ModeEn = ModeEn.NIR3K
     CFG_NAMES = []
+
+    # MUST RESTART DMCOMB!!!!
+    @classmethod
+    def _post_configure_start(cls) -> base.T_Result:
+
+        # START DMcomb01
+        loop_cfg = CacaoLoopManager(cls.LOOP_FULL_NAME, None)
+        dmch2disp = loop_cfg.fps_ctrl.find_fps(
+                f'DMch2disp-{loop_cfg.dm_number:02d}')
+        dmch2disp.run_start()
+
+        return super()._post_configure_start()
