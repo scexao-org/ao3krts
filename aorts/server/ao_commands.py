@@ -55,13 +55,13 @@ class GainCommand(ClickRemotelyInvokableObject):
     @click.argument('gain', type=float)
     @click.pass_obj
     def dm_gain(self, gain: float):
-        LoopCommand.CALLEE.set_dmgain(gain)
+        LoopCommand.CALLEE.set_dm_gain(gain)
 
     @DISPATCHER.click_invokator.command('ttg')
     @click.argument('gain', type=float)
     @click.pass_obj
     def tt_gain(self, gain: float):
-        LoopCommand.CALLEE.set_ttgain(gain)
+        LoopCommand.CALLEE.set_tt_gain(gain)
 
     # LGS #
     @DISPATCHER.click_invokator.command('htt')

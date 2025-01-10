@@ -75,6 +75,7 @@ class LoopGainBaseController:
 
 
 class LoopGainPT3KController(LoopGainBaseController):
+    Mode = ModeEn.PT3K
 
     def get_loop_and_gain_states(self):
         # Spit out defaults -- we know nothing about the system since
@@ -100,10 +101,10 @@ class LoopGain_NGS_AND_NIR_Controller(LoopGainBaseController):
         self.dm_loop.mfilt.loopON = True
         self.tt_loop.mfilt.loopON = True
 
-    def set_dmgain(self, gain: float) -> None:
+    def set_dm_gain(self, gain: float) -> None:
         self.dm_loop.mfilt.loopgain = gain
 
-    def set_ttgain(self, gain: float) -> None:
+    def set_tt_gain(self, gain: float) -> None:
         self.tt_loop.mfilt.loopgain = gain
 
     def get_loop_and_gain_states(self) -> LoopGainStatusReportStruct:
@@ -167,10 +168,10 @@ class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
         self.lo_loop.mfilt.loopON = True
         self.tt_loop.mfilt.loopON = True
 
-    def set_dmgain(self, gain: float):
+    def set_dm_gain(self, gain: float):
         self.ho_loop.mfilt.loopgain = gain
 
-    def set_ttgain(self, gain: float):
+    def set_tt_gain(self, gain: float):
         self.tt_loop.mfilt.loopgain = gain
 
     def set_htt_flag(self, flag: bool):
@@ -215,7 +216,7 @@ class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
         return LoopGainStatusReportStruct(
                 loop_state=self._figure_out_loop_state(),
                 dmg=self.ho_loop.mfilt.loopgain,
-                ttg=self.lo_loop.mfilt.loopgain, htt=ho_lims_data[0],
+                ttg=self.tt_loop.mfilt.loopgain, htt=ho_lims_data[0],
                 hdf=ho_lims_data[2], ltt=lo_gains_data[0], ldf=lo_gains_data[2],
                 wtt=-1.0)
 
@@ -307,13 +308,13 @@ class GlobalLoopGainController:
 
     def loop_close(self):
         self.refresh_rts_mode()
-        return self.inner_controller.loop_open()
+        return self.inner_controller.loop_close()
 
-    def set_dmgain(self, gain: float):
+    def set_dm_gain(self, gain: float):
         self.refresh_rts_mode()
         return self.inner_controller.set_dm_gain(gain)
 
-    def set_ttgain(self, gain: float):
+    def set_tt_gain(self, gain: float):
         self.refresh_rts_mode()
         return self.inner_controller.set_tt_gain(gain)
 
