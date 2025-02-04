@@ -33,14 +33,14 @@ def load_cacao_environment(cacaovars_path: pathlib.Path) -> dict[str, str]:
     #command = shlex.split(f"bash -c 'ls'")
     subproc = subprocess.Popen(command, stdout=subprocess.PIPE)
 
+    # Retrieve stdout from bash source
+    lines = subproc.communicate()[0].decode().split('\n')
+
     # IT SHOULD SUFFICE TO CALL .poll()
     # https://python-list.python.narkive.com/Q2zUmGKI/trapping-the-segfault-of-a-subprocess-popen
     # Because POpen was segfaulting upon communicate/exit, which is possible if POpen line has silently
     # spawned children of its own
     subproc.wait()
-
-    # Retrieve stdout from bash source
-    lines = subproc.communicate()[0].decode().split('\n')
 
     # Parse environment
     regex_cacao_env = re.compile('^(CACAO_.*)=(.*)$')
