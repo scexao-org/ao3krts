@@ -92,6 +92,8 @@ def main_foc_offloader(fps_name: str = 'wtt_offl'):
         fps.out_tip, fps.out_til = out_tip, out_til
         fps.m_frate = fps.m_frate * (1 - frate_gain) + frate_gain / interval
 
+        shm_output.set_data(np.array([out_tip, out_til], dtype=np.float32))
+
         # exit cleanly on keyboard interrupt (atexit?)
 
 
