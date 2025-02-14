@@ -82,8 +82,8 @@ def main_foc_offloader(fps_name: str = 'wtt_offl'):
         output = shm_output_antiwindup.get_data()
         out_tip, out_til = output[0], output[1]
 
-        out_tip -= out_tip * fps.loopmult + tip * fps.loopgain
-        out_til -= out_til * fps.loopmult + til * fps.loopgain
+        out_tip = out_tip * fps.loopmult + tip * fps.loopgain
+        out_til = out_til * fps.loopmult + til * fps.loopgain
 
         # Remember to offset by 5 because this is WTT!!!
         out_tip = np.clip(out_tip, -fps.looplimit, fps.looplimit) + 5
