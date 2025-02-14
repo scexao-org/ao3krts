@@ -178,30 +178,30 @@ class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
         # We proceed by setting the mode limit for tip-tilt.
         # Since the SHM is overwritten on mfilt runstart
         # We MUST expect that mfilt is running (but then this entire class expects this)
-        ho_lims_shm = SHM(f'aol{self.ho_loop.loop_number}_mlimitfact')
-        ho_lims_data = ho_lims_shm.get_data()
-        ho_lims_data[:2] = float(flag)  # TT
-        ho_lims_shm.set_data(ho_lims_data)
+        with SHM(f'aol{self.ho_loop.loop_number}_mlimitfact') as ho_lims_shm:
+            ho_lims_data = ho_lims_shm.get_data()
+            ho_lims_data[:2] = float(flag)  # TT
+            ho_lims_shm.set_data(ho_lims_data)
 
     def set_hdf_flag(self, flag: bool):
 
-        ho_lims_shm = SHM(f'aol{self.ho_loop.loop_number}_mlimitfact')
-        ho_lims_data = ho_lims_shm.get_data()
-        ho_lims_data[2] = float(flag)  # Focus
-        ho_lims_shm.set_data(ho_lims_data)
+        with SHM(f'aol{self.ho_loop.loop_number}_mlimitfact') as ho_lims_shm:
+            ho_lims_data = ho_lims_shm.get_data()
+            ho_lims_data[2] = float(flag)  # Focus
+            ho_lims_shm.set_data(ho_lims_data)
 
     def set_ltt_gain(self, gain: float):
 
-        lo_gains_shm = SHM(f'aol{self.lo_loop.loop_number}_mgainfact')
-        lo_gains_data = lo_gains_shm.get_data()
-        lo_gains_data[:2] = gain  # TT
-        lo_gains_shm.set_data(lo_gains_data)
+        with SHM(f'aol{self.lo_loop.loop_number}_mgainfact') as lo_gains_shm:
+            lo_gains_data = lo_gains_shm.get_data()
+            lo_gains_data[:2] = gain  # TT
+            lo_gains_shm.set_data(lo_gains_data)
 
     def set_ldf_gain(self, gain: float):
-        lo_gains_shm = SHM(f'aol{self.lo_loop.loop_number}_mgainfact')
-        lo_gains_data = lo_gains_shm.get_data()
-        lo_gains_data[2] = gain  # Focus
-        lo_gains_shm.set_data(lo_gains_data)
+        with SHM(f'aol{self.lo_loop.loop_number}_mgainfact') as lo_gains_shm:
+            lo_gains_data = lo_gains_shm.get_data()
+            lo_gains_data[2] = gain  # Focus
+            lo_gains_shm.set_data(lo_gains_data)
 
     def set_wtt_gain(self, gain: float):
         from ..control.wtt_offloader import WTTOffloaderControl
@@ -212,10 +212,11 @@ class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
         from ..control.wtt_offloader import WTTOffloaderControl
         wtt_controller = WTTOffloaderControl(allow_creation=False)
 
-        ho_lims_data = SHM(
-                f'aol{self.ho_loop.loop_number}_mlimitfact').get_data()
-        lo_gains_data = SHM(
-                f'aol{self.lo_loop.loop_number}_mgainfact').get_data()
+        with SHM(f'aol{self.ho_loop.loop_number}_mlimitfact') as s:
+            ho_lims_data = s.get_data()
+        with SHM(f'aol{self.lo_loop.loop_number}_mgainfact') as s:
+            lo_gains_data = s.get_data()
+
         return LoopGainStatusReportStruct(
                 loop_state=self._figure_out_loop_state(),
                 dmg=self.ho_loop.mfilt.loopgain,

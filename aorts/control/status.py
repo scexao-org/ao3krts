@@ -163,17 +163,22 @@ class StatusObj:
         self.lowfs_data_ave = self.lowfs_data_ave_shm.get_data()
 
         try:
-            self.ngs_defoc: float = SHM('aol5_modevalWFS_ave').get_data()[2]
-            assert isinstance(self.ngs_defoc, float)
-        except:
-            self.ngs_defoc = 0.0
-        try:
-            self.nir_defoc: float = SHM('aol7_modevalWFS_ave').get_data()[2]
-            assert isinstance(self.nir_defoc, float)
-        except:
-            self.nir_defoc = 0.0
+            with SHM('aol5_modevalWFS_ave') as s:
+                self.ngs_defoc = s.get_data()[2]
+                assert isinstance(self.ngs_defoc, float)
+        except AssertionError:
+            self.ngs_defoc: float = 0.0
 
-        dm_map = SHM('dm64out_ave').get_data()
-        dm_flat = SHM('dm64disp00').get_data()
+        try:
+            with SHM('aol7_modevalWFS_ave') as s:
+                self.nir_defoc = s.get_data()[2]
+                assert isinstance(self.nir_defoc, float)
+        except AssertionError:
+            self.nir_defoc: float = 0.0
+
+        with SHM('dm64out_ave') as s:
+            dm_map = s.get_data()
+        with SHM('dm64disp00') as s:
+            dm_flat = s.get_data()
 
         self.dm_defoc = np.sum((dm_map - dm_flat) * PREP_FOCUS)  # type: ignore
