@@ -136,7 +136,7 @@ class TTManager(DMCombManager):
         shm = self.dm_shms[chan]
         assert shm is not None
         vals = shm.get_data()
-        vals[0] = val_x
+        vals[0] = -val_x  # Command INVERTED for consistency with status, and RTS06
         shm.set_data(vals)
 
     def yset(self, val_y: float, chan: int = 0) -> None:
@@ -149,14 +149,15 @@ class TTManager(DMCombManager):
     def set(self, val_x: float, val_y: float, chan: int = 0) -> None:
         shm = self.dm_shms[chan]
         assert shm is not None
-        shm.set_data(np.array([val_x, val_y], np.float32),
+        # X command INVERTED for consistency with status, and RTS06
+        shm.set_data(np.array([-val_x, val_y], np.float32),
                      autorelink_if_need=True)
 
     def xnudge(self, val_x: float, chan: int = 0) -> None:
         shm = self.dm_shms[chan]
         assert shm is not None
         vals = shm.get_data()
-        vals[0] += val_x
+        vals[0] -= val_x  # Command INVERTED for consistency with status, and RTS06
         shm.set_data(vals)
 
     def ynudge(self, val_y: float, chan: int = 0) -> None:
@@ -170,8 +171,9 @@ class TTManager(DMCombManager):
         shm = self.dm_shms[chan]
         assert shm is not None
 
+        # X command INVERTED for consistency with status, and RTS06
         shm.set_data(
-                np.array([val_x, val_y], np.float32) + shm.get_data(),
+                np.array([-val_x, val_y], np.float32) + shm.get_data(),
                 autorelink_if_need=True)
 
 
