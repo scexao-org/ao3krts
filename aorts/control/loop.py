@@ -38,31 +38,31 @@ class LoopGainBaseController:
 
     _msg_tail = 'on generic superclass or unimplemented subclass.'
 
-    def loop_open(self):
+    def loop_open(self) -> None:
         raise NotImplementedError(f'loop_open() {self._msg_tail}')
 
-    def loop_close(self):
+    def loop_close(self) -> None:
         raise NotImplementedError(f'loop_close() {self._msg_tail}')
 
-    def set_dm_gain(self, gain: float):
+    def set_dm_gain(self, gain: float) -> None:
         raise NotImplementedError(f'set_dm_gain({gain}) {self._msg_tail}')
 
-    def set_tt_gain(self, gain: float):
+    def set_tt_gain(self, gain: float) -> None:
         raise NotImplementedError(f'set_tt_gain({gain}) {self._msg_tail}')
 
-    def set_htt_flag(self, flag: bool):
+    def set_htt_flag(self, flag: bool) -> None:
         raise NotImplementedError(f'set_htt_gain({flag}) {self._msg_tail}')
 
-    def set_hdf_flag(self, flag: bool):
+    def set_hdf_flag(self, flag: bool) -> None:
         raise NotImplementedError(f'set_hdf_gain({flag}) {self._msg_tail}')
 
-    def set_ltt_gain(self, gain: float):
+    def set_ltt_gain(self, gain: float) -> None:
         raise NotImplementedError(f'set_ltt_gain({gain}) {self._msg_tail}')
 
-    def set_ldf_gain(self, gain: float):
+    def set_ldf_gain(self, gain: float) -> None:
         raise NotImplementedError(f'set_ldf_gain({gain}) {self._msg_tail}')
 
-    def set_wtt_gain(self, gain: float):
+    def set_wtt_gain(self, gain: float) -> None:
         raise NotImplementedError(f'set_wtt_gain({gain}) {self._msg_tail}')
 
     # This really should be an abstract method? It MUST be subclassed
@@ -77,7 +77,7 @@ class LoopGainBaseController:
 class LoopGainPT3KController(LoopGainBaseController):
     Mode = ModeEn.PT3K
 
-    def get_loop_and_gain_states(self):
+    def get_loop_and_gain_states(self) -> LoopGainStatusReportStruct:
         # Spit out defaults -- we know nothing about the system since
         # RTS06 is in charge
         return LoopGainStatusReportStruct()
@@ -85,7 +85,7 @@ class LoopGainPT3KController(LoopGainBaseController):
 
 class LoopGain_NGS_AND_NIR_Controller(LoopGainBaseController):
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.dm_loop: CacaoLoopManagerWithMFilt
         self.tt_loop: CacaoLoopManagerWithMFilt
         raise NotImplementedError('Use a subclass.')
@@ -126,7 +126,7 @@ class LoopGain_NGS_AND_NIR_Controller(LoopGainBaseController):
 class LoopGainNIR3KController(LoopGain_NGS_AND_NIR_Controller):
     Mode = ModeEn.NIR3K
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.dm_loop = CacaoLoopManagerWithMFilt(*config.LINFO_IRPYR_3K)
         self.tt_loop = CacaoLoopManagerWithMFilt(*config.LINFO_3KTTOFFLOAD)
 
@@ -134,14 +134,14 @@ class LoopGainNIR3KController(LoopGain_NGS_AND_NIR_Controller):
 class LoopGainNGS3KController(LoopGain_NGS_AND_NIR_Controller):
     Mode = ModeEn.NGS3K
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.dm_loop = CacaoLoopManagerWithMFilt(*config.LINFO_HOAPD_3K)
         self.tt_loop = CacaoLoopManagerWithMFilt(*config.LINFO_3KTTOFFLOAD)
 
 
 class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.ho_loop = CacaoLoopManagerWithMFilt(*config.LINFO_HOAPD_3K)
         self.lo_loop = CacaoLoopManagerWithMFilt(*config.LINFO_LOAPD_3K)
         self.tt_loop = CacaoLoopManagerWithMFilt(*config.LINFO_3KTTOFFLOAD)
@@ -168,13 +168,13 @@ class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
         self.lo_loop.mfilt.loopON = True
         self.tt_loop.mfilt.loopON = True
 
-    def set_dm_gain(self, gain: float):
+    def set_dm_gain(self, gain: float) -> None:
         self.ho_loop.mfilt.loopgain = gain
 
-    def set_tt_gain(self, gain: float):
+    def set_tt_gain(self, gain: float) -> None:
         self.tt_loop.mfilt.loopgain = gain
 
-    def set_htt_flag(self, flag: bool):
+    def set_htt_flag(self, flag: bool) -> None:
         # We proceed by setting the mode limit for tip-tilt.
         # Since the SHM is overwritten on mfilt runstart
         # We MUST expect that mfilt is running (but then this entire class expects this)
@@ -183,27 +183,27 @@ class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
             ho_lims_data[:2] = float(flag)  # TT
             ho_lims_shm.set_data(ho_lims_data)
 
-    def set_hdf_flag(self, flag: bool):
+    def set_hdf_flag(self, flag: bool) -> None:
 
         with SHM(f'aol{self.ho_loop.loop_number}_mlimitfact') as ho_lims_shm:
             ho_lims_data = ho_lims_shm.get_data()
             ho_lims_data[2] = float(flag)  # Focus
             ho_lims_shm.set_data(ho_lims_data)
 
-    def set_ltt_gain(self, gain: float):
+    def set_ltt_gain(self, gain: float) -> None:
 
         with SHM(f'aol{self.lo_loop.loop_number}_mgainfact') as lo_gains_shm:
             lo_gains_data = lo_gains_shm.get_data()
             lo_gains_data[:2] = gain  # TT
             lo_gains_shm.set_data(lo_gains_data)
 
-    def set_ldf_gain(self, gain: float):
+    def set_ldf_gain(self, gain: float) -> None:
         with SHM(f'aol{self.lo_loop.loop_number}_mgainfact') as lo_gains_shm:
             lo_gains_data = lo_gains_shm.get_data()
             lo_gains_data[2] = gain  # Focus
             lo_gains_shm.set_data(lo_gains_data)
 
-    def set_wtt_gain(self, gain: float):
+    def set_wtt_gain(self, gain: float) -> None:
         from ..control.wtt_offloader import WTTOffloaderControl
         wtt_controller = WTTOffloaderControl(allow_creation=False)
         wtt_controller.set_gain(gain)
@@ -288,12 +288,12 @@ class GlobalLoopGainController:
     def __init__(self) -> None:
         self.refresh_rts_mode()
 
-    def refresh_rts_mode(self):
+    def refresh_rts_mode(self) -> None:
         self.rts_mode: ModeEn = ModeEn.read_rtsmode()
         self.inner_controller: LoopGainBaseController =\
             get_singleton_controller_per_mode(self.rts_mode)
 
-    def open_all_loops(self):
+    def open_all_loops(self) -> None:
         for klass in SINGLETON_CONTROLLERS_CLASS.values():
             if klass.Singleton:
                 try:
