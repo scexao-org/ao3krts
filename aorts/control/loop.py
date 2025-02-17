@@ -128,10 +128,8 @@ class LoopGain_NGS_AND_NIR_Controller(LoopGainBaseController):
         self.tt_loop.mfilt.loopgain = gain
 
     def get_loop_and_gain_states(self) -> LoopGainStatusReportStruct:
-        return LoopGainStatusReportStruct(
-                loop_state=self._figure_out_loop_state(),
-                dmg=self.dm_loop.mfilt.loopgain,
-                ttg=self.tt_loop.mfilt.loopgain, htt=1, hdf=1)
+        raise NotImplementedError(
+                f'get_loop_and_gain_states() {self._msg_tail}')
 
     def _figure_out_loop_state(self) -> int:
         if self.dm_loop.mfilt.loopON and \
@@ -150,6 +148,14 @@ class LoopGainNIR3KController(LoopGain_NGS_AND_NIR_Controller):
         self.dm_loop = CacaoLoopManagerWithMFilt(*config.LINFO_IRPYR_3K)
         self.tt_loop = CacaoLoopManagerWithMFilt(*config.LINFO_3KTTOFFLOAD)
 
+    def get_loop_and_gain_states(self) -> LoopGainStatusReportStruct:
+        return LoopGainStatusReportStruct(
+                loop_state=self._figure_out_loop_state(),
+                nir_state=self.dm_loop.mfilt.loopON,
+                tt_state=self.tt_loop.mfilt.loopON,
+                dmg=self.dm_loop.mfilt.loopgain,
+                ttg=self.tt_loop.mfilt.loopgain, htt=1, hdf=1)
+
 
 class LoopGainNGS3KController(LoopGain_NGS_AND_NIR_Controller):
     Mode = ModeEn.NGS3K
@@ -157,6 +163,14 @@ class LoopGainNGS3KController(LoopGain_NGS_AND_NIR_Controller):
     def __init__(self) -> None:
         self.dm_loop = CacaoLoopManagerWithMFilt(*config.LINFO_HOAPD_3K)
         self.tt_loop = CacaoLoopManagerWithMFilt(*config.LINFO_3KTTOFFLOAD)
+
+    def get_loop_and_gain_states(self) -> LoopGainStatusReportStruct:
+        return LoopGainStatusReportStruct(
+                loop_state=self._figure_out_loop_state(),
+                ho_state=self.dm_loop.mfilt.loopON,
+                tt_state=self.tt_loop.mfilt.loopON,
+                dmg=self.dm_loop.mfilt.loopgain,
+                ttg=self.tt_loop.mfilt.loopgain, htt=1, hdf=1)
 
 
 class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
@@ -269,6 +283,10 @@ class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
 
         return LoopGainStatusReportStruct(
                 loop_state=self._figure_out_loop_state(),
+                ho_state=self.ho_loop.mfilt.loopON,
+                lo_state=self.lo_loop.mfilt.loopON,
+                tt_state=self.tt_loop.mfilt.loopON,
+                wtt_state=wtt_controller.fps.loopON,
                 dmg=self.ho_loop.mfilt.loopgain,
                 ttg=self.tt_loop.mfilt.loopgain, htt=ho_lims_data[0],
                 hdf=ho_lims_data[2], ltt=lo_gains_data[0], ldf=lo_gains_data[2],
@@ -298,7 +316,7 @@ class TestController(LoopGainBaseController):
     Mode = ModeEn.NONE
 
     def get_loop_and_gain_states(self) -> LoopGainStatusReportStruct:
-        return LoopGainStatusReportStruct(2, 0.123, 0.456)
+        return LoopGainStatusReportStruct(2, dmg=0.123, ttg=0.456)
 
 
 _klasses: list[type[LoopGainBaseController]] = [

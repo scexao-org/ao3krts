@@ -41,7 +41,12 @@ class StatusObj:
         # Begin report variables
         self.rts_mode: str = 'Unknown'
 
-        self.loop_state: int = 0  # 0, 1, 2 for off, on, weird.
+        self.loop_state: int = 2  # 0, 1, 2 for off, on, weird.
+        self.nir_state: int = 2
+        self.ho_state: int = 2
+        self.lo_state: int = 2
+        self.tt_state: int = 2
+        self.wtt_state: int = 2
 
         self.dmg: float = 0.0
         self.ttg: float = 0.0
@@ -89,9 +94,14 @@ class StatusObj:
 
     def __str__(self) -> str:
         s = self
+        ST = ("OFF", " ON", "???")
+
         string = (
                 f'MODE : {s.rts_mode}',
-                f'LOOP : State = {("OFF", " ON", "???")[self.loop_state]}',
+                f'LOOP : State = {ST[self.loop_state]}',
+                f'     : NIRst = {ST[self.nir_state]}',
+                f'     : HOst  = {ST[self.ho_state]} , LOst  = {ST[self.lo_state]}',
+                f'     : TTst  = {ST[self.tt_state]} , WTTst = {ST[self.wtt_state]}',
                 f'GAIN : DMG = {s.dmg:0.4f} , TTG = {s.ttg:0.4f}',
                 f'     : HTT = {s.htt:0.4f} , HDF = {s.hdf:0.4f}',
                 f'     : LTT = {s.ltt:0.4f} , LDF = {s.ldf:0.4f}',
@@ -125,7 +135,14 @@ class StatusObj:
 
         self.rts_mode = self.loop_gain_state_watcher.rts_mode
 
+        # this is starting to look like we should just encapsulate a copy
+        # of last_state...
         self.loop_state = last_state.loop_state
+        self.nir_state = last_state.nir_state
+        self.ho_state = last_state.ho_state
+        self.lo_state = last_state.lo_state
+        self.tt_state = last_state.tt_state
+        self.wtt_state = last_state.wtt_state
 
         self.dmg = last_state.dmg
         self.ttg = last_state.ttg
