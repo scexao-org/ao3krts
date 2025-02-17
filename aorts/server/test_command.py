@@ -67,7 +67,13 @@ class ActualInterestingTestObject(ClickRemotelyInvokableObject):
         print(cls)
         return 0
 
-    #@classmethod
+    @DISPATCHER.click_invokator.command('slowprint')
+    @staticmethod
+    def slow_print():
+        import time
+        for k in range(5):
+            print(chr(65 + k) * 10)
+            time.sleep(1)
 
 
 if __name__ == "__main__":

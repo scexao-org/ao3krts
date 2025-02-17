@@ -25,7 +25,7 @@ def ctfixt_server_pair(request):
     time.sleep(0.5)
 
     CMD_OBJS = [
-            ActualInterestingTestObject(),
+            ActualInterestingTestObject(),  # 'test'
     ]
 
     pyro_server = PyroServer(bindTo=('localhost', 0),

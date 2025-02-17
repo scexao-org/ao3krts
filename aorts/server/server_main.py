@@ -19,7 +19,7 @@ import time
 # Collection of control objects
 from .test_command import ActualInterestingTestObject
 from .device_commands import DM3kCommand, TTCommand, StatusCommand, DM3kHKLCommand, WTTCommand
-from .ao_commands import LoopCommand, GainCommand, FocusOffloaderCommand
+from .ao_commands import LoopCommand, GainCommand, WTTOffloaderCommand
 from .system_commands import ModeSwitcher
 
 import click
@@ -50,7 +50,7 @@ def main_g2if(debug: bool):
             'gain': GainCommand(),
             'status': StatusCommand(),
             'modes': ModeSwitcher(),
-            'foc': FocusOffloaderCommand(),
+            'wttl': WTTOffloaderCommand(),
             'wtt': WTTCommand(),
     }
 

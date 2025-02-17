@@ -15,7 +15,7 @@ from .dispatcher import ClickDispatcher, ClickRemotelyInvokableObject
 import click
 
 from ..control.loop import GlobalLoopGainController
-from ..control.foc_offloader import FocusLGSOffloader
+from ..control.wtt_offloader import WTTOffloaderControl
 
 
 class LoopCommand(ClickRemotelyInvokableObject):
@@ -96,19 +96,41 @@ class GainCommand(ClickRemotelyInvokableObject):
 
 
 # Focus offloader is obsolete? Probably; we rather need to report in status gen2 the correct values!
-class FocusOffloaderCommand(ClickRemotelyInvokableObject):
-    NAME = 'FOCOFFL'
-    DESCR = 'Focus offloader av. gain'
+class WTTOffloaderCommand(ClickRemotelyInvokableObject):
+    NAME = 'wttl'
+    DESCR = 'Control WTT offloader loop'
     DISPATCHER = ClickDispatcher(click_group=NAME)
-    CALLEE = FocusLGSOffloader()
+    CALLEE = WTTOffloaderControl()
 
-    @DISPATCHER.click_invokator.command('ttg')
-    @click.argument('avg_gain', type=float)
+    @DISPATCHER.click_invokator.command('on')
     @staticmethod
-    def set_av_gain(avg_gain: float):
-        FocusOffloaderCommand.CALLEE.set_ave_gain(avg_gain)
+    def loop_on():
+        WTTOffloaderCommand.CALLEE.loop_close()
 
-    @DISPATCHER.click_invokator.command('reset')
+    @DISPATCHER.click_invokator.command('off')
+    @staticmethod
+    def loop_off():
+        WTTOffloaderCommand.CALLEE.loop_open()
+
+    @DISPATCHER.click_invokator.command('zero')
     @staticmethod
     def reset():
-        FocusOffloaderCommand.CALLEE.reset()
+        WTTOffloaderCommand.CALLEE.reset()
+
+    @DISPATCHER.click_invokator.command('gain')
+    @click.argument('gain', type=float)
+    @staticmethod
+    def set_gain(gain: float):
+        WTTOffloaderCommand.CALLEE.set_gain(gain)
+
+    @DISPATCHER.click_invokator.command('mult')
+    @click.argument('mult', type=float)
+    @staticmethod
+    def set_leak(mult: float):
+        WTTOffloaderCommand.CALLEE.set_mult(mult)
+
+    @DISPATCHER.click_invokator.command('limit')
+    @click.argument('limit', type=float)
+    @staticmethod
+    def set_limit(limit: float):
+        WTTOffloaderCommand.CALLEE.set_limit(limit)
