@@ -244,12 +244,20 @@ class LoopGainNLGS3KController(LoopGain_BOTH_OLD_NEW_LGS_3KController):
     Mode = ModeEn.NLGS3K
 
 
+class TestController(LoopGainBaseController):
+    Mode = ModeEn.NONE
+
+    def get_loop_and_gain_states(self) -> LoopGainStatusReportStruct:
+        return LoopGainStatusReportStruct(2, 0.123, 0.456)
+
+
 _klasses: list[type[LoopGainBaseController]] = [
         LoopGainNGS3KController,
         LoopGainNIR3KController,
         LoopGainNLGS3KController,
         LoopGainOLGS3KController,
         LoopGainPT3KController,
+        TestController,
 ]
 
 SINGLETON_CONTROLLERS_CLASS: dict[ModeEn, type[LoopGainBaseController]] = {
