@@ -6,6 +6,7 @@ import logging
 
 logg = logging.getLogger(__name__)
 
+import time
 from dataclasses import dataclass
 
 from pyMilk.interfacing.shm import SHM
@@ -19,6 +20,13 @@ from ..modules.base_module_modes import RTS_MODE_ENUM as ModeEn
 class LoopGainStatusReportStruct:
     # Sentinel values, the we can use the constructor with partial kwargs.
     loop_state: int = 2
+
+    nir_state: int = 2
+    ho_state: int = 2
+    lo_state: int = 2
+    wtt_state: int = 2
+    tt_state: int = 2
+
     dmg: float = -1.0
     ttg: float = -1.0
 
@@ -64,6 +72,18 @@ class LoopGainBaseController:
 
     def set_wtt_gain(self, gain: float) -> None:
         raise NotImplementedError(f'set_wtt_gain({gain}) {self._msg_tail}')
+
+    def wtt_toggle(self, state: bool) -> None:
+        raise NotImplementedError(f'wtt_toggle({state}) {self._msg_tail}')
+
+    def holoop_toggle(self, state: bool, wtt: bool = False) -> None:
+        raise NotImplementedError(f'holoop_toggle({state}) {self._msg_tail}')
+
+    def loloop_toggle(self, state: bool) -> None:
+        raise NotImplementedError(f'loloop_toggle({state}) {self._msg_tail}')
+
+    def gain_clear(self) -> None:
+        raise NotImplementedError(f'gain_clear() {self._msg_tail}')
 
     # This really should be an abstract method? It MUST be subclassed
     # It's used by the status object
@@ -152,20 +172,24 @@ class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
         self.ho_loop.mfilt.loopON = False
         self.lo_loop.mfilt.loopON = False
         self.tt_loop.mfilt.loopON = False
+        self.wtt_toggle(False)
 
     def loop_close(self) -> None:
+        # Zero HO, LO loops.
         self.ho_loop.mfilt.loopZERO = True
         self.lo_loop.mfilt.loopZERO = True
-
-        # Initialize LTT gain, LDF gain
-        self.lo_loop.mfilt.loopgain = 1.0
-        self.set_ltt_gain(0.0)
-        self.set_ldf_gain(0.0)
-
         self.tt_loop.mfilt.loopZERO = True
 
-        self.ho_loop.mfilt.loopON = True
-        self.lo_loop.mfilt.loopON = True
+        # Close HO loop, wait, disable HTT, close WTT loop
+        # HTT might be already disabled here, that's OK.
+        self.holoop_toggle(True, True)
+        time.sleep(1.0)
+
+        # Start LO loop (memorized LTT, LDF gains)
+        self.loloop_toggle(True)
+
+        time.sleep(1.0)
+
         self.tt_loop.mfilt.loopON = True
 
     def set_dm_gain(self, gain: float) -> None:
@@ -207,6 +231,32 @@ class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
         from ..control.wtt_offloader import WTTOffloaderControl
         wtt_controller = WTTOffloaderControl(allow_creation=False)
         wtt_controller.set_gain(gain)
+
+    def wtt_toggle(self, state: bool) -> None:
+        from ..control.wtt_offloader import WTTOffloaderControl
+        wtt_controller = WTTOffloaderControl(allow_creation=False)
+        if state:
+            wtt_controller.loop_close()
+        else:
+            wtt_controller.loop_open()
+
+    def holoop_toggle(self, state: bool, wtt: bool = False) -> None:
+        self.ho_loop.mfilt.loopON = state
+        if state:
+            time.sleep(0.2)
+            self.set_htt_flag(False)
+            self.wtt_toggle(True)
+
+    def loloop_toggle(self, state: bool) -> None:
+        self.lo_loop.mfilt.loopgain = 1.0  # Unused, keep at 1
+        self.lo_loop.mfilt.loopON = state
+
+    def gain_clear(self) -> None:
+        self.set_tt_gain(0.0)
+        self.set_htt_flag(True)
+        self.set_hdf_flag(True)
+        self.set_ltt_gain(0.0)
+        self.set_ldf_gain(0.0)
 
     def get_loop_and_gain_states(self) -> LoopGainStatusReportStruct:
         from ..control.wtt_offloader import WTTOffloaderControl

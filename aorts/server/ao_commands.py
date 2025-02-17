@@ -38,11 +38,41 @@ class LoopCommand(ClickRemotelyInvokableObject):
     @staticmethod
     def off():
         LoopCommand.CALLEE.loop_open()
+        # Also set WTT off
 
     @DISPATCHER.click_invokator.command('killall')
     @staticmethod
     def killall():
         LoopCommand.CALLEE.open_all_loops()
+
+    @DISPATCHER.click_invokator.command('wtt')
+    @click.argument('_state', type=click.Choice(['on', 'off'],
+                                                case_sensitive=False))
+    @staticmethod
+    def wtt_toggle(_state: str):
+        state = _state.lower() == 'on'
+        LoopCommand.CALLEE.wtt_toggle(state)
+
+    @DISPATCHER.click_invokator.command('ho')
+    @click.argument(
+            '_state', type=click.Choice(['on', 'off', 'onnowtt'],
+                                        case_sensitive=False))
+    @staticmethod
+    def holoop_toggle(_state: str):
+        if _state == 'on':
+            LoopCommand.CALLEE.holoop_toggle(True, True)
+        elif _state == 'off':
+            LoopCommand.CALLEE.holoop_toggle(False)
+        elif _state == 'onnowtt':
+            LoopCommand.CALLEE.holoop_toggle(True, False)
+
+    @DISPATCHER.click_invokator.command('lo')
+    @click.argument('_state', type=click.Choice(['on', 'off'],
+                                                case_sensitive=False))
+    @staticmethod
+    def loloop_toggle(_state: str):
+        state = _state.lower() == 'on'
+        LoopCommand.CALLEE.loloop_toggle(state)
 
 
 class GainCommand(ClickRemotelyInvokableObject):
@@ -93,6 +123,11 @@ class GainCommand(ClickRemotelyInvokableObject):
     @click.pass_obj
     def wtt_gain(self, gain: float):
         LoopCommand.CALLEE.set_wtt_gain(gain)
+
+    @DISPATCHER.click_invokator.command('clear')
+    @staticmethod
+    def clear():
+        LoopCommand.CALLEE.gain_clear()
 
 
 # Focus offloader is obsolete? Probably; we rather need to report in status gen2 the correct values!
