@@ -275,22 +275,23 @@ def get_singleton_controller_per_mode(mode: ModeEn) -> LoopGainBaseController:
     return klass.Singleton
 
 
-class GlobalLoopGainController:
+class GlobalLoopGainController(LoopGainBaseController):
+    Singleton = None
+    Mode = ModeEn.NONE
     '''
-    Loop manager object for loop on / loop off in NIR mode
+    The inheritance from LoopGainBaseController is not warranted
 
-    This is really the binding for the loop on / off control from gen2.
+    This is just a metaprogramming wrapper so that all
+    methods from LoopGainBaseController
 
-    E.g this is called by (for setters):
+    get wrapped as such:
 
-        aorts.server.ao_commands.LoopCommand (>$ rts23 loop ...)
-        aorts.server.ao_commands.GainCommand (>$ rts23 gain ...)
+    def loop_open(self) -> None:
+        self.refresh_rts_mode()
+        return self.inner_controller.loop_open()
 
-    And by (for getter):
-
-        aorts.control.status.StatusObj
-        which is itself called by:
-            aorts.command.device_commands.StatusCommand (>$ rts23 status ...)
+    The inheritance itself only is to permit preservation of method signatures for
+    the type-checker.
     '''
 
     def __init__(self) -> None:
@@ -309,47 +310,29 @@ class GlobalLoopGainController:
                 except:
                     pass
 
-    '''
-    Of course all the functions below could be metaprogrammed from
-    just a list of function names to pass down to inner_controller.
-    '''
 
-    def loop_open(self):
-        self.refresh_rts_mode()
-        return self.inner_controller.loop_open()
+# Metaprogram the function wrapping
+def func_handle_factory(name: str):
 
-    def loop_close(self):
+    def _func_handle(self, *args, **kwargs):
         self.refresh_rts_mode()
-        return self.inner_controller.loop_close()
+        return getattr(self.inner_controller, name)(*args, **kwargs)
 
-    def set_dm_gain(self, gain: float):
-        self.refresh_rts_mode()
-        return self.inner_controller.set_dm_gain(gain)
+    _func_handle.__name__ = name
 
-    def set_tt_gain(self, gain: float):
-        self.refresh_rts_mode()
-        return self.inner_controller.set_tt_gain(gain)
+    return _func_handle
 
-    def set_htt_flag(self, flag: bool):
-        self.refresh_rts_mode()
-        return self.inner_controller.set_htt_flag(flag)
 
-    def set_hdf_flag(self, flag: bool):
-        self.refresh_rts_mode()
-        return self.inner_controller.set_hdf_flag(flag)
+'''
+Add all wrapped functions to GlobalLoopGainController, based
+on what's available in the LoopBaseGainController dictionary
+'''
+from types import FunctionType
+for name, method in LoopGainBaseController.__dict__.items():
+    if not isinstance(method, FunctionType):
+        continue
+    if name.startswith('_'):
+        continue
 
-    def set_ltt_gain(self, gain: float):
-        self.refresh_rts_mode()
-        return self.inner_controller.set_ltt_gain(gain)
-
-    def set_ldf_gain(self, gain: float):
-        self.refresh_rts_mode()
-        return self.inner_controller.set_ldf_gain(gain)
-
-    def set_wtt_gain(self, gain: float):
-        self.refresh_rts_mode()
-        return self.inner_controller.set_wtt_gain(gain)
-
-    def get_loop_and_gain_states(self) -> LoopGainStatusReportStruct:
-        self.refresh_rts_mode()
-        return self.inner_controller.get_loop_and_gain_states()
+    print(f'mpatch {name} {method}')
+    setattr(GlobalLoopGainController, name, func_handle_factory(name))
