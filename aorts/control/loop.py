@@ -402,5 +402,4 @@ for name, method in LoopGainBaseController.__dict__.items():
     if name.startswith('_'):
         continue
 
-    print(f'mpatch {name} {method}')
     setattr(GlobalLoopGainController, name, func_handle_factory(name))
