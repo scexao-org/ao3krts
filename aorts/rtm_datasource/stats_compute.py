@@ -35,7 +35,9 @@ class ShmStatisticator:
         sz, tp = self.shm.shape_c, self.shm.nptype
 
         # Create SHMs for stats.
-        self.shm_ave = SHM(self.shm_name + '_ave', (sz, np.float32), symcode=0)
+        # USE _mean and _var
+        # THERE is a name conflict with CACAO with _ave, _rms
+        self.shm_ave = SHM(self.shm_name + '_mean', (sz, np.float32), symcode=0)
         self.shm_var = SHM(self.shm_name + '_var', (sz, np.float32), symcode=0)
 
         # Straight memory pointers to the SHM

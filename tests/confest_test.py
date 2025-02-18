@@ -8,6 +8,8 @@ actually do their job.
 import os
 import Pyro4
 
+import pytest
+
 from swmain.network.pyroclient import connect_generic
 
 from swmain.network.pyroserver_registerable import PyroServer
@@ -50,10 +52,10 @@ def test_smartfps_in_server(ctfixt_server_w_smartfps):
     # No errors
     fps_proxy = connect_generic('FPS', *ps.nsAddress)
 
-    assert fps_proxy.looplimit == 0.0
-    fps_obj.looplimit = 1.0
-    assert fps_obj.looplimit == 1.0
     assert fps_proxy.looplimit == 1.0
+    fps_obj.looplimit = 3.14
+    assert pytest.approx(fps_obj.looplimit) == 3.14
+    assert pytest.approx(fps_proxy.looplimit) == 3.14
 
 
 def test_smartfps_not_in_server(ctfixt_server_pair):

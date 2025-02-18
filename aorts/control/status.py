@@ -80,11 +80,11 @@ class StatusObj:
         self.wtt_shm = SHM('wtt_telemetry')
         self.ctt_shm = SHM('ctt_telemetry')
 
-        self.apd_ave_shm = SHM('apd_ave')  # Warning 2 x 216
+        self.apd_ave_shm = SHM('apd_mean')  # Warning 2 x 216
         assert self.apd_ave_shm.shape == (
                 2, 216)  # Never too sure, one transpose away...
 
-        self.lowfs_data_ave_shm = SHM('lowfs_data_ave')
+        self.lowfs_data_ave_shm = SHM('lowfs_data_mean')
         self.lowfs_data_ave = self.lowfs_data_ave_shm.get_data(
         )  # 11-element numpy array
 
@@ -180,7 +180,7 @@ class StatusObj:
         self.lowfs_data_ave = self.lowfs_data_ave_shm.get_data()
 
         try:
-            with SHM('aol5_modevalWFS_ave') as s:
+            with SHM('aol5_modevalWFS_mean') as s:
                 # Casting and not using isinstance(float) AssertionError
                 # because np.float32 is not a float...
                 self.ngs_defoc = float(s.get_data()[2])
@@ -188,12 +188,12 @@ class StatusObj:
             self.ngs_defoc: float = 0.0
 
         try:
-            with SHM('aol7_modevalWFS_ave') as s:
+            with SHM('aol7_modevalWFS_mean') as s:
                 self.nir_defoc = float(s.get_data()[2])
         except ValueError:
             self.nir_defoc: float = 0.0
 
-        with SHM('dm64out_ave') as s:
+        with SHM('dm64out_mean') as s:
             dm_map = s.get_data()
         with SHM('dm64disp00') as s:
             dm_flat = s.get_data()

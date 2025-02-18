@@ -119,7 +119,7 @@ def test_changing_size_statisticator(fixt_shm_posting_process_as_func_factory):
     stat2 = ShmStatisticator('y', allow_autorelink_error=True)
     stat2.test_me_unthreaded(max_it=1000)
 
-    assert SHM('y_ave').shape == (123, 7)
+    assert SHM('y_mean').shape == (123, 7)
     assert SHM('y_var').shape == (123, 7)
 
     # cleanup before restarting a changed-size poster
@@ -133,7 +133,7 @@ def test_changing_size_statisticator(fixt_shm_posting_process_as_func_factory):
         stat.test_me_unthreaded(max_it=1000)
     stat2.test_me_unthreaded(max_it=1000)
 
-    assert SHM('y_ave').shape == (12, 36)
+    assert SHM('y_mean').shape == (12, 36)
     assert SHM('y_var').shape == (12, 36)
 
     # We still should cleanup, even though _eventually_ the fixture factory should do it.
@@ -194,7 +194,7 @@ def test_changing_size_threaded_statisticator_stays_alive(
         time.sleep(0.01)
 
     assert (stat.thread is not None) and stat.thread.is_alive(), 'A'
-    assert SHM('y_ave').shape == (12, 36), 'B'
+    assert SHM('y_mean').shape == (12, 36), 'B'
     assert SHM('y_var').shape == (12, 36), 'C'
 
     stat.stop_thread()
