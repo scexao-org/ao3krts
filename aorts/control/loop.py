@@ -172,6 +172,10 @@ class LoopGainNGS3KController(LoopGain_NGS_AND_NIR_Controller):
                 dmg=self.dm_loop.mfilt.loopgain,
                 ttg=self.tt_loop.mfilt.loopgain, htt=1, hdf=1)
 
+    def gain_clear(self) -> None:
+        self.dm_loop.mfilt.loopgain = 0.0
+        self.tt_loop.mfilt.loopgain = 0.0
+
 
 class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
 
