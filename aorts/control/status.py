@@ -181,16 +181,16 @@ class StatusObj:
 
         try:
             with SHM('aol5_modevalWFS_ave') as s:
-                self.ngs_defoc = s.get_data()[2]
-                assert isinstance(self.ngs_defoc, float)
-        except AssertionError:
+                # Casting and not using isinstance(float) AssertionError
+                # because np.float32 is not a float...
+                self.ngs_defoc = float(s.get_data()[2])
+        except ValueError:
             self.ngs_defoc: float = 0.0
 
         try:
             with SHM('aol7_modevalWFS_ave') as s:
-                self.nir_defoc = s.get_data()[2]
-                assert isinstance(self.nir_defoc, float)
-        except AssertionError:
+                self.nir_defoc = float(s.get_data()[2])
+        except ValueError:
             self.nir_defoc: float = 0.0
 
         with SHM('dm64out_ave') as s:
