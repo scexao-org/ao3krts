@@ -196,11 +196,11 @@ class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
         # Zero HO, LO loops.
         self.ho_loop.mfilt.loopZERO = True
         self.lo_loop.mfilt.loopZERO = True
-        self.tt_loop.mfilt.loopZERO = True
+        #self.tt_loop.mfilt.loopZERO = True # risky when closing the loop with large TT?
 
         # Close HO loop, wait, disable HTT, close WTT loop
         # HTT might be already disabled here, that's OK.
-        self.holoop_toggle(True, True)
+        self.holoop_toggle(True, True)  # enable WTT loop by YO
         time.sleep(1.0)
 
         # Start LO loop (memorized LTT, LDF gains)
@@ -260,14 +260,15 @@ class LoopGain_BOTH_OLD_NEW_LGS_3KController(LoopGainBaseController):
 
     def holoop_toggle(self, state: bool, wtt: bool = False) -> None:
         self.ho_loop.mfilt.loopON = state
-        if state:
+        if wtt:  # state --> wtt
             time.sleep(0.2)
-            self.set_htt_flag(False)
-            self.wtt_toggle(True)
+            #self.set_htt_flag(False) # comment out by YO
+            self.wtt_toggle(state)
 
     def loloop_toggle(self, state: bool) -> None:
         self.lo_loop.mfilt.loopgain = 1.0  # Unused, keep at 1
         self.lo_loop.mfilt.loopON = state
+        self.tt_loop.mfilt.loopON = state  # add by YO
 
     def gain_clear(self) -> None:
         self.set_tt_gain(0.0)

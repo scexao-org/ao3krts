@@ -111,7 +111,7 @@ class StatusObj:
                 f'     : CTT_CH1 = {s.ctt_x:0.4f} [V] , CTT_CH2 = {s.ctt_y:0.4f} [V]',
                 f'APD  : HOWFS-Ave. = {s.howfs_ave:.2f} [kcnt/sec/elem] , ( Rmag = {s.howfs_rmag:.2f} )',
                 f'     : LOWFS-Ave. = {s.lowfs_ave:.2f} [kcnt/sec/elem] , ( Rmag = {s.lowfs_rmag:.2f} )',
-                f'Eval : DMdefocus = {s.dm_defoc:.3f} , CVdefocus = {s.ngs_defoc:.3f}',  # units? Mean value.
+                f'Eval : DMdefocus = {s.dm_defoc:.3f} , CVdefocus = {s.ngs_defoc*1000:.3f}',  # units? Mean value.
                 f'     : LWdefocus = {s.lowfs_data_ave[10]:.3f} , NIRdefocus = {s.nir_defoc:.3f}',
                 # TT x and y from LOWFS mean value. # Swapped to match the axes of HOWFS first 2 modes (will probs change again...).
                 f'     : LWttx = {-s.lowfs_data_ave[9]:.3f} , LWtty = {+s.lowfs_data_ave[8]:.3f}',
@@ -121,7 +121,9 @@ class StatusObj:
                 #f'     : CVvar = 0.000 , CVtvar = 0.000 , CVfvar = 0.000',
         )
 
-        return '\n'.join(string)
+        return '\n'.join(
+                string
+        ) + '\r'  # add '\r' for the communication with AU server for ADF control by YO
 
     def status_report(self) -> str:
         self.update_status()

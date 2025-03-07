@@ -162,7 +162,9 @@ class RTSModeSwitcher:
                 mode: RTS_MODE_ENUM | None = None
                 if _target_mode in _module.CFG_NAMES:
                     mode = _target_mode
-                return partial(_module.start_and_configure, mode)
+                _to_call = partial(_module.start_and_configure, mode)
+                _to_call.__name__ = "start_and_configure"
+                return _to_call
             else:
                 return _module.start_function
 
