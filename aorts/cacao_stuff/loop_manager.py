@@ -273,7 +273,7 @@ def cacao_loop_deploy(loop_full_name: str, root_aodir: str |
     if delete_logdir:
         cacao_deploy_folder = root_aodir / f'.{cfg_reader.loop_name}.cacaotaskmanager-log'
         import shutil
-        shutil.rmtree(cacao_deploy_folder)
+        shutil.rmtree(cacao_deploy_folder, ignore_errors=True)
 
     from swmain.infra import tmux
     fpsCTRL_tmux = tmux.find_or_create(cfg_reader.loop_name + '_fpsCTRL')
