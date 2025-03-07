@@ -67,7 +67,7 @@ class WTTOffloader_RTSModule:  # implements RTS_MODULE Protocol
 
         tmux_foc = tmux.find('wtt_offloader')
         if tmux_foc is None:
-            return (ERR, "WTT offloader startup failure (no tmux)")
+            return (ERR, "WTT offloader stop failure (no tmux)")
 
         tmux.kill_running(tmux_foc)
 
