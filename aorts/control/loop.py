@@ -317,8 +317,15 @@ class LoopGainNLGS3KController(LoopGain_BOTH_OLD_NEW_LGS_3KController):
     Mode = ModeEn.NLGS3K
 
 
-class TestController(LoopGainBaseController):
+class NoneController(LoopGainBaseController):
     Mode = ModeEn.NONE
+
+    def get_loop_and_gain_states(self) -> LoopGainStatusReportStruct:
+        return LoopGainStatusReportStruct(2, dmg=0.123, ttg=0.456)
+
+
+class UnknownController(LoopGainBaseController):
+    Mode = ModeEn.UNKNOWN
 
     def get_loop_and_gain_states(self) -> LoopGainStatusReportStruct:
         return LoopGainStatusReportStruct(2, dmg=0.123, ttg=0.456)
@@ -330,7 +337,8 @@ _klasses: list[type[LoopGainBaseController]] = [
         LoopGainNLGS3KController,
         LoopGainOLGS3KController,
         LoopGainPT3KController,
-        TestController,
+        NoneController,  # These 2 are used so that we can still spin up a server instance if the RTS
+        UnknownController  # state is NONE or UNKNOWN following a previous failure.
 ]
 
 SINGLETON_CONTROLLERS_CLASS: dict[ModeEn, type[LoopGainBaseController]] = {

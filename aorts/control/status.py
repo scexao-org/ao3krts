@@ -186,13 +186,13 @@ class StatusObj:
                 # Casting and not using isinstance(float) AssertionError
                 # because np.float32 is not a float...
                 self.ngs_defoc = float(s.get_data()[2])
-        except ValueError:
+        except (ValueError, FileNotFoundError):
             self.ngs_defoc: float = 0.0
 
         try:
             with SHM('aol7_modevalWFS_mean') as s:
                 self.nir_defoc = float(s.get_data()[2])
-        except ValueError:
+        except (ValueError, FileNotFoundError):
             self.nir_defoc: float = 0.0
 
         with SHM('dm64out_mean') as s:

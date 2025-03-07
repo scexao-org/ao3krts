@@ -233,6 +233,6 @@ class StatusCommand(ClickRemotelyInvokableObject):
     CALLEE = StatusObj()
 
     @DISPATCHER.click_invokator.command('gen2')
-    @click.pass_obj
-    def report(self) -> str:
+    @staticmethod
+    def report() -> str:
         return StatusCommand.CALLEE.status_report()

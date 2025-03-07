@@ -22,7 +22,24 @@ from .device_commands import DM3kCommand, TTCommand, StatusCommand, DM3kHKLComma
 from .ao_commands import LoopCommand, GainCommand, WTTOffloaderCommand
 from .system_commands import ModeSwitcher
 
+if typ.TYPE_CHECKING:
+    from .dispatcher import ClickRemotelyInvokableObject
+
 import click
+
+# Create singleton control objects -- actually should check of a running instance to avoid dupletons
+CMD_OBJS: dict[str, ClickRemotelyInvokableObject] = {
+        'test': ActualInterestingTestObject(),
+        'dm': DM3kCommand(),
+        'dmc': DM3kHKLCommand(),
+        'tt': TTCommand(),
+        'loop': LoopCommand(),
+        'gain': GainCommand(),
+        'status': StatusCommand(),
+        'modes': ModeSwitcher(),
+        'wttl': WTTOffloaderCommand(),
+        'wtt': WTTCommand(),
+}
 
 
 @click.command('g2if-pyserver')
@@ -39,20 +56,6 @@ def main_g2if(debug: bool):
     auto_register_to_watchers('SRVS', 'RTS23 TCP/Pyro')
 
     # Define command objects
-
-    # Create singleton control objects -- actually should check of a running instance to avoid dupletons
-    CMD_OBJS = {
-            'x': ActualInterestingTestObject(),
-            'dm': DM3kCommand(),
-            'dmc': DM3kHKLCommand(),
-            'tt': TTCommand(),
-            'loop': LoopCommand(),
-            'gain': GainCommand(),
-            'status': StatusCommand(),
-            'modes': ModeSwitcher(),
-            'wttl': WTTOffloaderCommand(),
-            'wtt': WTTCommand(),
-    }
 
     from scxconf import PYRONSAO_HOST, PYRONSAO_PORT, IP_AORTS_SUMMIT
     pyro_server = PyroServer(bindTo=(IP_AORTS_SUMMIT, 0),

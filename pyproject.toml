@@ -25,6 +25,7 @@ script-files = [
 g2if-pyserver = "aorts.server.server_main:main_g2if"
 ao-testobj = "aorts.control.test_obj:TestControl.main"
 rts-modeselect = "aorts.modules.rts_modeselect_main:modeselect"
+rts23local = "aorts.server.client_local_exec:rts23_localexec"
 
 
 [tool.pytest.ini_options]
