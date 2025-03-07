@@ -62,7 +62,7 @@ class LoopCommand(ClickRemotelyInvokableObject):
         if _state == 'on':
             LoopCommand.CALLEE.holoop_toggle(True, True)
         elif _state == 'off':
-            LoopCommand.CALLEE.holoop_toggle(False)
+            LoopCommand.CALLEE.holoop_toggle(False, True)
         elif _state == 'onnowtt':
             LoopCommand.CALLEE.holoop_toggle(True, False)
 

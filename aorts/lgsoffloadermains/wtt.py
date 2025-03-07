@@ -62,6 +62,9 @@ def main_wtt_offloader(fps_name: str = 'wtt_offl'):
             fps.out_tip = 5.0
             fps.out_til = 5.0
             fps.loopZERO = False
+            shm_output.set_data(
+                    np.array([fps.out_tip, fps.out_til],
+                             dtype=np.float32))  # apply change, add by YO
 
         if not fps.loopON:
             time.sleep(.01)  # Relieve CPU
@@ -82,7 +85,7 @@ def main_wtt_offloader(fps_name: str = 'wtt_offl'):
 
         # Integrator
         # output = shm_output_antiwindup.get_data() # change to shm_output by YO 2025/02/16
-        output = shm_output.get_data()
+        output = shm_output.get_data() - 5  # add -5 again by YO
 
         out_tip, out_til = output[0], output[1]
 
@@ -90,8 +93,10 @@ def main_wtt_offloader(fps_name: str = 'wtt_offl'):
         out_til = out_til * fps.loopmult + til * fps.loopgain
 
         # Remember to offset by 5 because this is WTT!!!
-        out_tip = np.clip(out_tip, -fps.looplimit, fps.looplimit)
-        out_til = np.clip(out_til, -fps.looplimit, fps.looplimit)
+        out_tip = np.clip(out_tip, -fps.looplimit,
+                          fps.looplimit) + 5  # add +5 again by YO
+        out_til = np.clip(out_til, -fps.looplimit,
+                          fps.looplimit) + 5  # add +5 again by YO
 
         fps.out_tip, fps.out_til = out_tip, out_til
         fps.m_frate = fps.m_frate * (1 - frate_gain) + frate_gain / interval
