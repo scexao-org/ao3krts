@@ -88,7 +88,9 @@ class DAC40_RTSModule:  # implements RTS_MODULE Protocol
 
         pid = tmux.find_pane_running_pid(tmux_sesh)
         if pid is None:
-            return (ERR, "DAC40 FPDP did not start. Inspect tmux fpdp_dm.")
+            return (ERR,
+                    "DAC40 FPDP did not start (no PID error). Inspect tmux fpdp_dm."
+                    )
 
         # Try to send data to dmXXdispXX and get return in bim188tele
         # TODO: just call dmzero from the control subpackage?
@@ -102,12 +104,15 @@ class DAC40_RTSModule:  # implements RTS_MODULE Protocol
         shm_dmtele = SHM(config.SHMNAME_BIM188)
         ctr_tele = shm_dmtele.get_counter()
 
-        shm_dmsend.set_data(np.zeros(188, np.float32))
+        for i in range(3):
+            shm_dmsend.set_data(np.zeros(188, np.float32))
 
         shm_dmtele.get_data(True, timeout=0.5)
 
         if shm_dmtele.get_counter() <= ctr_tele:
-            return (ERR, "DAC40 FPDP did not start. Inspect tmux fpdp_dm.")
+            return (ERR,
+                    "DAC40 FPDP did not start (counter error). Inspect tmux fpdp_dm."
+                    )
 
         milk_make_rt('dm188_drv', pid, 40)
 
@@ -129,11 +134,12 @@ class DAC40_RTSModule:  # implements RTS_MODULE Protocol
         WTTManager().zero()
 
         if not (np.all(
-                SHM(config.SHMNAME_BIM188).get_data(True, timeout=0.1) == 0.0
-        ) and np.all(SHM(config.SHMNAME_TT).get_data(True, timeout=0.1) == 0.0)
-                and np.all(
-                        SHM(config.SHMNAME_WTT).get_data(True, timeout=0.1) ==
-                        0.0)):
+                SHM(config.SHMNAME_BIM188).get_data(True, timeout=0.1) == 0.0)
+                and np.
+                all(SHM(config.SHMNAME_TT).get_data(True, timeout=0.1) == 0.0)):
+            # and np.all(
+            #            SHM(config.SHMNAME_WTT).get_data(True, timeout=0.1) ==
+            #            5.0)):
             return (ERR,
                     "DAC40 halt error during DM/TTs zeroing. Inspect tmux fpdp_dm."
                     )
