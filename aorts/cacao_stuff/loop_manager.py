@@ -65,7 +65,7 @@ class CacaoLoopManager(CacaoConfigReader):
         super().__init__(loop_full_name, loop_number, root_all=root_all)
 
         # FIXME MUST FILTER BY KEYWORD.
-        self.fps_ctrl = FPSManager('*', f'aol{self.loop_number}')
+        self.fps_ctrl = FPSManager('*', f'aol{self.loop_number}_')
         if len(self.fps_ctrl.fps_cache) == 0:
             logg.warning(
                     f"FPSCtrl cache is suspiciously empty for regex {self.fps_ctrl.fps_name_glob}.fps.shm"
